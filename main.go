@@ -25,9 +25,9 @@ func main() {
 
 	server := gin.Default()
 	log.WithField("server", server).Info("Default Gin server create.")
+	server.LoadHTMLGlob("templates/*")
 	LoadRoutes(server)
 	server.Run(IP_PORT)
-
 }
 
 // LoadRoutes does exactly that... loads all routes for the server.

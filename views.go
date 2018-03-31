@@ -36,5 +36,14 @@ func CheckPut(c *gin.Context) {
 }
 
 func LandingPage(c *gin.Context) {
-	c.String(http.StatusOK, "Hello!")
+	c.HTML(
+		// Set the HTTP status to 200 (OK)
+		http.StatusOK,
+		// Use the index.html template
+		"index.html",
+		// Pass the data that the page uses (in this case, 'title')
+		gin.H{
+			"title": "Home Page",
+		},
+	)
 }
