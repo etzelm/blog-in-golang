@@ -1,6 +1,7 @@
 package main
 
 import (
+	"html/template"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -25,7 +26,13 @@ func main() {
 
 	server := gin.Default()
 	log.WithField("server", server).Info("Default Gin server create.")
-	server.LoadHTMLGlob("templates/*")
+	var tmpl = template.Must(template.New("").Funcs(template.FuncMap{
+		"eq": func(a, b interface{}) bool {
+			return a == b
+		},
+	}).ParseGlob("templates/*.html"))
+	tmpl.ParseFiles("article.html", "header.html", "index.html", "menu.html")
+	server.SetHTMLTemplate(tmpl)
 	LoadRoutes(server)
 	server.Run(IP_PORT)
 }
