@@ -5,5 +5,3 @@ Sample Local Test Commands:
 
  * go run main.go views.go
  * ../../../../bin/dep.exe ensure
-
- Test Commit 
