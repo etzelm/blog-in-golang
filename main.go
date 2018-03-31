@@ -1,7 +1,6 @@
 package main
 
 import (
-	"html/template"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -26,13 +25,7 @@ func main() {
 
 	server := gin.Default()
 	log.WithField("server", server).Info("Default Gin server create.")
-	var tmpl = template.Must(template.New("").Funcs(template.FuncMap{
-		"eq": func(a, b interface{}) bool {
-			return a == b
-		},
-	}).ParseGlob("templates/*.html"))
-	tmpl.ParseFiles("article.html", "header.html", "index.html", "menu.html")
-	server.SetHTMLTemplate(tmpl)
+	server.LoadHTMLGlob("templates/*")
 	LoadRoutes(server)
 	server.Run(IP_PORT)
 }
@@ -40,6 +33,7 @@ func main() {
 // LoadRoutes does exactly that... loads all routes for the server.
 func LoadRoutes(server *gin.Engine) *gin.Engine {
 	server.GET("/", LandingPage)
+	server.GET("/about", AboutPage)
 	server.GET("/article/view/:article_id", getArticle)
 	return server
 }
