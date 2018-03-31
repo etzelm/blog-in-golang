@@ -1,11 +1,7 @@
 package main
 
 import (
-	"net"
 	"os"
-
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -18,25 +14,8 @@ const (
 // IP_PORT is this computers IP address
 var IP_PORT string
 
-func launchGrpcServer() {
-	lis, err := net.Listen("tcp", port)
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-
-	s := grpc.NewServer()
-	// Register reflection service on gRPC server.
-
-	reflection.Register(s)
-	if err := s.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
-	}
-}
-
 func main() {
 	log.Info("Server is starting...")
-	go launchGrpcServer()
-	log.Info("finished launchGrpcServer.")
 
 	IP_PORT := os.Getenv("ip_port")
 	if IP_PORT == "" {
