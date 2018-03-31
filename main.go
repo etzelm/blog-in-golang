@@ -33,16 +33,6 @@ func main() {
 // LoadRoutes does exactly that... loads all routes for the server.
 func LoadRoutes(server *gin.Engine) *gin.Engine {
 	server.GET("/", LandingPage)
-
-	server.GET("/hello", Hello)
-
-	// All '/check' routes are grouped for convenience/clarity.
-	check := server.Group("/check")
-	{
-		check.GET("", CheckGet)
-		check.POST("", CheckPost)
-		check.PUT("", CheckPut)
-	}
-
+	server.GET("/article/view/:article_id", getArticle)
 	return server
 }
