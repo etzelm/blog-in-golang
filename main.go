@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )
@@ -26,6 +27,7 @@ func main() {
 	server := gin.Default()
 	log.WithField("server", server).Info("Default Gin server create.")
 	server.LoadHTMLGlob("templates/*")
+	server.Use(static.Serve("/public", static.LocalFile("./public", true)))
 	LoadRoutes(server)
 	server.Run(IP_PORT)
 }

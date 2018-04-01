@@ -8,6 +8,12 @@
   revision = "22d885f9ecc78bf4ee5d72b937e4bbcdc58e8cae"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/gin-contrib/static"
+  packages = ["."]
+  revision = "73da7037e716e63aa2b0ffceb630dfa7be299086"
+
+[[projects]]
   name = "github.com/gin-gonic/gin"
   packages = [
     ".",
@@ -71,6 +77,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "0bd616b7edc0ad43341512e0c6f4fdd34c33ad5550daf063c61cdeffe87d9a94"
+  inputs-digest = "aa11f55db26be1f6fc890a433ad83a4b0ff775ad869e5b3885655a661c6b704d"
   solver-name = "gps-cdcl"
   solver-version = 1
