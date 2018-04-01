@@ -26,18 +26,24 @@ func LandingPage(c *gin.Context) {
 }
 
 func AboutPage(c *gin.Context) {
-	// Call the HTML method of the Context to render a template
-	c.HTML(
-		// Set the HTTP status to 200 (OK)
-		http.StatusOK,
-		// Use the index.html template
-		"about.html",
-		// Pass the data that the page uses
-		gin.H{
-			"title": "About Me",
-		},
-	)
-
+	if article, err := getArticleByID(9999); err == nil {
+		// Call the HTML method of the Context to render a template
+		c.HTML(
+			// Set the HTTP status to 200 (OK)
+			http.StatusOK,
+			// Use the index.html template
+			"article.html",
+			// Pass the data that the page uses
+			gin.H{
+				"title": article.Title,
+			},
+		)
+		//Write Stored HTML from mongoDB to article.html
+		c.Writer.Write([]byte(article.Content))
+	} else {
+		// If the article is not found, abort with an error
+		c.AbortWithError(http.StatusNotFound, err)
+	}
 }
 
 func getArticle(c *gin.Context) {
