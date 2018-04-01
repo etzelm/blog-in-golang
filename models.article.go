@@ -1,6 +1,11 @@
 package main
 
-import "errors"
+import (
+	"errors"
+
+	log "github.com/sirupsen/logrus"
+	mgo "gopkg.in/mgo.v2"
+)
 
 type article struct {
 	ID      int    `json:"id"`
@@ -27,7 +32,34 @@ var articleList = []article{
 
 // Return a list of all the articles
 func getAllArticles() []article {
-	return articleList
+	session, err := mgo.Dial("localhost:27017")
+	if err != nil {
+		panic(err)
+	}
+	defer session.Close()
+	session.SetMode(mgo.Monotonic, true)
+
+	c := session.DB("test").C("articles")
+
+	/* session.DB("test").C("articles").RemoveAll(nil) */
+
+	/* err = c.Insert(&article{ID: 15, Title: "Article 15", Content: "Article 15 body"},
+		&article{ID: 16, Title: "Article 16", Content: "Article 16 body"},
+		&article{ID: 17, Title: "Article 17", Content: "Article 17 body"},
+		&article{ID: 18, Title: "Article 18", Content: "Article 18 body"},
+		&article{ID: 19, Title: "Article 19", Content: "Article 19 body"})
+	if err != nil {
+		log.Info("Test5")
+		log.Fatal(err)
+	} */
+
+	results := []article{}
+	err = c.Find(nil).All(&results)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return results
 }
 
 func getArticleByID(id int) (*article, error) {
