@@ -11,5 +11,5 @@ type article struct {
 
 func main() {
 	//drop_tables()
-	insert_about()
+	about_me()
 }

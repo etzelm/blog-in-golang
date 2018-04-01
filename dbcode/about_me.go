@@ -4,9 +4,10 @@ import (
 	"log"
 
 	mgo "gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
-func insert_about() {
+func about_me() {
 	session, err := mgo.Dial("localhost:27017")
 	if err != nil {
 		panic(err)
@@ -47,7 +48,12 @@ func insert_about() {
 		"<h4>&emsp;&emsp;<a href=\"https://github.com/etzelm\">Through Github</a></h4>" +
 		"</div>"
 
-	err = c.Insert(&article{ID: 9999, Title: "About Me", Created: created, Modified: modified, Blurb: blurb, Content: hold})
+	/* err = c.Insert(&article{ID: 9999, Title: "About Me",
+	Created: created, Modified: modified, Blurb: blurb, Content: hold}) */
+
+	err = c.Update(bson.M{"id": 9999},
+		&article{ID: 9999, Title: "About Me",
+			Created: created, Modified: modified, Blurb: blurb, Content: hold})
 	if err != nil {
 		log.Fatal(err)
 	}
