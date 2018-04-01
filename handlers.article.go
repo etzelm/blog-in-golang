@@ -34,7 +34,7 @@ func AboutPage(c *gin.Context) {
 		"about.html",
 		// Pass the data that the page uses
 		gin.H{
-			"title": "Home Page",
+			"title": "About Me",
 		},
 	)
 
@@ -57,12 +57,10 @@ func getArticle(c *gin.Context) {
 					"payload": article,
 				},
 			)
-
 		} else {
 			// If the article is not found, abort with an error
 			c.AbortWithError(http.StatusNotFound, err)
 		}
-
 	} else {
 		// If an invalid article ID is specified in the URL, abort with an error
 		c.AbortWithStatus(http.StatusNotFound)
