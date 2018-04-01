@@ -56,6 +56,7 @@ func getArticle(c *gin.Context) {
 					"title": article.Title,
 				},
 			)
+			//Write Stored HTML from mongoDB to article.html
 			c.Writer.Write([]byte(article.Content))
 		} else {
 			// If the article is not found, abort with an error
