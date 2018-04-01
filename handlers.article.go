@@ -53,10 +53,10 @@ func getArticle(c *gin.Context) {
 				"article.html",
 				// Pass the data that the page uses
 				gin.H{
-					"title":   article.Title,
-					"payload": article,
+					"title": article.Title,
 				},
 			)
+			c.Writer.Write([]byte(article.Content))
 		} else {
 			// If the article is not found, abort with an error
 			c.AbortWithError(http.StatusNotFound, err)
