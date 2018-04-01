@@ -25,6 +25,8 @@ func insert_about() {
 	c := session.DB("test").C("articles")
 
 	blurb := "Just a quick blurb about me and this blog"
+	created := "March 31st, 2018"
+	modified := "April 1st, 2018"
 	hold := "<div class=\"container\">" +
 		"<div class=\"row\">" +
 		"<div class=\"col-md-6 form-group\">" +
@@ -54,7 +56,7 @@ func insert_about() {
 		"<h4>&emsp;&emsp;<a href=\"https://github.com/etzelm\">Through Github</a></h4>" +
 		"</div>"
 
-	err = c.Insert(&article{ID: 9999, Title: "About Me", Blurb: blurb, Content: hold})
+	err = c.Insert(&article{ID: 9999, Title: "About Me", Created: created, Modified: modified, Blurb: blurb, Content: hold})
 	if err != nil {
 		log.Fatal(err)
 	}

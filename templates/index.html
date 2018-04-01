@@ -10,8 +10,12 @@
 <!--Display the title of the article -->
 <h2>{{.Title}}</h2>
 </a>
+<!--Display the time created of the article-->
+<p>&emsp;&emsp;<u>Date Created:</u> {{.Created}}</p>
+<!--Display the last time modified of the article-->
+<p>&emsp;&emsp;<u>Last Modified:</u> {{.Modified}}</p>
 <!--Display the content of the article-->
-<p>{{.Blurb}}</p>
+<p>&emsp;&emsp;{{.Blurb}}</p>
 {{end}}
 
 
