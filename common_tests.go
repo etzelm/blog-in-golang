@@ -42,14 +42,3 @@ func testHTTPResponse(t *testing.T, r *gin.Engine, req *http.Request, f func(w *
 		t.Fail()
 	}
 }
-
-// This function is used to store the main lists into the temporary one
-// for testing
-func saveLists() {
-	tmpArticleList = articleList
-}
-
-// This function is used to restore the main lists from the temporary one
-func restoreLists() {
-	articleList = tmpArticleList
-}
