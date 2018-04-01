@@ -8,10 +8,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const (
-	port = ":50051"
-)
-
 // IP_PORT is this computers IP address
 var IP_PORT string
 
