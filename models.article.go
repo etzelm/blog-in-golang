@@ -28,7 +28,7 @@ func getAllArticles() []article {
 	c := session.DB("test").C("articles")
 
 	results := []article{}
-	err = c.Find(nil).Sort("id").All(&results)
+	err = c.Find(nil).Sort("-id").All(&results)
 	if err != nil {
 		log.Fatal(err)
 	}

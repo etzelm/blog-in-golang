@@ -4,7 +4,6 @@ import (
 	"log"
 
 	mgo "gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 )
 
 func about_me() {
@@ -48,12 +47,13 @@ func about_me() {
 		"<h4>&emsp;&emsp;<a href=\"https://github.com/etzelm\">Through Github</a></h4>" +
 		"</div>"
 
-	/* err = c.Insert(&article{ID: 9999, Title: "About Me",
-	Created: created, Modified: modified, Blurb: blurb, Content: hold}) */
+	err = c.Insert(&article{ID: 0, Title: "About Me",
+		Created: created, Modified: modified, Blurb: blurb, Content: hold})
 
-	err = c.Update(bson.M{"id": 9999},
-		&article{ID: 9999, Title: "About Me",
-			Created: created, Modified: modified, Blurb: blurb, Content: hold})
+	/* err = c.Update(bson.M{"id": 0},
+	&article{ID: 0, Title: "About Me",
+		Created: created, Modified: modified, Blurb: blurb, Content: hold}) */
+
 	if err != nil {
 		log.Fatal(err)
 	}

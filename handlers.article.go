@@ -26,7 +26,7 @@ func LandingPage(c *gin.Context) {
 }
 
 func AboutPage(c *gin.Context) {
-	if article, err := getArticleByID(9999); err == nil {
+	if article, err := getArticleByID(0); err == nil {
 		// Call the HTML method of the Context to render a template
 		c.HTML(
 			// Set the HTTP status to 200 (OK)
