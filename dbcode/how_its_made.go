@@ -4,6 +4,7 @@ import (
 	"log"
 
 	mgo "gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 func how_its_made() {
@@ -30,12 +31,12 @@ func how_its_made() {
 		"way, here and there.</h4>" +
 		"</div>"
 
-	err = c.Insert(&article{ID: 1, Title: "Who Would Want to Write a Blog in Go?",
-		Created: created, Modified: modified, Blurb: blurb, Content: hold})
+	/* err = c.Insert(&article{ID: 1, Title: "Who Would Want to Write a Blog in Go?",
+	Created: created, Modified: modified, Blurb: blurb, Content: hold}) */
 
-	/* err = c.Update(bson.M{"id": 1},
-	&article{ID: 1, Title: "Who Would Want to Write a Blog in Go?",
-		Created: created, Modified: modified, Blurb: blurb, Content: hold}) */
+	err = c.Update(bson.M{"id": 1},
+		&article{ID: 1, Title: "Who Would Want to Write a Blog in Go?",
+			Created: created, Modified: modified, Blurb: blurb, Content: hold})
 
 	if err != nil {
 		log.Fatal(err)
