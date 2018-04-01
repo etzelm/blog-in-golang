@@ -6,15 +6,6 @@ import (
 	mgo "gopkg.in/mgo.v2"
 )
 
-type article struct {
-	ID       int    `json:"id"`
-	Created  string `json:"created"`
-	Modified string `json:"modified"`
-	Title    string `json:"title"`
-	Blurb    string `json:"blurb"`
-	Content  string `json:"content"`
-}
-
 func insert_about() {
 	session, err := mgo.Dial("localhost:27017")
 	if err != nil {
