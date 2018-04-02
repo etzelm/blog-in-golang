@@ -19,7 +19,8 @@ func about_me() {
 	blurb := "Just a quick blurb about me and this blog"
 	created := "March 31st, 2018"
 	modified := "April 2nd, 2018"
-	hold := "<div class=\"container\">" +
+	hold := "<div class=\"well\" style=\"background-color:#DFF0D8;\">" +
+		"<div class=\"container\">" +
 		"<div class=\"row\">" +
 		"<div class=\"col-md-6 form-group\">" +
 		"<br><img src=\"/public/face.jpg\" alt=\"My Face\">" +
@@ -32,6 +33,7 @@ func about_me() {
 		"<h4>&emsp;&emsp;Associates of Science in Computer Science</h4>" +
 		"<h4>&emsp;&emsp;Diablo Valley College, Pleasant Hill, CA</h4>" +
 		"<h4>&emsp;&emsp;Attended from January 2013 to June 2015</h4>" +
+		"</div>" +
 		"</div>" +
 		"</div>" +
 		"<h3 style=\"color:#A619FF;\">About Me:</h3>" +
@@ -48,6 +50,7 @@ func about_me() {
 		"<img src=\"/public/email.png\" alt=\"Email\"  height=\"30\" width=\"45\"></a>" +
 		"&emsp;&emsp;<a style=\"color:#9C6708;\" href=\"https://github.com/etzelm\">" +
 		"<img src=\"/public/github.png\" alt=\"Github\"  height=\"45\" width=\"45\"></a></h4>" +
+		"</div>" +
 		"</div>"
 
 	/* err = c.Insert(&article{ID: 0, Title: "About Me",
