@@ -16,8 +16,7 @@ func how_its_made() {
 	session.SetMode(mgo.Monotonic, true)
 	c := session.DB("test").C("articles")
 
-	blurb := "We'll besides the general allure of writing blogs in and of them self, " +
-		"Golang is actually pretty easy to write a blog or pretty much any kind of website in"
+	blurb := "A reflection on what it took to make this website and its content, plus maybe some updates to come"
 	created := "April 1st, 2018"
 	modified := "April 1st, 2018"
 	hold := "<h3>Who Would Want to Write a Blog in Go?</h3>" +
@@ -35,7 +34,7 @@ func how_its_made() {
 	Created: created, Modified: modified, Blurb: blurb, Content: hold}) */
 
 	err = c.Update(bson.M{"id": 1},
-		&article{ID: 1, Title: "Who Would Want to Write a Blog in Go?",
+		&article{ID: 1, Title: "Who Would Want to Write a Blog in Golang Anyways",
 			Created: created, Modified: modified, Blurb: blurb, Content: hold})
 
 	if err != nil {

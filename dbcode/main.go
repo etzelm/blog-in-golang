@@ -1,5 +1,10 @@
 package main
 
+import (
+	"fmt"
+	"os"
+)
+
 type article struct {
 	ID       int    `json:"id"`
 	Created  string `json:"created"`
@@ -10,7 +15,14 @@ type article struct {
 }
 
 func main() {
-	//drop_tables()
-	//about_me()
-	how_its_made()
+	switch args := os.Args[1:]; args[0] {
+	case "0":
+		drop_tables()
+	case "1":
+		about_me()
+	case "2":
+		how_its_made()
+	default:
+		fmt.Printf("No Input Given")
+	}
 }

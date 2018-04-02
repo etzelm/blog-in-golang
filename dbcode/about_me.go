@@ -25,7 +25,7 @@ func about_me() {
 		"<br><img src=\"/public/face.jpg\" alt=\"My Face\">" +
 		"</div>" +
 		"<div class=\"col-md-6 form-group\">" +
-		"<h3>Education:</h3>" +
+		"<h3 style=\"color:#A619FF;\">Education:</h3>" +
 		"<h4>&emsp;&emsp;Bachelors of Science in Computer Science</h4>" +
 		"<h4>&emsp;&emsp;University of California, Santa Cruz</h4>" +
 		"<h4>&emsp;&emsp;Attended from June 2015 to March 2018</h4><br>" +
@@ -34,7 +34,7 @@ func about_me() {
 		"<h4>&emsp;&emsp;Attended from January 2013 to June 2015</h4>" +
 		"</div>" +
 		"</div>" +
-		"<h3>About Me:</h3>" +
+		"<h3 style=\"color:#A619FF;\">About Me:</h3>" +
 		"<h4>&emsp;&emsp;Hopefully you've guessed by now that my name is Mitchell " +
 		"Etzel and as a recent college graduate I've decided to start this blog to " +
 		"help foster and share my further eduction. I take these actions in the " +
@@ -43,9 +43,9 @@ func about_me() {
 		"related to them as well. Although I make promises toward the fact that " +
 		"I will probably get a little bit distracted with side projects along the " +
 		"way, here and there.</h4>" +
-		"<h3>Contact Me:</h3>" +
-		"<h4>&emsp;&emsp;<a href=\"mailto:etzelm@live.com\">Through Email</a></h4>" +
-		"<h4>&emsp;&emsp;<a href=\"https://github.com/etzelm\">Through Github</a></h4>" +
+		"<h3 style=\"color:#A619FF;\">Contact Me:</h3>" +
+		"<h4>&emsp;&emsp;<a style=\"color:#CC8A14;\" href=\"mailto:etzelm@live.com\">Through Email</a></h4>" +
+		"<h4>&emsp;&emsp;<a style=\"color:#9C6708;\" href=\"https://github.com/etzelm\">Through Github</a></h4>" +
 		"</div>"
 
 	/* err = c.Insert(&article{ID: 0, Title: "About Me",
