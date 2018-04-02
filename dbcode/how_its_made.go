@@ -16,9 +16,9 @@ func how_its_made() {
 	session.SetMode(mgo.Monotonic, true)
 	c := session.DB("test").C("articles")
 
-	blurb := "A reflection on what it took to make this website and its content, plus maybe some updates to come"
+	blurb := "A reflection on what it took to make this website and its content, plus maybe some updates along the way"
 	created := "April 1st, 2018"
-	modified := "April 1st, 2018"
+	modified := "April 2nd, 2018"
 	hold := "<h3>Who Would Want to Write a Blog in Go?</h3>" +
 		"<h4>&emsp;&emsp;Hopefully you've guessed by now that my name is Mitchell " +
 		"Etzel and as a recent college graduate I've decided to start this blog to " +

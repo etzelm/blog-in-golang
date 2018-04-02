@@ -18,7 +18,7 @@ func about_me() {
 
 	blurb := "Just a quick blurb about me and this blog"
 	created := "March 31st, 2018"
-	modified := "April 1st, 2018"
+	modified := "April 2nd, 2018"
 	hold := "<div class=\"container\">" +
 		"<div class=\"row\">" +
 		"<div class=\"col-md-6 form-group\">" +
@@ -44,8 +44,10 @@ func about_me() {
 		"I will probably get a little bit distracted with side projects along the " +
 		"way, here and there.</h4>" +
 		"<h3 style=\"color:#A619FF;\">Contact Me:</h3>" +
-		"<h4>&emsp;&emsp;<a style=\"color:#CC8A14;\" href=\"mailto:etzelm@live.com\">Through Email</a></h4>" +
-		"<h4>&emsp;&emsp;<a style=\"color:#9C6708;\" href=\"https://github.com/etzelm\">Through Github</a></h4>" +
+		"<h4>&emsp;&emsp;<a style=\"color:#CC8A14;\" href=\"mailto:etzelm@live.com\">" +
+		"<img src=\"/public/email.png\" alt=\"Email\"  height=\"30\" width=\"45\"></a>" +
+		"&emsp;&emsp;<a style=\"color:#9C6708;\" href=\"https://github.com/etzelm\">" +
+		"<img src=\"/public/github.png\" alt=\"Github\"  height=\"45\" width=\"45\"></a></h4>" +
 		"</div>"
 
 	/* err = c.Insert(&article{ID: 0, Title: "About Me",

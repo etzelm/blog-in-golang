@@ -2,20 +2,25 @@
 
 <!--Embed the header.html template at this location-->
 {{ template "header.html" .}}
-<br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br>
 
 {{range .payload }}
-<!--Create the link for the article based on its ID-->
-<a style="color:MediumSeaGreen;" href="/article/view/{{.ID}}">
-<!--Display the title of the article -->
-<h2>{{.Title}}</h2>
-</a>
-<!--Display the time created of the article-->
-<p>&emsp;&emsp;<u style="color:#A619FF;">Date Created:</u> {{.Created}}</p>
-<!--Display the last time modified of the article-->
-<p>&emsp;&emsp;<u style="color:#A619FF;">Last Modified:</u> {{.Modified}}</p>
-<!--Display the content of the article-->
-<p>&emsp;&emsp;{{.Blurb}}</p>
+<div class="panel panel-success">
+    <div class="panel-heading">
+        <!--Create the link for the article based on its ID-->
+        <a style="color:MediumSeaGreen;" href="/article/view/{{.ID}}">
+        <!--Display the title of the article -->
+        <h2 class="panel-title">{{.Title}}</h2></a>
+    </div>
+    <div class="panel-body">
+        <!--Display the time created of the article-->
+        <p>&emsp;&emsp;<u style="color:#A619FF;">Date Created:</u> {{.Created}}</p>
+        <!--Display the last time modified of the article-->
+        <p>&emsp;&emsp;<u style="color:#A619FF;">Last Modified:</u> {{.Modified}}</p>
+        <!--Display the content of the article-->
+        <p>&emsp;&emsp;{{.Blurb}}</p>
+    </div>
+</div>
 {{end}}
 
 
