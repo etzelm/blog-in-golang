@@ -8,6 +8,19 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+type ItemInfo struct {
+	Created  string `json:"created"`
+	Modified string `json:"modified"`
+	Blurb    string `json:"blurb"`
+	Content  string `json:"content"`
+}
+
+type Item struct {
+	ID    int      `json:"id"`
+	Title string   `json:"title"`
+	Info  ItemInfo `json:"info"`
+}
+
 type article struct {
 	ID       int    `json:"id"`
 	Created  string `json:"created"`
