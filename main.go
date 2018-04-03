@@ -22,7 +22,7 @@ func main() {
 
 	server := gin.Default()
 	log.WithField("server", server).Info("Default Gin server create.")
-	//server.LoadHTMLGlob("templates/*")
+	server.LoadHTMLGlob("templates/*")
 	server.Use(static.Serve("/public", static.LocalFile("./public", true)))
 	LoadRoutes(server)
 	server.Run(IP_PORT)
