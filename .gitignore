@@ -1,4 +1,4 @@
 vendor/
 mongodb/
 .vscode/
-run.sh
+*.sh
