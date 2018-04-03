@@ -8,7 +8,7 @@ import (
 )
 
 func LandingPage(c *gin.Context) {
-	//articles := getAllArticles()
+	articles := getAllArticles()
 
 	// Call the HTML method of the Context to render a template
 	c.HTML(
@@ -18,8 +18,8 @@ func LandingPage(c *gin.Context) {
 		"index.html",
 		// Pass the data that the page uses
 		gin.H{
-			"title": "Home Page",
-			//"payload": articles,
+			"title":   "Home Page",
+			"payload": articles,
 		},
 	)
 

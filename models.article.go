@@ -1,11 +1,17 @@
 package main
 
 import (
-	"errors"
+	"fmt"
+	"os"
+	"strconv"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
+	"github.com/aws/aws-sdk-go/service/dynamodb/expression"
 	log "github.com/sirupsen/logrus"
-	mgo "gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 )
 
 type ItemInfo struct {
@@ -32,36 +38,115 @@ type article struct {
 
 // Return a list of all the articles
 func getAllArticles() []article {
-	session, err := mgo.Dial("localhost:27017")
-	if err != nil {
-		panic(err)
-	}
-	defer session.Close()
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("test").C("articles")
+	aid := os.Getenv("AWS_ACCESS_KEY_ID")
+	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
+	var my_credentials = credentials.NewStaticCredentials(aid, key, "")
 
-	results := []article{}
-	err = c.Find(nil).Sort("-id").All(&results)
+	sess, err := session.NewSession(&aws.Config{
+		Credentials: my_credentials,
+		Region:      aws.String("us-west-2"),
+		Endpoint:    aws.String("http://localhost:8000")})
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return nil
 	}
-	return results
+	dbSvc := dynamodb.New(sess)
+
+	filt := expression.Name("id").GreaterThanEqual(expression.Value(0))
+
+	proj := expression.NamesList(expression.Name("title"), expression.Name("id"), expression.Name("info.blurb"),
+		expression.Name("info.created"), expression.Name("info.modified"))
+
+	expr, err := expression.NewBuilder().WithFilter(filt).WithProjection(proj).Build()
+
+	params := &dynamodb.ScanInput{
+		ExpressionAttributeNames:  expr.Names(),
+		ExpressionAttributeValues: expr.Values(),
+		FilterExpression:          expr.Filter(),
+		ProjectionExpression:      expr.Projection(),
+		TableName:                 aws.String("Articles"),
+	}
+
+	// Make the DynamoDB Query API call
+	result, err := dbSvc.Scan(params)
+
+	temp := []article{}
+
+	for _, i := range result.Items {
+		item := Item{}
+		article := article{}
+
+		err = dynamodbattribute.UnmarshalMap(i, &item)
+
+		if err != nil {
+			fmt.Println("Got error unmarshalling:")
+			fmt.Println(err.Error())
+			os.Exit(1)
+		}
+
+		article.ID = item.ID
+		article.Title = item.Title
+		article.Created = item.Info.Created
+		article.Modified = item.Info.Modified
+		article.Blurb = item.Info.Blurb
+		temp = append(temp, article)
+	}
+
+	return temp
 }
 
 func getArticleByID(id int) (*article, error) {
-	session, err := mgo.Dial("localhost:27017")
-	if err != nil {
-		panic(err)
-	}
-	defer session.Close()
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("test").C("articles")
+	aid := os.Getenv("AWS_ACCESS_KEY_ID")
+	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
+	var my_credentials = credentials.NewStaticCredentials(aid, key, "")
 
-	result := article{}
-	err = c.Find(bson.M{"id": id}).One(&result)
+	sess, err := session.NewSession(&aws.Config{
+		Credentials: my_credentials,
+		Region:      aws.String("us-west-2"),
+		Endpoint:    aws.String("http://localhost:8000")})
 	if err != nil {
-		log.Fatal(err)
-		return nil, errors.New("Article not found")
+		log.Println(err)
+		return nil, err
 	}
-	return &result, nil
+	dbSvc := dynamodb.New(sess)
+
+	result, err := dbSvc.GetItem(&dynamodb.GetItemInput{
+		TableName: aws.String("Articles"),
+		Key: map[string]*dynamodb.AttributeValue{
+			"id": {
+				N: aws.String(strconv.Itoa(id)),
+			},
+			"title": {
+				S: aws.String("About Me"),
+			},
+		},
+	})
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, err
+	}
+
+	item := Item{}
+	article := article{}
+
+	err = dynamodbattribute.UnmarshalMap(result.Item, &item)
+
+	if err != nil {
+		panic(fmt.Sprintf("Failed to unmarshal Record, %v", err))
+	}
+
+	if item.Title == "" {
+		fmt.Println("Could not find 'The Big New Movie' (2015)")
+		return nil, err
+	}
+
+	article.ID = item.ID
+	article.Title = item.Title
+	article.Blurb = item.Info.Blurb
+	article.Created = item.Info.Created
+	article.Modified = item.Info.Modified
+	article.Content = item.Info.Content
+
+	return &article, nil
 }
