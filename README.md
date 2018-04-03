@@ -5,7 +5,7 @@ Sample Local Test Commands:
 
  * go run main.go models.article.go handlers.article.go
  * ../../../../bin/dep.exe ensure
- * "C:\Program Files\MongoDB\Server\3.6\bin\mongod.exe" --dbpath "C:\Projects\Go\src\github.com\etzelm\blog-in-golang\mongodb"
+ * java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb
  * go run main.go about_me.go how_its_made.go drop_tables.go 1
 
  Docker Helper Commands:

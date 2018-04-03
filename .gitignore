@@ -1,4 +1,4 @@
 vendor/
-mongodb/
+dynamodb/
 .vscode/
 *.sh
