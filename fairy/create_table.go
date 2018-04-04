@@ -21,7 +21,8 @@ func create_table() {
 	sess, err := session.NewSession(&aws.Config{
 		Credentials: my_credentials,
 		Region:      aws.String("us-west-2"),
-		Endpoint:    aws.String("http://localhost:8000")})
+		Endpoint:    aws.String("http://localhost:8000"),
+	})
 	if err != nil {
 		log.Println(err)
 		return
