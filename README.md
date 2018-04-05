@@ -6,15 +6,15 @@ Sample Local Test Commands:
  * go run main.go models.article.go handlers.article.go
  * ../../../../bin/dep.exe ensure
  * java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb
- * go run main.go about_me.go how_its_made.go drop_tables.go 1
+ * go run main.go about_me.go how_its_made.go drop_tables.go create_table.go 0
 
  Docker Helper Commands:
 
  * docker stop $(docker ps -aq)
  * docker rm $(docker ps -aq)
  * docker rmi --force $(docker images -q)
- * docker build -t hw4 .
- * docker run -d hw4
+ * docker build -t blog .
+ * docker run -d -p 8080:3000 blog
 
 Color Scheme:
 

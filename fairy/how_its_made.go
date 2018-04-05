@@ -1,20 +1,34 @@
 package main
 
 import (
-	"log"
+	"fmt"
+	"os"
 
-	mgo "gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
+	log "github.com/sirupsen/logrus"
 )
 
 func how_its_made() {
-	session, err := mgo.Dial("localhost:27017")
+	id := os.Getenv("AWS_ACCESS_KEY_ID")
+	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
+	log.Info("id: ", id)
+	log.Info("key: ", key)
+	var my_credentials = credentials.NewStaticCredentials(id, key, "")
+
+	sess, err := session.NewSession(&aws.Config{
+		Credentials: my_credentials,
+		Region:      aws.String("us-west-1"),
+		Endpoint:    aws.String("http://localhost:8000"),
+	})
 	if err != nil {
-		panic(err)
+		log.Println(err)
+		return
 	}
-	defer session.Close()
-	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("test").C("articles")
+	dbSvc := dynamodb.New(sess)
 
 	blurb := "A reflection on what it took to make this website and its content, plus maybe some updates along the way"
 	created := "April 1st, 2018"
@@ -30,14 +44,62 @@ func how_its_made() {
 		"way, here and there.</h4>" +
 		"</div>"
 
-	/* err = c.Insert(&article{ID: 1, Title: "Who Would Want to Write a Blog in Go?",
-	Created: created, Modified: modified, Blurb: blurb, Content: hold}) */
+	d_input := &dynamodb.DeleteItemInput{
+		Key: map[string]*dynamodb.AttributeValue{
+			"id": {
+				N: aws.String("0"),
+			},
+			"title": {
+				S: aws.String("Who Would Want to Write a Blog in Golang Anyways"),
+			},
+		},
+		TableName: aws.String("Articles"),
+	}
 
-	err = c.Update(bson.M{"id": 1},
-		&article{ID: 1, Title: "Who Would Want to Write a Blog in Golang Anyways",
-			Created: created, Modified: modified, Blurb: blurb, Content: hold})
+	_, err = dbSvc.DeleteItem(d_input)
 
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("Got error calling DeleteItem")
+		fmt.Println(err.Error())
+		return
+	}
+
+	info := ItemInfo{
+		Created:  created,
+		Modified: modified,
+		Blurb:    blurb,
+		Content:  hold,
+	}
+
+	item := Item{
+		ID:    1,
+		Title: "Who Would Want to Write a Blog in Golang Anyways",
+		Info:  info,
+	}
+
+	av, err := dynamodbattribute.MarshalMap(item)
+
+	input := &dynamodb.PutItemInput{
+		Item:      av,
+		TableName: aws.String("Articles"),
+	}
+
+	_, err = dbSvc.PutItem(input)
+
+	if err != nil {
+		fmt.Println("Got error calling PutItem:")
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+
+	result, err := dbSvc.ListTables(&dynamodb.ListTablesInput{})
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	log.Println("Tables:")
+	for _, table := range result.TableNames {
+		log.Println(*table)
 	}
 }

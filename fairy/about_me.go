@@ -70,9 +70,7 @@ func about_me() {
 		"help foster and share my further eduction. I take these actions in the " +
 		"hope that they might help others along a similar journey one day. The " +
 		"goal is to dedicate this website to distributed systems and things " +
-		"related to them as well. Although I make promises toward the fact that " +
-		"I will probably get a little distracted with side projects along the " +
-		"way.</h4></li>" +
+		"related to them as well.</h4></li>" +
 		"<li class=\"list-group-item\">" +
 		"<h4>&emsp;&emsp;<a style=\"color:#CC8A14;\" href=\"mailto:etzelm@live.com\">" +
 		"<img src=\"/public/email.png\" alt=\"Email\"  height=\"30\" width=\"45\"></a>" +
@@ -140,15 +138,4 @@ func about_me() {
 	for _, table := range result.TableNames {
 		log.Println(*table)
 	}
-
-	/* err = c.Insert(&article{ID: 0, Title: "About Me",
-	Created: created, Modified: modified, Blurb: blurb, Content: hold}) */
-
-	/* err = c.Update(bson.M{"id": 0},
-		&article{ID: 0, Title: "About Me",
-			Created: created, Modified: modified, Blurb: blurb, Content: hold})
-
-	if err != nil {
-		log.Fatal(err)
-	} */
 }
