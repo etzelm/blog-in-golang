@@ -44,7 +44,7 @@ func about_me() {
 		//Spacing for face picture
 		"<br><br>&emsp;&emsp;&emsp;&emsp;" +
 		//Actual face picture
-		"<img src=\"/public/face.jpg\" alt=\"My Face\" height=\"250\" width=\"250\"></div>" +
+		"<img src=\"/public/face.png\" alt=\"My Face\" height=\"250\" width=\"250\"></div>" +
 		//Start of the column with education panel in it
 		"<div class=\"col-md-6 form-group\"><br>" +
 		//Start of the education panel
@@ -65,17 +65,21 @@ func about_me() {
 		"<div class=\"panel-heading\" style=\"color:#A619FF;font-size: 1.6em\">About Me & Contact Info:</div>" +
 		"<ul class=\"list-group\">" +
 		"<li class=\"list-group-item\">" +
-		"<h4>&emsp;&emsp;Hopefully by now you've guessed that my name is Mitchell " +
+		"<h4>&emsp;&emsp;By now you've hopefully guessed that my name is Mitchell " +
 		"Etzel and as a recent college graduate I've decided to start this blog to " +
 		"help foster and share my further eduction. I take these actions in the " +
 		"hope that they might help others along a similar journey one day. The " +
-		"goal is to dedicate this website to distributed systems and things " +
-		"related to them as well.</h4></li>" +
+		"goal is to dedicate this website to the study of distributed systems and things " +
+		"related to them as well. Distributed systems are all around us and in most of the " +
+		"web services we use nowadays. Considering that they have only gotten more popular over the " +
+		"last twenty years, I believe they deserve a more thorough and discerning study.</h4></li>" +
 		"<li class=\"list-group-item\">" +
-		"<h4>&emsp;&emsp;<a style=\"color:#CC8A14;\" href=\"mailto:etzelm@live.com\">" +
+		"<h4>&emsp;&emsp;<a style=\"color:#9C6708;\" href=\"mailto:etzelm@live.com\">" +
 		"<img src=\"/public/email.png\" alt=\"Email\"  height=\"30\" width=\"45\"></a>" +
 		"&emsp;&emsp;<a style=\"color:#9C6708;\" href=\"https://github.com/etzelm\">" +
-		"<img src=\"/public/github.png\" alt=\"Github\"  height=\"45\" width=\"45\"></a></h4></li>" +
+		"<img src=\"/public/github.png\" alt=\"Github\"  height=\"45\" width=\"45\"></a>" +
+		"&emsp;&emsp;<a style=\"color:#9C6708;\" href=\"https://www.linkedin.com/in/etzelm/\">" +
+		"<img src=\"/public/linkedin.png\" alt=\"LinkedIn\"  height=\"45\" width=\"45\"></a></h4></h4></li>" +
 		"</div>" +
 		"</div>" +
 		"</div>"
