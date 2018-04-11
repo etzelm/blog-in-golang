@@ -96,7 +96,7 @@ func getAllArticles() []article {
 	return temp
 }
 
-func getArticleByID(id int) (*article, error) {
+func getArticleByID(id int, title string) (*article, error) {
 	aid := os.Getenv("AWS_ACCESS_KEY_ID")
 	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
 	var my_credentials = credentials.NewStaticCredentials(aid, key, "")
@@ -119,7 +119,7 @@ func getArticleByID(id int) (*article, error) {
 				N: aws.String(strconv.Itoa(id)),
 			},
 			"title": {
-				S: aws.String("About Me"),
+				S: aws.String(title),
 			},
 		},
 	})
@@ -138,10 +138,10 @@ func getArticleByID(id int) (*article, error) {
 		panic(fmt.Sprintf("Failed to unmarshal Record, %v", err))
 	}
 
-	if item.Title == "" {
+	/* if item.Title == "" {
 		fmt.Println("Could not find 'The Big New Movie' (2015)")
 		return nil, err
-	}
+	} */
 
 	article.ID = item.ID
 	article.Title = item.Title

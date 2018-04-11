@@ -12,7 +12,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func how_its_made() {
+func graph_store() {
 	id := os.Getenv("AWS_ACCESS_KEY_ID")
 	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
 	log.Info("id: ", id)
@@ -30,9 +30,9 @@ func how_its_made() {
 	}
 	dbSvc := dynamodb.New(sess)
 
-	blurb := "A reflection on what it took to make this website and its content, plus maybe some updates along the way"
-	created := "April 1st, 2018"
-	modified := "April 2nd, 2018"
+	blurb := "A look at what goes into making a successful distributed system"
+	created := "April 10th, 2018"
+	modified := "April 11th, 2018"
 	hold := "<h3>Who Would Want to Write a Blog in Go?</h3>" +
 		"<h4>&emsp;&emsp;Hopefully you've guessed by now that my name is Mitchell " +
 		"Etzel and as a recent college graduate I've decided to start this blog to " +
@@ -41,16 +41,15 @@ func how_its_made() {
 		"goal is to dedicate this website to distributed systems and things " +
 		"related to them as well. Although I make promises toward the fact that " +
 		"I will probably get a little bit distracted with side projects along the " +
-		"way, here and there.</h4>" +
-		"</div>"
+		"way, here and there.</h4>"
 
 	d_input := &dynamodb.DeleteItemInput{
 		Key: map[string]*dynamodb.AttributeValue{
 			"id": {
-				N: aws.String("0"),
+				N: aws.String("1"),
 			},
 			"title": {
-				S: aws.String("Who Would Want to Write a Blog in Golang Anyways"),
+				S: aws.String("Creating a Scalable, Fault Tolerant, & Strongly Consistent Graph Store API"),
 			},
 		},
 		TableName: aws.String("Articles"),
@@ -73,7 +72,7 @@ func how_its_made() {
 
 	item := Item{
 		ID:    1,
-		Title: "Who Would Want to Write a Blog in Golang Anyways",
+		Title: "Creating a Scalable, Fault Tolerant, & Strongly Consistent Graph Store API",
 		Info:  info,
 	}
 

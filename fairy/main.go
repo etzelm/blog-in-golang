@@ -33,7 +33,9 @@ func main() {
 	case "0":
 		about_me()
 	case "1":
-		how_its_made()
+		graph_store()
+	case "2":
+		google_SRE()
 	case "42":
 		create_table()
 	//Execute Order 66 Meme
