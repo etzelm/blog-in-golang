@@ -117,7 +117,15 @@ func graph_store() {
 		"<div class=\"panel-heading\" style=\"color:#A619FF;font-size: 1.6em\">Example Docker Commands:</div>" +
 		"<ul class=\"list-group\">" +
 		"<li class=\"list-group-item\">" +
-		"<h4></h4>" +
+		"<h4><b>Starting a system with 4 active server hosts and a maximum partition size of 2:</b><br><br>" +
+		"docker run -p 3001:3000 --ip=10.0.0.21:3000 --net=mynet -e IP=\"10.0.0.21:3000\" -e PORT=\"3001\" " +
+		"-e R=2 -e PARTITIONS=\"10.0.0.21:3000,10.0.0.22:3000,10.0.0.23:3000,10.0.0.24:3000\" mycontainer<br><br>" +
+		"docker run -p 3002:3000 --ip=10.0.0.22:3000 --net=mynet -e IP=\"10.0.0.22:3000\" -e PORT=\"3002\" " +
+		"-e R=2 -e PARTITIONS=\"10.0.0.21:3000,10.0.0.22:3000,10.0.0.23:3000,10.0.0.24:3000\" mycontainer<br><br>" +
+		"docker run -p 3003:3000 --ip=10.0.0.23:3000 --net=mynet -e IP=\"10.0.0.23:3000\" -e PORT=\"3003\" " +
+		"-e R=2 -e PARTITIONS=\"10.0.0.21:3000,10.0.0.22:3000,10.0.0.23:3000,10.0.0.24:3000\" mycontainer<br><br>" +
+		"docker run -p 3004:3000 --ip=10.0.0.24:3000 --net=mynet -e IP=\"10.0.0.24:3000\" -e PORT=\"3004\" " +
+		"-e R=2 -e PARTITIONS=\"10.0.0.21:3000,10.0.0.22:3000,10.0.0.23:3000,10.0.0.24:3000\" mycontainer</h4><br>" +
 		"</div></div>"
 
 	d_input := &dynamodb.DeleteItemInput{
