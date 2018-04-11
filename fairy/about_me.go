@@ -73,7 +73,7 @@ func about_me() {
 		"related to them as well. Distributed systems are all around us and in most of the " +
 		"web services we use nowadays. Considering that they have only gotten more popular over the " +
 		"last twenty years, I believe they deserve a more thorough and discerning study.</h4></li>" +
-		"<li class=\"list-group-item\">" +
+		"<li class=\"list-group-item\"  style=\"text-align: center;\">" +
 		"<h4>&emsp;&emsp;<a style=\"color:#9C6708;\" href=\"mailto:etzelm@live.com\">" +
 		"<img src=\"/public/email.png\" alt=\"Email\"  height=\"30\" width=\"45\"></a>" +
 		"&emsp;&emsp;<a style=\"color:#9C6708;\" href=\"https://github.com/etzelm\"  target=\"_blank\">" +
