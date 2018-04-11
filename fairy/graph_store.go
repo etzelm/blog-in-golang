@@ -33,15 +33,92 @@ func graph_store() {
 	blurb := "A look at what goes into making a successful distributed system"
 	created := "April 10th, 2018"
 	modified := "April 11th, 2018"
-	hold := "<h3>Who Would Want to Write a Blog in Go?</h3>" +
-		"<h4>&emsp;&emsp;Hopefully you've guessed by now that my name is Mitchell " +
-		"Etzel and as a recent college graduate I've decided to start this blog to " +
-		"help foster and share my further eduction. I take these actions in the " +
-		"hope that they might help others along a similar journey one day. The " +
-		"goal is to dedicate this website to distributed systems and things " +
-		"related to them as well. Although I make promises toward the fact that " +
-		"I will probably get a little bit distracted with side projects along the " +
-		"way, here and there.</h4>"
+	hold := "<div class=\"well\" style=\"background-color:#DFF0D8;\">" +
+		//Start of the About Me paragraph and contact info
+		"<div class=\"panel panel-default\">" +
+		"<div class=\"panel-heading\" style=\"color:#A619FF;font-size: 1.6em\">" +
+		"Creating a Scalable, Fault Tolerant, & Strongly Consistent Graph Store API:</div>" +
+		"<ul class=\"list-group\">" +
+		"<li class=\"list-group-item\">" +
+		"<h4>&emsp;&emsp;The goal of this project is to provide a REST-accessible graph storage service that " +
+		"runs on port 3000 and is available as a resource named gs. For example, the service " +
+		"would listen at http://server-hostname:3000/gs. We want to develop distributed system " +
+		"software to support this service so that it can store an amount of data that would " +
+		"not normally fit onto a single machine system. To accomplish this, we will simulate " +
+		"our server code as if it is being run on multiple, separate hosts simultaneously, " +
+		"using Docker to provide this functionality. A single server host in our system stores " +
+		"only a certain subset of the graphs stored in the system as a whole. We also have " +
+		"them keep track of a list of all the other server hostnames in the known system so " +
+		"that they can forward requests they receive for graphs that arent stored locally for " +
+		"them. The plan is to distribute graphs among partitions that each have an active " +
+		"amount of server hosts assigned to them based on the total number of server hosts " +
+		"that exist in the system at the time of observation. This way each server host in a " +
+		"partition can store the same subset of graphs assigned to that partition, providing " +
+		"a measurable amount of fault-tolerance to the user if one of those hosts happens to " +
+		"crash or experience a network partition. <br><br>&emsp;&emsp;Scalability is achieved by allowing for the " +
+		"user to change the system environment by adding or removing server hosts, based on " +
+		"their needs, using API calls which then have our distributed system software " +
+		"automatically reshuffle our partitioning and graph distribution across all active  " +
+		"server hosts to attain maximum fault-tolerance and minimize access latency. To ensure " +
+		"strong consistency among server hosts in a partition that stores the same subset of " +
+		"graphs in our system, we will use an algorithm called Raft that uses a 2 phase commit " +
+		"sequence and timers to achieve consensus on a total causal order over any value given " +
+		"to us by the user. Due to the CAP theorem, we know that using partitions to attain " +
+		"fault tolerance means we cannot have a graph store that is both highly available and " +
+		"strongly consistent. In this project, we will favour strong consistency over having " +
+		"our system be highly available, meaning our service should only return responses to " +
+		"requests if it can guarantee that it is using the most recent data available to it.</h4></li>" +
+		"<li class=\"list-group-item\" style=\"text-align: center;\">" +
+		"<h4>Source code for this project can be located here:&emsp;&emsp;" +
+		"<a style=\"color:#9C6708;\" href=\"https://github.com/etzelm/consistent-graph-store-api\" target=\"_blank\">" +
+		"<img src=\"/public/github.png\" alt=\"Github\"  height=\"45\" width=\"45\"></a></h4>" +
+		"</div>" +
+		//Start of the container for
+		"<div class=\"container\">" +
+		//Only used one row for the container
+		"<div class=\"row\">" +
+		//Start of the column with face picture in it
+		"<div class=\"col-md-6 form-group\">" +
+		"<div class=\"panel panel-default\">" +
+		"<div class=\"panel-heading\" style=\"color:#A619FF;font-size: 1.6em\">Input Format Specifications:</div>" +
+		//Start of the list
+		"<ul class=\"list-group\">" +
+		"<li class=\"list-group-item\"><h4><b>&emsp;Graph Names</b></h4>" +
+		"<h4>&emsp;charset: [a-zA-Z0-9] i.e. Alphanumeric w/ cases</h4>" +
+		"<h4>&emsp;size:&emsp;1 to 250 characters</h4></li>" +
+		"<li class=\"list-group-item\"><h4>&emsp;<b>Vertex Names</b></h4>" +
+		"<h4>&emsp;charset: [a-zA-Z0-9] i.e. Alphanumeric w/ cases</h4>" +
+		"<h4>&emsp;size:&emsp;1 to 250 characters</h4></li>" +
+		"<li class=\"list-group-item\"><h4>&emsp;<b>Edge Names</b></h4>" +
+		"<h4>&emsp;charset: [a-zA-Z0-9] i.e. Alphanumeric w/ cases</h4>" +
+		"<h4>&emsp;size:&emsp;1 to 250 characters</h4></li></div></div>" +
+		//Start of the column with education panel in it
+		"<div class=\"col-md-5 form-group\">" +
+		//Start of the education panel
+		"<div class=\"panel panel-default\">" +
+		"<div class=\"panel-heading\" style=\"color:#A619FF;font-size: 1.6em\">Environment Variables Used:</div>" +
+		//Start of the list
+		"<ul class=\"list-group\">" +
+		"<li class=\"list-group-item\">" +
+		"<h4><b>&emsp;<i>PARTITIONS:</i></b> used to keep track of all other active server hosts in our system</h4></li>" +
+		"<li class=\"list-group-item\">" +
+		"<h4><b>&emsp;<i>IP:</i></b> used to store the docker network ip/port used for system communications</h4></li>" +
+		"<li class=\"list-group-item\">" +
+		"<h4><b>&emsp;<i>PORT:</i></b> used to store the local network port exposed by docker for the user</h4></li>" +
+		"<li class=\"list-group-item\">" +
+		"<h4><b>&emsp;<i>R:</i></b> used to store the maximum number of server hosts a partition can be assigned</h4></li>" +
+		//End of the container for the face picture and education panel
+		"</div>" +
+		"</div>" +
+		"</div>" +
+		"</div>" +
+		//Start of the About Me paragraph and contact info
+		"<div class=\"panel panel-default\">" +
+		"<div class=\"panel-heading\" style=\"color:#A619FF;font-size: 1.6em\">Example Docker Commands:</div>" +
+		"<ul class=\"list-group\">" +
+		"<li class=\"list-group-item\">" +
+		"<h4></h4>" +
+		"</div></div>"
 
 	d_input := &dynamodb.DeleteItemInput{
 		Key: map[string]*dynamodb.AttributeValue{

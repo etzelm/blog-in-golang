@@ -30,7 +30,7 @@ func google_SRE() {
 	}
 	dbSvc := dynamodb.New(sess)
 
-	blurb := "Using the popular O'Reilly book, I try to gain a better understanding of distributed systems"
+	blurb := "Using the popular O'Reilly book, I try to gain a better understanding of what SRE really means"
 	created := "April 11th, 2018"
 	modified := "April 11th, 2018"
 	hold := "<h3>Who Would Want to Write a Blog in Go?</h3>" +

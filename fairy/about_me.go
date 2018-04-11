@@ -76,9 +76,9 @@ func about_me() {
 		"<li class=\"list-group-item\">" +
 		"<h4>&emsp;&emsp;<a style=\"color:#9C6708;\" href=\"mailto:etzelm@live.com\">" +
 		"<img src=\"/public/email.png\" alt=\"Email\"  height=\"30\" width=\"45\"></a>" +
-		"&emsp;&emsp;<a style=\"color:#9C6708;\" href=\"https://github.com/etzelm\">" +
+		"&emsp;&emsp;<a style=\"color:#9C6708;\" href=\"https://github.com/etzelm\"  target=\"_blank\">" +
 		"<img src=\"/public/github.png\" alt=\"Github\"  height=\"45\" width=\"45\"></a>" +
-		"&emsp;&emsp;<a style=\"color:#9C6708;\" href=\"https://www.linkedin.com/in/etzelm/\">" +
+		"&emsp;&emsp;<a style=\"color:#9C6708;\" href=\"https://www.linkedin.com/in/etzelm/\" target=\"_blank\">" +
 		"<img src=\"/public/linkedin.png\" alt=\"LinkedIn\"  height=\"45\" width=\"45\"></a></h4></h4></li>" +
 		"</div>" +
 		"</div>" +
