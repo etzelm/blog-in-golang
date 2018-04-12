@@ -33,15 +33,29 @@ func google_SRE() {
 	blurb := "Using the popular O'Reilly book, I try to gain a better understanding of what SRE really means"
 	created := "April 11th, 2018"
 	modified := "April 11th, 2018"
-	hold := "<h3>Who Would Want to Write a Blog in Go?</h3>" +
-		"<h4>&emsp;&emsp;Hopefully you've guessed by now that my name is Mitchell " +
-		"Etzel and as a recent college graduate I've decided to start this blog to " +
-		"help foster and share my further eduction. I take these actions in the " +
-		"hope that they might help others along a similar journey one day. The " +
-		"goal is to dedicate this website to distributed systems and things " +
-		"related to them as well. Although I make promises toward the fact that " +
-		"I will probably get a little bit distracted with side projects along the " +
-		"way, here and there.</h4>"
+	hold := "<div class=\"well\" style=\"background-color:#DFF0D8;\">" +
+		//Start of the About Me paragraph and contact info
+		"<div class=\"panel panel-default\">" +
+		"<div class=\"panel-heading\" style=\"color:#A619FF;font-size: 1.6em\">" +
+		"A Review & Attempt at Implementing Google's Site Reliability Engineering:</div>" +
+		"<ul class=\"list-group\">" +
+		"<li class=\"list-group-item\">" +
+		"<h4>&emsp;&emsp;Paying homage to who many consider to be the emperor of distributed systems, I have deciced " +
+		"to review and make an attempt at implementing some of the concepts put forth in the O'Reilly book, <i>" +
+		"<a style=\"color:#9C6708;\" href=\"https://landing.google.com/sre/book.html\" target=\"_blank\">" +
+		"Site Reliability Engineering: How Google Runs Production Systems</a></i>. This work will be done concurrently " +
+		"with my development of a personal distributed system for graph storage to help foster both projects and I have " +
+		"attached a link to that source code at the bottom of this introduction. " +
+		"" +
+		"</h4></li>" +
+		"<li class=\"list-group-item\" style=\"text-align: center;\">" +
+		"<h4>Source code for this project can be located here:&emsp;&emsp;" +
+		"<a href=\"https://github.com/etzelm/consistent-graph-store-api\" target=\"_blank\">" +
+		"<img src=\"/public/github.png\" alt=\"Github\"  height=\"45\" width=\"45\"></a></h4>" +
+		"</div>" +
+		//Start of the container for
+
+		"</div>"
 
 	d_input := &dynamodb.DeleteItemInput{
 		Key: map[string]*dynamodb.AttributeValue{

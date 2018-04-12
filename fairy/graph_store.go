@@ -70,7 +70,7 @@ func graph_store() {
 		"requests if it can guarantee that it is using the most recent data available to it.</h4></li>" +
 		"<li class=\"list-group-item\" style=\"text-align: center;\">" +
 		"<h4>Source code for this project can be located here:&emsp;&emsp;" +
-		"<a style=\"color:#9C6708;\" href=\"https://github.com/etzelm/consistent-graph-store-api\" target=\"_blank\">" +
+		"<a href=\"https://github.com/etzelm/consistent-graph-store-api\" target=\"_blank\">" +
 		"<img src=\"/public/github.png\" alt=\"Github\"  height=\"45\" width=\"45\"></a></h4>" +
 		"</div>" +
 		//Start of the container for
@@ -100,13 +100,13 @@ func graph_store() {
 		//Start of the list
 		"<ul class=\"list-group\">" +
 		"<li class=\"list-group-item\">" +
-		"<h4><b>&emsp;<i>PARTITIONS:</i></b> used to keep track of all other active server hosts in our system</h4></li>" +
+		"<h4><b><i>PARTITIONS:</i></b> used to keep track of all other active server hosts in our system</h4></li>" +
 		"<li class=\"list-group-item\">" +
-		"<h4><b>&emsp;<i>IP:</i></b> used to store the docker network ip/port used for system communications</h4></li>" +
+		"<h4><b><i>IP:</i></b> used to store the docker network ip/port used for system communications</h4></li>" +
 		"<li class=\"list-group-item\">" +
-		"<h4><b>&emsp;<i>PORT:</i></b> used to store the local network port exposed by docker for the user</h4></li>" +
+		"<h4><b><i>PORT:</i></b> used to store the local network port exposed by docker for the user</h4></li>" +
 		"<li class=\"list-group-item\">" +
-		"<h4><b>&emsp;<i>R:</i></b> used to store the maximum number of server hosts a partition can be assigned</h4></li>" +
+		"<h4><b><i>R:</i></b> used to store the maximum number of server hosts a partition can be assigned</h4></li>" +
 		//End of the container for the face picture and education panel
 		"</div>" +
 		"</div>" +
