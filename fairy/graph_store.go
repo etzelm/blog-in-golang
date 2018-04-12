@@ -175,15 +175,4 @@ func graph_store() {
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
-
-	result, err := dbSvc.ListTables(&dynamodb.ListTablesInput{})
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	log.Println("Tables:")
-	for _, table := range result.TableNames {
-		log.Println(*table)
-	}
 }
