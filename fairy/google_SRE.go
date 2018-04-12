@@ -32,16 +32,16 @@ func google_SRE() {
 
 	blurb := "Using the popular O'Reilly book, I try to gain a better understanding of what SRE really means"
 	created := "April 11th, 2018"
-	modified := "April 11th, 2018"
+	modified := "April 12th, 2018"
 	hold := "<div class=\"well\" style=\"background-color:#DFF0D8;\">" +
 		//Start of the About Me paragraph and contact info
 		"<div class=\"panel panel-default\">" +
 		"<div class=\"panel-heading\" style=\"color:#A619FF;font-size: 1.6em\">" +
-		"A Review & Attempt at Implementing Google's Site Reliability Engineering:</div>" +
+		"A Review & Implementation of Google's Site Reliability Engineering:</div>" +
 		"<ul class=\"list-group\">" +
 		"<li class=\"list-group-item\">" +
-		"<h4>&emsp;&emsp;Paying homage to who many consider to be the emperor of distributed systems, I have deciced " +
-		"to review and make an attempt at implementing some of the concepts put forth in the O'Reilly book, <i>" +
+		"<h4>&emsp;&emsp;Paying homage to who many consider to be at the forefront of distributed systems, I have deciced " +
+		"to review and implement some of the concepts put forth in the O'Reilly book, <i>" +
 		"<a style=\"color:#9C6708;\" href=\"https://landing.google.com/sre/book.html\" target=\"_blank\">" +
 		"Site Reliability Engineering: How Google Runs Production Systems</a></i>. This work will be done concurrently " +
 		"with my development of a personal distributed system for graph storage to help foster both projects and I have " +
@@ -63,7 +63,7 @@ func google_SRE() {
 				N: aws.String("2"),
 			},
 			"title": {
-				S: aws.String("A Review & Attempt at Implementing Google's Site Reliability Engineering"),
+				S: aws.String("A Review & Implementation of Google's Site Reliability Engineering"),
 			},
 		},
 		TableName: aws.String("Articles"),
@@ -86,7 +86,7 @@ func google_SRE() {
 
 	item := Item{
 		ID:    2,
-		Title: "A Review & Attempt at Implementing Google's Site Reliability Engineering",
+		Title: "A Review & Implementation of Google's Site Reliability Engineering",
 		Info:  info,
 	}
 

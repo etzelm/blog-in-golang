@@ -32,7 +32,7 @@ func graph_store() {
 
 	blurb := "A look at what goes into making a successful distributed system"
 	created := "April 10th, 2018"
-	modified := "April 11th, 2018"
+	modified := "April 12th, 2018"
 	hold := "<div class=\"well\" style=\"background-color:#DFF0D8;\">" +
 		//Start of the About Me paragraph and contact info
 		"<div class=\"panel panel-default\">" +
