@@ -15,6 +15,7 @@ import (
 )
 
 type ItemInfo struct {
+	Title    string `json:"title"`
 	Created  string `json:"created"`
 	Modified string `json:"modified"`
 	Blurb    string `json:"blurb"`
@@ -22,9 +23,8 @@ type ItemInfo struct {
 }
 
 type Item struct {
-	ID    int      `json:"id"`
-	Title string   `json:"title"`
-	Info  ItemInfo `json:"info"`
+	ID   int      `json:"id"`
+	Info ItemInfo `json:"info"`
 }
 
 type article struct {
@@ -55,7 +55,7 @@ func getAllArticles() []article {
 
 	filt := expression.Name("id").GreaterThanEqual(expression.Value(0))
 
-	proj := expression.NamesList(expression.Name("title"), expression.Name("id"), expression.Name("info.blurb"),
+	proj := expression.NamesList(expression.Name("info.title"), expression.Name("id"), expression.Name("info.blurb"),
 		expression.Name("info.created"), expression.Name("info.modified"))
 
 	expr, err := expression.NewBuilder().WithFilter(filt).WithProjection(proj).Build()
@@ -65,7 +65,7 @@ func getAllArticles() []article {
 		ExpressionAttributeValues: expr.Values(),
 		FilterExpression:          expr.Filter(),
 		ProjectionExpression:      expr.Projection(),
-		TableName:                 aws.String("Articles"),
+		TableName:                 aws.String("Articles1"),
 	}
 
 	// Make the DynamoDB Query API call
@@ -86,7 +86,7 @@ func getAllArticles() []article {
 		}
 
 		article.ID = item.ID
-		article.Title = item.Title
+		article.Title = item.Info.Title
 		article.Created = item.Info.Created
 		article.Modified = item.Info.Modified
 		article.Blurb = item.Info.Blurb
@@ -96,7 +96,7 @@ func getAllArticles() []article {
 	return temp
 }
 
-func getArticleByID(id int, title string) (*article, error) {
+func getArticleByID(id int) (*article, error) {
 	aid := os.Getenv("AWS_ACCESS_KEY_ID")
 	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
 	var my_credentials = credentials.NewStaticCredentials(aid, key, "")
@@ -113,13 +113,10 @@ func getArticleByID(id int, title string) (*article, error) {
 	dbSvc := dynamodb.New(sess)
 
 	result, err := dbSvc.GetItem(&dynamodb.GetItemInput{
-		TableName: aws.String("Articles"),
+		TableName: aws.String("Articles1"),
 		Key: map[string]*dynamodb.AttributeValue{
 			"id": {
 				N: aws.String(strconv.Itoa(id)),
-			},
-			"title": {
-				S: aws.String(title),
 			},
 		},
 	})
@@ -138,13 +135,8 @@ func getArticleByID(id int, title string) (*article, error) {
 		panic(fmt.Sprintf("Failed to unmarshal Record, %v", err))
 	}
 
-	/* if item.Title == "" {
-		fmt.Println("Could not find 'The Big New Movie' (2015)")
-		return nil, err
-	} */
-
 	article.ID = item.ID
-	article.Title = item.Title
+	article.Title = item.Info.Title
 	article.Blurb = item.Info.Blurb
 	article.Created = item.Info.Created
 	article.Modified = item.Info.Modified

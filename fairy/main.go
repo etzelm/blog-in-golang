@@ -6,6 +6,7 @@ import (
 )
 
 type ItemInfo struct {
+	Title    string `json:"title"`
 	Created  string `json:"created"`
 	Modified string `json:"modified"`
 	Blurb    string `json:"blurb"`
@@ -13,9 +14,8 @@ type ItemInfo struct {
 }
 
 type Item struct {
-	ID    int      `json:"id"`
-	Title string   `json:"title"`
-	Info  ItemInfo `json:"info"`
+	ID   int      `json:"id"`
+	Info ItemInfo `json:"info"`
 }
 
 type article struct {
@@ -33,9 +33,9 @@ func main() {
 	case "0":
 		about_me()
 	case "1":
-		graph_store()
+		//graph_store()
 	case "2":
-		google_SRE()
+		//google_SRE()
 	case "42":
 		create_table()
 	//Execute Order 66 Meme

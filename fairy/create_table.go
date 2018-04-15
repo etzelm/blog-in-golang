@@ -20,7 +20,7 @@ func create_table() {
 
 	sess, err := session.NewSession(&aws.Config{
 		Credentials: my_credentials,
-		Region:      aws.String("us-west-2"),
+		Region:      aws.String("us-west-1"),
 		Endpoint:    aws.String("http://localhost:8000"),
 	})
 	if err != nil {
@@ -35,26 +35,18 @@ func create_table() {
 				AttributeName: aws.String("id"),
 				AttributeType: aws.String("N"),
 			},
-			{
-				AttributeName: aws.String("title"),
-				AttributeType: aws.String("S"),
-			},
 		},
 		KeySchema: []*dynamodb.KeySchemaElement{
 			{
 				AttributeName: aws.String("id"),
 				KeyType:       aws.String("HASH"),
 			},
-			{
-				AttributeName: aws.String("title"),
-				KeyType:       aws.String("RANGE"),
-			},
 		},
 		ProvisionedThroughput: &dynamodb.ProvisionedThroughput{
 			ReadCapacityUnits:  aws.Int64(10),
 			WriteCapacityUnits: aws.Int64(10),
 		},
-		TableName: aws.String("Articles"),
+		TableName: aws.String("Articles1"),
 	}
 
 	_, err = dbSvc.CreateTable(input)

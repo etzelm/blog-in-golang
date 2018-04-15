@@ -89,11 +89,8 @@ func about_me() {
 			"id": {
 				N: aws.String("0"),
 			},
-			"title": {
-				S: aws.String("About Me"),
-			},
 		},
-		TableName: aws.String("Articles"),
+		TableName: aws.String("Articles1"),
 	}
 
 	_, err = dbSvc.DeleteItem(d_input)
@@ -105,6 +102,7 @@ func about_me() {
 	}
 
 	info := ItemInfo{
+		Title:    "About Me",
 		Created:  created,
 		Modified: modified,
 		Blurb:    blurb,
@@ -112,16 +110,15 @@ func about_me() {
 	}
 
 	item := Item{
-		ID:    0,
-		Title: "About Me",
-		Info:  info,
+		ID:   0,
+		Info: info,
 	}
 
 	av, err := dynamodbattribute.MarshalMap(item)
 
 	input := &dynamodb.PutItemInput{
 		Item:      av,
-		TableName: aws.String("Articles"),
+		TableName: aws.String("Articles1"),
 	}
 
 	_, err = dbSvc.PutItem(input)
