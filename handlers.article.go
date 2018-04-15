@@ -46,27 +46,6 @@ func AboutPage(c *gin.Context) {
 	}
 }
 
-func GraphStore(c *gin.Context) {
-	if article, err := getArticleByID(1); err == nil {
-		// Call the HTML method of the Context to render a template
-		c.HTML(
-			// Set the HTTP status to 200 (OK)
-			http.StatusOK,
-			// Use the index.html template
-			"article.html",
-			// Pass the data that the page uses
-			gin.H{
-				"title": article.Title,
-			},
-		)
-		//Write Stored HTML from mongoDB to article.html
-		c.Writer.Write([]byte(article.Content))
-	} else {
-		// If the article is not found, abort with an error
-		c.AbortWithError(http.StatusNotFound, err)
-	}
-}
-
 func getArticle(c *gin.Context) {
 	// Check if the article ID is valid
 	if articleID, err := strconv.Atoi(c.Param("article_id")); err == nil {

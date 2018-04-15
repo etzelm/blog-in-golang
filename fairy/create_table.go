@@ -46,7 +46,7 @@ func create_table() {
 			ReadCapacityUnits:  aws.Int64(10),
 			WriteCapacityUnits: aws.Int64(10),
 		},
-		TableName: aws.String("Articles1"),
+		TableName: aws.String("Articles"),
 	}
 
 	_, err = dbSvc.CreateTable(input)

@@ -32,7 +32,6 @@ func main() {
 func LoadRoutes(server *gin.Engine) *gin.Engine {
 	server.GET("/", LandingPage)
 	server.GET("/about", AboutPage)
-	server.GET("/graph_store", GraphStore)
-	server.GET("/article/view/:article_id", getArticle)
+	server.GET("/article/:article_id", getArticle)
 	return server
 }

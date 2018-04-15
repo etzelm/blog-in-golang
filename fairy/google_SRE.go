@@ -69,9 +69,6 @@ func google_SRE() {
 			"id": {
 				N: aws.String("2"),
 			},
-			"title": {
-				S: aws.String("A Review & Implementation of Google's Site Reliability Engineering"),
-			},
 		},
 		TableName: aws.String("Articles"),
 	}
@@ -85,6 +82,7 @@ func google_SRE() {
 	}
 
 	info := ItemInfo{
+		Title:    "A Review & Implementation of Google's Site Reliability Engineering",
 		Created:  created,
 		Modified: modified,
 		Blurb:    blurb,
@@ -92,9 +90,8 @@ func google_SRE() {
 	}
 
 	item := Item{
-		ID:    2,
-		Title: "A Review & Implementation of Google's Site Reliability Engineering",
-		Info:  info,
+		ID:   2,
+		Info: info,
 	}
 
 	av, err := dynamodbattribute.MarshalMap(item)

@@ -90,7 +90,7 @@ func about_me() {
 				N: aws.String("0"),
 			},
 		},
-		TableName: aws.String("Articles1"),
+		TableName: aws.String("Articles"),
 	}
 
 	_, err = dbSvc.DeleteItem(d_input)
@@ -118,7 +118,7 @@ func about_me() {
 
 	input := &dynamodb.PutItemInput{
 		Item:      av,
-		TableName: aws.String("Articles1"),
+		TableName: aws.String("Articles"),
 	}
 
 	_, err = dbSvc.PutItem(input)

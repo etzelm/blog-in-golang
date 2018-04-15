@@ -133,9 +133,6 @@ func graph_store() {
 			"id": {
 				N: aws.String("1"),
 			},
-			"title": {
-				S: aws.String("Creating a Scalable, Fault Tolerant, & Strongly Consistent Graph Store API"),
-			},
 		},
 		TableName: aws.String("Articles"),
 	}
@@ -149,6 +146,7 @@ func graph_store() {
 	}
 
 	info := ItemInfo{
+		Title:    "Creating a Scalable, Fault Tolerant, & Strongly Consistent Graph Store API",
 		Created:  created,
 		Modified: modified,
 		Blurb:    blurb,
@@ -156,9 +154,8 @@ func graph_store() {
 	}
 
 	item := Item{
-		ID:    1,
-		Title: "Creating a Scalable, Fault Tolerant, & Strongly Consistent Graph Store API",
-		Info:  info,
+		ID:   1,
+		Info: info,
 	}
 
 	av, err := dynamodbattribute.MarshalMap(item)

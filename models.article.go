@@ -65,7 +65,7 @@ func getAllArticles() []article {
 		ExpressionAttributeValues: expr.Values(),
 		FilterExpression:          expr.Filter(),
 		ProjectionExpression:      expr.Projection(),
-		TableName:                 aws.String("Articles1"),
+		TableName:                 aws.String("Articles"),
 	}
 
 	// Make the DynamoDB Query API call
@@ -113,7 +113,7 @@ func getArticleByID(id int) (*article, error) {
 	dbSvc := dynamodb.New(sess)
 
 	result, err := dbSvc.GetItem(&dynamodb.GetItemInput{
-		TableName: aws.String("Articles1"),
+		TableName: aws.String("Articles"),
 		Key: map[string]*dynamodb.AttributeValue{
 			"id": {
 				N: aws.String(strconv.Itoa(id)),
