@@ -22,7 +22,7 @@ func graph_store() {
 	sess, err := session.NewSession(&aws.Config{
 		Credentials: my_credentials,
 		Region:      aws.String("us-west-1"),
-		Endpoint:    aws.String("http://localhost:8000"),
+		//Endpoint:    aws.String("http://localhost:8000"),
 	})
 	if err != nil {
 		log.Println(err)
@@ -32,15 +32,15 @@ func graph_store() {
 
 	blurb := "A look at what goes into making a successful distributed system"
 	created := "April 10th, 2018"
-	modified := "April 12th, 2018"
+	modified := "April 16th, 2018"
 	hold := "<div class=\"well\" style=\"background-color:#DFF0D8;\">" +
 		//Start of the About Me paragraph and contact info
 		"<div class=\"panel panel-default\">" +
-		"<div class=\"panel-heading\" style=\"color:#A619FF;font-size: 1.6em\">" +
+		"<div class=\"panel-heading\" style=\"color:#A619FF;font-size: 1.17em\">" +
 		"Creating a Scalable, Fault Tolerant, & Strongly Consistent Graph Store API:</div>" +
-		"<ul class=\"list-group\">" +
+		"<ul class=\"list-group\" style=\"font-size: 1.07em;\">" +
 		"<li class=\"list-group-item\">" +
-		"<h4>&emsp;&emsp;The goal of this project is to provide a REST-accessible graph storage service that " +
+		"&emsp;&emsp;The goal of this project is to provide a REST-accessible graph storage service that " +
 		"runs on port 3000 and is available as a resource named gs. For example, the service " +
 		"would listen at http://server-hostname:3000/gs. We want to develop distributed system " +
 		"software to support this service so that it can store an amount of data that would " +
@@ -67,11 +67,11 @@ func graph_store() {
 		"fault tolerance means we cannot have a graph store that is both highly available and " +
 		"strongly consistent. In this project, we will favour strong consistency over having " +
 		"our system be highly available, meaning our service should only return responses to " +
-		"requests if it can guarantee that it is using the most recent data available to it.</h4></li>" +
+		"requests if it can guarantee that it is using the most recent data available to it.</li>" +
 		"<li class=\"list-group-item\" style=\"text-align: center;\">" +
-		"<h4>Source code for this project can be located here:&emsp;&emsp;" +
+		"Source code for this project can be located here:&emsp;&emsp;" +
 		"<a href=\"https://github.com/etzelm/consistent-graph-store-api\" target=\"_blank\">" +
-		"<img src=\"/public/github.png\" alt=\"Github\"  height=\"45\" width=\"45\"></a></h4>" +
+		"<img src=\"/public/github.png\" alt=\"Github\"  height=\"45\" width=\"45\"></a>" +
 		"</div>" +
 		//Start of the container for
 		"<div class=\"container\">" +
@@ -80,33 +80,33 @@ func graph_store() {
 		//Start of the column with face picture in it
 		"<div class=\"col-md-6 form-group\">" +
 		"<div class=\"panel panel-default\">" +
-		"<div class=\"panel-heading\" style=\"color:#A619FF;font-size: 1.6em\">Input Format Specifications:</div>" +
+		"<div class=\"panel-heading\" style=\"color:#A619FF;font-size: 1.17em\">Input Format Specifications:</div>" +
 		//Start of the list
-		"<ul class=\"list-group\">" +
-		"<li class=\"list-group-item\"><h4><b>&emsp;Graph Names</b></h4>" +
-		"<h4>&emsp;charset: [a-zA-Z0-9] i.e. Alphanumeric w/ cases</h4>" +
-		"<h4>&emsp;size:&emsp;1 to 250 characters</h4></li>" +
-		"<li class=\"list-group-item\"><h4>&emsp;<b>Vertex Names</b></h4>" +
-		"<h4>&emsp;charset: [a-zA-Z0-9] i.e. Alphanumeric w/ cases</h4>" +
-		"<h4>&emsp;size:&emsp;1 to 250 characters</h4></li>" +
-		"<li class=\"list-group-item\"><h4>&emsp;<b>Edge Names</b></h4>" +
-		"<h4>&emsp;charset: [a-zA-Z0-9] i.e. Alphanumeric w/ cases</h4>" +
-		"<h4>&emsp;size:&emsp;1 to 250 characters</h4></li></div></div>" +
+		"<ul class=\"list-group\" style=\"font-size: 1.07em;\">" +
+		"<li class=\"list-group-item\"><b>Graph Names: </b>" +
+		"chars: [a-zA-Z0-9] i.e. Alphanumeric w/ cases" +
+		"<br>size: 1 to 250 characters</li>" +
+		"<li class=\"list-group-item\"><b>Vertex Names: </b>" +
+		"chars: [a-zA-Z0-9] i.e. Alphanumeric w/ cases" +
+		"<br>size: 1 to 250 characters</li>" +
+		"<li class=\"list-group-item\"><b>Edge Names: </b>" +
+		"chars: [a-zA-Z0-9] i.e. Alphanumeric w/ cases" +
+		"<br>size: 1 to 250 characters</li></div></div>" +
 		//Start of the column with education panel in it
 		"<div class=\"col-md-5 form-group\">" +
 		//Start of the education panel
 		"<div class=\"panel panel-default\">" +
-		"<div class=\"panel-heading\" style=\"color:#A619FF;font-size: 1.6em\">Environment Variables Used:</div>" +
+		"<div class=\"panel-heading\" style=\"color:#A619FF;font-size: 1.17em\">Environment Variables Used:</div>" +
 		//Start of the list
-		"<ul class=\"list-group\">" +
+		"<ul class=\"list-group\" style=\"font-size: 1.07em;\">" +
 		"<li class=\"list-group-item\">" +
-		"<h4><b><i>PARTITIONS:</i></b> used to keep track of all other active server hosts in our system</h4></li>" +
+		"<b><i>PARTITIONS:</i></b> Tracks all active server hosts in our system</li>" +
 		"<li class=\"list-group-item\">" +
-		"<h4><b><i>IP:</i></b> used to store the docker network ip/port used for system communications</h4></li>" +
+		"<b><i>IP:</i></b> Stores docker network ip/port used for inter-communication</li>" +
 		"<li class=\"list-group-item\">" +
-		"<h4><b><i>PORT:</i></b> used to store the local network port exposed by docker for the user</h4></li>" +
+		"<b><i>PORT:</i></b> Stores local network port exposed by docker for the user</li>" +
 		"<li class=\"list-group-item\">" +
-		"<h4><b><i>R:</i></b> used to store the maximum number of server hosts a partition can be assigned</h4></li>" +
+		"<b><i>R:</i></b> Stores max number of hosts a partition can be given</li>" +
 		//End of the container for the face picture and education panel
 		"</div>" +
 		"</div>" +
@@ -114,10 +114,10 @@ func graph_store() {
 		"</div>" +
 		//Start of the About Me paragraph and contact info
 		"<div class=\"panel panel-default\">" +
-		"<div class=\"panel-heading\" style=\"color:#A619FF;font-size: 1.6em\">Example Docker Commands:</div>" +
-		"<ul class=\"list-group\">" +
+		"<div class=\"panel-heading\" style=\"color:#A619FF;font-size: 1.17em\">Example Docker Commands:</div>" +
+		"<ul class=\"list-group\"  style=\"font-size: 1.07em;\">" +
 		"<li class=\"list-group-item\">" +
-		"<h4><b>Starting a system with 4 active server hosts and a maximum partition size of 2:</b><br><br>" +
+		"<b>Starting a system with 4 active server hosts and a maximum partition size of 2:</b><br><br>" +
 		"docker run -p 3001:3000 --ip=10.0.0.21:3000 --net=mynet -e IP=\"10.0.0.21:3000\" -e PORT=\"3001\" " +
 		"-e R=2 -e PARTITIONS=\"10.0.0.21:3000,10.0.0.22:3000,10.0.0.23:3000,10.0.0.24:3000\" mycontainer<br><br>" +
 		"docker run -p 3002:3000 --ip=10.0.0.22:3000 --net=mynet -e IP=\"10.0.0.22:3000\" -e PORT=\"3002\" " +
@@ -125,7 +125,7 @@ func graph_store() {
 		"docker run -p 3003:3000 --ip=10.0.0.23:3000 --net=mynet -e IP=\"10.0.0.23:3000\" -e PORT=\"3003\" " +
 		"-e R=2 -e PARTITIONS=\"10.0.0.21:3000,10.0.0.22:3000,10.0.0.23:3000,10.0.0.24:3000\" mycontainer<br><br>" +
 		"docker run -p 3004:3000 --ip=10.0.0.24:3000 --net=mynet -e IP=\"10.0.0.24:3000\" -e PORT=\"3004\" " +
-		"-e R=2 -e PARTITIONS=\"10.0.0.21:3000,10.0.0.22:3000,10.0.0.23:3000,10.0.0.24:3000\" mycontainer</h4><br>" +
+		"-e R=2 -e PARTITIONS=\"10.0.0.21:3000,10.0.0.22:3000,10.0.0.23:3000,10.0.0.24:3000\" mycontainer<br>" +
 		"</div></div>"
 
 	d_input := &dynamodb.DeleteItemInput{

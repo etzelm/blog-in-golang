@@ -32,7 +32,7 @@ func about_me() {
 
 	blurb := "Just a quick blurb about me and this blog"
 	created := "March 31st, 2018"
-	modified := "April 2nd, 2018"
+	modified := "April 16th, 2018"
 	//		Start of the green well that backgrounds About Me post
 	hold := "<div class=\"well\" style=\"background-color:#DFF0D8;\">" +
 		//Start of the container for the face picture and education panel
@@ -73,13 +73,13 @@ func about_me() {
 		"related to them as well. Distributed systems are all around us and in most of the " +
 		"web services we use nowadays. Considering that they have only gotten more popular over the " +
 		"last twenty years, I believe they deserve a more thorough and discerning study.</li>" +
-		"<li class=\"list-group-item\"  style=\"text-align: center;\">" +
-		"<a  href=\"mailto:etzelm@live.com\">" +
-		"<img src=\"/public/email.png\" alt=\"Email\"  height=\"30\" width=\"45\"></a>" +
-		"&emsp;&emsp;<a  href=\"https://github.com/etzelm\"  target=\"_blank\">" +
-		"<img src=\"/public/github.png\" alt=\"Github\"  height=\"45\" width=\"45\"></a>" +
-		"&emsp;&emsp;<a  href=\"https://www.linkedin.com/in/etzelm/\" target=\"_blank\">" +
-		"<img src=\"/public/linkedin.png\" alt=\"LinkedIn\"  height=\"45\" width=\"45\"></a></li>" +
+		"<li class=\"list-group-item\"style=\"text-align: center;\">" +
+		"<a href=\"mailto:etzelm@live.com\">" +
+		"<img src=\"/public/email.png\" alt=\"Email\"height=\"30\" width=\"45\"></a>" +
+		"&emsp;&emsp;<a href=\"https://github.com/etzelm\"target=\"_blank\">" +
+		"<img src=\"/public/github.png\" alt=\"Github\"height=\"45\" width=\"45\"></a>" +
+		"&emsp;&emsp;<a href=\"https://www.linkedin.com/in/etzelm/\" target=\"_blank\">" +
+		"<img src=\"/public/linkedin.png\" alt=\"LinkedIn\"height=\"45\" width=\"45\"></a></li>" +
 		"<li class=\"list-group-item\" style=\"text-align: center;\">" +
 		"Source code for this website can be located: " +
 		"<a style=\"color:#A619FF;\" href=\"https://github.com/etzelm/blog-in-golang\" target=\"_blank\">" +
