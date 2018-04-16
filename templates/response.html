@@ -9,3 +9,16 @@
     Hello!
 
 </div>
+
+{{range .payload }}
+<div class="panel panel-success">
+    <div class="panel-heading">
+        <!--Display the name -->
+        <h2 class="panel-title">{{.Name}}</h2></a>
+    </div>
+    <div class="panel-body">
+        <!--Display the feedback -->
+        <p>{{.Feedback}}</p>
+    </div>
+</div>
+{{end}}

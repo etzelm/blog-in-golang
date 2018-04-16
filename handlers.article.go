@@ -1,11 +1,18 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
+	"os"
 	"regexp"
 	"strconv"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )
@@ -50,6 +57,8 @@ func AboutPage(c *gin.Context) {
 }
 
 func FeedbackPage(c *gin.Context) {
+	feedbacks := getAllFeedback()
+
 	// Call the HTML method of the Context to render a template
 	c.HTML(
 		// Set the HTTP status to 200 (OK)
@@ -58,7 +67,8 @@ func FeedbackPage(c *gin.Context) {
 		"feedback.html",
 		// Pass the data that the page uses
 		gin.H{
-			"title": "Leave Feedback",
+			"title":   "Leave Feedback",
+			"payload": feedbacks,
 		},
 	)
 }
@@ -82,6 +92,49 @@ func FeedbackResponse(c *gin.Context) {
 		log.Info("Private")
 	}
 
+	aid := os.Getenv("AWS_ACCESS_KEY_ID")
+	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
+	var my_credentials = credentials.NewStaticCredentials(aid, key, "")
+
+	sess, err := session.NewSession(&aws.Config{
+		Credentials: my_credentials,
+		Region:      aws.String("us-west-1"),
+		Endpoint:    aws.String("http://localhost:8000"),
+	})
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	dbSvc := dynamodb.New(sess)
+
+	info := FeedbackInfo{
+		Feedback: feedback,
+		X:        form.X,
+	}
+
+	item := FeedbackItem{
+		Name: name,
+		Info: info,
+	}
+
+	av, err := dynamodbattribute.MarshalMap(item)
+
+	input := &dynamodb.PutItemInput{
+		Item:      av,
+		TableName: aws.String("Feedback"),
+	}
+
+	_, err = dbSvc.PutItem(input)
+
+	if err != nil {
+		fmt.Println("Got error calling PutItem:")
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+
+	feedbacks := getAllFeedback()
+
 	// Call the HTML method of the Context to render a template
 	c.HTML(
 		// Set the HTTP status to 200 (OK)
@@ -90,7 +143,8 @@ func FeedbackResponse(c *gin.Context) {
 		"response.html",
 		// Pass the data that the page uses
 		gin.H{
-			"title": "Thank You!",
+			"title":   "Thank You!",
+			"payload": feedbacks,
 		},
 	)
 }

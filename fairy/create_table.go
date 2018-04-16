@@ -32,13 +32,13 @@ func create_table() {
 	input := &dynamodb.CreateTableInput{
 		AttributeDefinitions: []*dynamodb.AttributeDefinition{
 			{
-				AttributeName: aws.String("id"),
-				AttributeType: aws.String("N"),
+				AttributeName: aws.String("name"),
+				AttributeType: aws.String("S"),
 			},
 		},
 		KeySchema: []*dynamodb.KeySchemaElement{
 			{
-				AttributeName: aws.String("id"),
+				AttributeName: aws.String("name"),
 				KeyType:       aws.String("HASH"),
 			},
 		},
@@ -46,7 +46,7 @@ func create_table() {
 			ReadCapacityUnits:  aws.Int64(10),
 			WriteCapacityUnits: aws.Int64(10),
 		},
-		TableName: aws.String("Articles"),
+		TableName: aws.String("Feedback"),
 	}
 
 	_, err = dbSvc.CreateTable(input)
