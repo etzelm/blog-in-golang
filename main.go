@@ -33,6 +33,7 @@ func LoadRoutes(server *gin.Engine) *gin.Engine {
 	server.GET("/", LandingPage)
 	server.GET("/about", AboutPage)
 	server.GET("/feedback", FeedbackPage)
+	server.POST("/feedback", FeedbackResponse)
 	server.GET("/article/:article_id", getArticle)
 	return server
 }
