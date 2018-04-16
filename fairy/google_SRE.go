@@ -32,15 +32,15 @@ func google_SRE() {
 
 	blurb := "Using the popular O'Reilly book, I try to gain a better understanding of what SRE really means"
 	created := "April 11th, 2018"
-	modified := "April 12th, 2018"
+	modified := "April 16th, 2018"
 	hold := "<div class=\"well\" style=\"background-color:#DFF0D8;\">" +
 		//Start of the Introduction paragraph and source code link
 		"<div class=\"panel panel-default\">" +
-		"<div class=\"panel-heading\" style=\"color:#A619FF;font-size: 1.6em\">" +
+		"<div class=\"panel-heading\" style=\"color:#A619FF;font-size: 1.17em\">" +
 		"A Review & Implementation of Google's Site Reliability Engineering:</div>" +
-		"<ul class=\"list-group\">" +
+		"<ul class=\"list-group\" style=\"font-size: 1.07em;\">" +
 		"<li class=\"list-group-item\">" +
-		"<h4>&emsp;&emsp;Paying homage to who many consider to be at the forefront of distributed systems, " +
+		"&emsp;&emsp;Paying homage to who many consider to be at the forefront of distributed systems, " +
 		"I have deciced to review and implement some of the concepts put forth in the O'Reilly book, <i>" +
 		"<a style=\"color:#9C6708;\" href=\"https://landing.google.com/sre/book.html\" target=\"_blank\">" +
 		"Site Reliability Engineering: How Google Runs Production Systems</a></i>. This work will be done " +
@@ -54,11 +54,11 @@ func google_SRE() {
 		"into what is Google's present-day SRE team. One of the first major drives of any Site Reliability " +
 		"Engineer should be to automate as many of their work processes as they can, so as to minimize on the " +
 		"amount of actual \"complex manual labor\" they have to actually perform. " +
-		"</h4></li>" +
+		"</li>" +
 		"<li class=\"list-group-item\" style=\"text-align: center;\">" +
-		"<h4>Source code for this project can be located here:&emsp;&emsp;" +
+		"Source code for this project can be located here:&emsp;&emsp;" +
 		"<a href=\"https://github.com/etzelm/consistent-graph-store-api\" target=\"_blank\">" +
-		"<img src=\"/public/github.png\" alt=\"Github\"  height=\"45\" width=\"45\"></a></h4>" +
+		"<img src=\"/public/github.png\" alt=\"Github\"  height=\"45\" width=\"45\"></a>" +
 		"</div>" +
 		//Start of the container for
 
