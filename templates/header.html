@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="UTF-8">
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <!--Use bootstrap to make the application look nice-->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <script async src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
@@ -19,18 +20,32 @@
   </head>
 
   <body class="container">
-  
+
   <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
       <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+
         <p class="navbar-text">&emsp;
-          <b><a href="/" style="color:MediumSeaGreen;">Sour Beer & Distributed Systems
-        </a></b></p>
+          <b><a href="/" style="color:MediumSeaGreen;">Sour Beer & Distributed Systems</a></b>
+        </p>
+        <ul class="list-inline visible-xs navmenu-mobile">
+          <li><a href="/about">About Me</a></li>
+          <li><a href="/feedback">Leave Feedback</a></li>
+        </ul>
       </div>
-      <ul class="nav navbar-nav">
-        <li><a href="/about">About Me</a></li>
-        <li><a href="/feedback">Leave Feedback</a></li>
-      </ul>
+
+      <div id="navbar" class="collapse navbar-collapse">
+        <ul class="nav navbar-nav">
+          <li class="hidden-xs"><a href="/about">About Me</a></li>
+          <li class="hidden-xs"><a href="/feedback">Leave Feedback</a></li>
+        </ul>
+      </div>
     </div>
   </nav>
     

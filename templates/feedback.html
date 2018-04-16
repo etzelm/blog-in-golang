@@ -2,18 +2,18 @@
 
 <!--Embed the header.html template at this location-->
 {{ template "header.html" .}}
-<br><br><br><br><br><br><br><br>
+<br><br><br><br>
 
 <div class="well" style="background-color:#DFF0D8;">
 
 <form action="/feedback" method="post">
     <div class="input-group">
         <span class="input-group-addon" id="basic-addon1">Name:</span>
-        <input type="text" name="name" class="form-control" placeholder="Name" aria-describedby="basic-addon1">
+        <input type="text" name="name" class="form-control" placeholder="Name" aria-describedby="basic-addon1" maxlength="30">
     </div><br>
     <div class="input-group">
         <span class="input-group-addon" id="basic-addon2">Reason for leaving feedback:</span>
-        <input type="text" name="reason" class="form-control" placeholder="Reason" aria-describedby="basic-addon2">
+        <input type="text" name="reason" class="form-control" placeholder="Reason" aria-describedby="basic-addon2" maxlength="250">
     </div><br>
     <input type="submit" value="Submit Feedback" style="display: block;margin: 0 auto;">
 </form>

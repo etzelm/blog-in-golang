@@ -2,7 +2,7 @@
 
 <!--Embed the header.html template at this location-->
 {{ template "header.html" .}}
-<br><br><br><br><br><br><br><br>
+<br><br><br><br>
 
 {{range .payload }}
 <div class="panel panel-success">
@@ -14,9 +14,9 @@
     </div>
     <div class="panel-body">
         <!--Display the time created of the article-->
-        <p><u style="color:#A619FF;">Date Created:</u> {{.Created}}</p>
+        <p><u style="color:#A619FF;">Date Created:</u>&emsp;{{.Created}}</p>
         <!--Display the last time modified of the article-->
-        <p><u style="color:#A619FF;">Last Modified:</u> {{.Modified}}</p>
+        <p><u style="color:#A619FF;">Last Modified:</u>&emsp;{{.Modified}}</p>
         <!--Display the content of the article-->
         <p>{{.Blurb}}</p>
     </div>
