@@ -66,6 +66,7 @@ func FeedbackPage(c *gin.Context) {
 func FeedbackResponse(c *gin.Context) {
 	var form FeedbackForm
 	c.Bind(&form)
+
 	name := template.HTMLEscapeString(form.Name)
 	feedback := template.HTMLEscapeString(form.Feedback)
 	if m, _ := regexp.MatchString("^[ a-zA-Z0-9]+( +[a-zA-Z0-9]+)*$", name); !m {
@@ -74,6 +75,13 @@ func FeedbackResponse(c *gin.Context) {
 	}
 	log.Info("Name: ", name)
 	log.Info("Feedback: ", feedback)
+
+	if form.X == 1 {
+		log.Info("Public")
+	} else {
+		log.Info("Private")
+	}
+
 	// Call the HTML method of the Context to render a template
 	c.HTML(
 		// Set the HTTP status to 200 (OK)

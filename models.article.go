@@ -39,6 +39,7 @@ type article struct {
 type FeedbackForm struct {
 	Name     string `form:"name" binding:"required"`
 	Feedback string `form:"feedback" binding:"required"`
+	X        int    `form:"x"`
 }
 
 // Return a list of all the articles
