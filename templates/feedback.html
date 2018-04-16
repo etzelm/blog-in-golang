@@ -1,0 +1,11 @@
+<!--article.html-->
+
+<!--Embed the header.html template at this location-->
+{{ template "header.html" .}}
+<br><br><br><br><br><br><br>
+
+<form action="/feedback" method="post">
+    Name:<input type="text" name="name">
+    Reason for leaving feedback:<input type="text" name="reason">
+    <input type="submit" value="Submit Feedback">
+</form>
