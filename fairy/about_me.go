@@ -49,21 +49,21 @@ func about_me() {
 		"<div class=\"col-md-6 form-group\"><br>" +
 		//Start of the education panel
 		"<div class=\"panel panel-default\">" +
-		"<div class=\"panel-heading\" style=\"color:#A619FF;font-size: 1.5em\">Education:</div>" +
+		"<div class=\"panel-heading\" style=\"color:#A619FF;font-size: 1.17em\">Education:</div>" +
 		//Start of the list
-		"<ul class=\"list-group\" style=\"font-size: 1.17em\">" +
+		"<ul class=\"list-group\" style=\"font-size: 1.07em;\">" +
 		"<li class=\"list-group-item\"><b>Bachelors of Science in Computer Science</b><br>" +
-		"University of California, Santa Cruz<br>" +
-		"Attended from June 2015 to March 2018</li>" +
+		"UCSC, Santa Cruz, CA<br>" +
+		"Attended: June '15 to March '18</li>" +
 		"<li class=\"list-group-item\"><b>Associates of Science in Computer Science</b><br>" +
-		"Diablo Valley College, Pleasant Hill, CA<br>" +
-		"Attended from January 2013 to June 2015</li>" +
+		"DVC, Pleasant Hill, CA<br>" +
+		"Attended: Janurary '13 to June '15</li>" +
 		//End of the container for the face picture and education panel
 		"</div></div></div></div>" +
 		//Start of the About Me paragraph and contact info
 		"<div class=\"panel panel-default\">" +
 		"<div class=\"panel-heading\" style=\"color:#A619FF;font-size: 1.17em\">About Me & Contact Info:</div>" +
-		"<ul class=\"list-group\">" +
+		"<ul class=\"list-group\" style=\"font-size: 1.07em;\">" +
 		"<li class=\"list-group-item\">" +
 		"&emsp;&emsp;By now you've hopefully guessed that my name is Mitchell " +
 		"Etzel and as a recent college graduate I've decided to start this blog to " +
@@ -74,12 +74,16 @@ func about_me() {
 		"web services we use nowadays. Considering that they have only gotten more popular over the " +
 		"last twenty years, I believe they deserve a more thorough and discerning study.</li>" +
 		"<li class=\"list-group-item\"  style=\"text-align: center;\">" +
-		"&emsp;&emsp;<a style=\"color:#9C6708;\" href=\"mailto:etzelm@live.com\">" +
+		"<a  href=\"mailto:etzelm@live.com\">" +
 		"<img src=\"/public/email.png\" alt=\"Email\"  height=\"30\" width=\"45\"></a>" +
-		"&emsp;&emsp;<a style=\"color:#9C6708;\" href=\"https://github.com/etzelm\"  target=\"_blank\">" +
+		"&emsp;&emsp;<a  href=\"https://github.com/etzelm\"  target=\"_blank\">" +
 		"<img src=\"/public/github.png\" alt=\"Github\"  height=\"45\" width=\"45\"></a>" +
-		"&emsp;&emsp;<a style=\"color:#9C6708;\" href=\"https://www.linkedin.com/in/etzelm/\" target=\"_blank\">" +
+		"&emsp;&emsp;<a  href=\"https://www.linkedin.com/in/etzelm/\" target=\"_blank\">" +
 		"<img src=\"/public/linkedin.png\" alt=\"LinkedIn\"  height=\"45\" width=\"45\"></a></li>" +
+		"<li class=\"list-group-item\" style=\"text-align: center;\">" +
+		"Source code for this website can be located: " +
+		"<a style=\"color:#A619FF;\" href=\"https://github.com/etzelm/blog-in-golang\" target=\"_blank\">" +
+		"here</a></li>" +
 		"</div>" +
 		"</div>" +
 		"</div>"
