@@ -5,16 +5,17 @@
 <br><br><br><br>
 
 <div class="well" style="background-color:#DFF0D8;">
-
-    Hello!
-
+    <div align="center">
+        <img src="/public/awesome.png" alt="My Face" height="225" width="300">
+        <h2>You're awesome! Thanks for the feedback!</h2>
+    </div>
 </div>
 
 {{range .payload }}
 <div class="panel panel-success">
     <div class="panel-heading">
         <!--Display the name -->
-        <h2 class="panel-title">{{.Name}}</h2></a>
+        <h2 class="panel-title" style="color:#A619FF;">{{.Name}} says:</h2>
     </div>
     <div class="panel-body">
         <!--Display the feedback -->
