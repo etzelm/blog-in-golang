@@ -36,6 +36,11 @@ type article struct {
 	Content  string `json:"content"`
 }
 
+type FeedbackForm struct {
+	Name     string `form:"name" binding:"required"`
+	Feedback string `form:"feedback" binding:"required"`
+}
+
 // Return a list of all the articles
 func getAllArticles() []article {
 	aid := os.Getenv("AWS_ACCESS_KEY_ID")

@@ -9,11 +9,11 @@
 <form action="/feedback" method="post">
     <div class="input-group">
         <span class="input-group-addon" id="basic-addon1">Name:</span>
-        <input type="text" name="name" class="form-control" placeholder="Name" aria-describedby="basic-addon1" maxlength="30">
+        <input type="text" name="name" class="form-control" placeholder="Name" aria-describedby="basic-addon1" maxlength="40" required>
     </div><br>
     <div class="input-group">
-        <span class="input-group-addon" id="basic-addon2">Reason for leaving feedback:</span>
-        <input type="text" name="reason" class="form-control" placeholder="Reason" aria-describedby="basic-addon2" maxlength="250">
+        <span class="input-group-addon" id="basic-addon2" style="vertical-align: top;padding-top: 8px;">Feedback:</span>
+        <textarea rows="8" cols="50" name="feedback" placeholder="Feedback" class="form-control" aria-describedby="basic-addon2" maxlength="1000" required></textarea>
     </div><br>
     <input type="submit" value="Submit Feedback" style="display: block;margin: 0 auto;">
 </form>

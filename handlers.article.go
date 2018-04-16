@@ -1,10 +1,13 @@
 package main
 
 import (
+	"html/template"
 	"net/http"
+	"regexp"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 )
 
 func LandingPage(c *gin.Context) {
@@ -61,6 +64,16 @@ func FeedbackPage(c *gin.Context) {
 }
 
 func FeedbackResponse(c *gin.Context) {
+	var form FeedbackForm
+	c.Bind(&form)
+	name := template.HTMLEscapeString(form.Name)
+	feedback := template.HTMLEscapeString(form.Feedback)
+	if m, _ := regexp.MatchString("^[ a-zA-Z0-9]+( +[a-zA-Z0-9]+)*$", name); !m {
+		c.AbortWithStatusJSON(400, "Name should contain only alphanumeric characters and spaces!")
+		return
+	}
+	log.Info("Name: ", name)
+	log.Info("Feedback: ", feedback)
 	// Call the HTML method of the Context to render a template
 	c.HTML(
 		// Set the HTTP status to 200 (OK)
