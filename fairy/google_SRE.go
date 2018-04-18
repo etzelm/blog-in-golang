@@ -64,23 +64,6 @@ func google_SRE() {
 
 		"</div>"
 
-	d_input := &dynamodb.DeleteItemInput{
-		Key: map[string]*dynamodb.AttributeValue{
-			"id": {
-				N: aws.String("2"),
-			},
-		},
-		TableName: aws.String("Articles"),
-	}
-
-	_, err = dbSvc.DeleteItem(d_input)
-
-	if err != nil {
-		fmt.Println("Got error calling DeleteItem")
-		fmt.Println(err.Error())
-		return
-	}
-
 	info := ItemInfo{
 		Title:    "A Review & Implementation of Google's Site Reliability Engineering",
 		Created:  created,

@@ -88,23 +88,6 @@ func about_me() {
 		"</div>" +
 		"</div>"
 
-	d_input := &dynamodb.DeleteItemInput{
-		Key: map[string]*dynamodb.AttributeValue{
-			"id": {
-				N: aws.String("0"),
-			},
-		},
-		TableName: aws.String("Articles"),
-	}
-
-	_, err = dbSvc.DeleteItem(d_input)
-
-	if err != nil {
-		fmt.Println("Got error calling DeleteItem")
-		fmt.Println(err.Error())
-		return
-	}
-
 	info := ItemInfo{
 		Title:    "About Me",
 		Created:  created,

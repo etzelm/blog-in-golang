@@ -32,7 +32,7 @@ func graph_store() {
 
 	blurb := "A look at what goes into making a successful distributed system"
 	created := "April 10th, 2018"
-	modified := "April 16th, 2018"
+	modified := "April 18th, 2018"
 	hold := "<div class=\"well\" style=\"background-color:#DFF0D8;\">" +
 		//Start of the About Me paragraph and contact info
 		"<div class=\"panel panel-default\">" +
@@ -140,23 +140,6 @@ func graph_store() {
 		"docker run -p 3004:3000 --ip=10.0.0.24:3000 --net=mynet -e IP=\"10.0.0.24:3000\" -e PORT=\"3004\" " +
 		"-e R=2 -e PARTITIONS=\"10.0.0.21:3000,10.0.0.22:3000,10.0.0.23:3000,10.0.0.24:3000\" mycontainer<br>" +
 		"</div></div>"
-
-	d_input := &dynamodb.DeleteItemInput{
-		Key: map[string]*dynamodb.AttributeValue{
-			"id": {
-				N: aws.String("1"),
-			},
-		},
-		TableName: aws.String("Articles"),
-	}
-
-	_, err = dbSvc.DeleteItem(d_input)
-
-	if err != nil {
-		fmt.Println("Got error calling DeleteItem")
-		fmt.Println(err.Error())
-		return
-	}
 
 	info := ItemInfo{
 		Title:    "Creating a Scalable, Fault Tolerant, & Strongly Consistent Graph Store API",
