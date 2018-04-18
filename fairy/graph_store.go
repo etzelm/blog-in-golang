@@ -40,22 +40,35 @@ func graph_store() {
 		"Creating a Scalable, Fault Tolerant, & Strongly Consistent Graph Store API:</div>" +
 		"<ul class=\"list-group\" style=\"font-size: 1.07em;\">" +
 		"<li class=\"list-group-item\">" +
-		"&emsp;&emsp;The goal of this project is to provide a REST-accessible graph storage service that " +
+		"<p>&emsp;&emsp;Collaborating on this project with me is my former distributed systems classmate, " +
+		"<a style=\"color:#9C6708;\" href=\"https://github.com/bryandmc\" target=\"_blank\">Bryan McCoid</a>. " +
+		"Our inspiration for this project was a desire to recreate some of our coursework, " +
+		"created by <a style=\"color:#9C6708;\" href=\"https://github.com/palvaro\" target=\"_blank\">Peter Alvaro</a> " +
+		"of <a style=\"color:#9C6708;\" href=\"https://disorderlylabs.github.io/\" target=\"_blank\">Disorderly Labs</a>, " +
+		"for public view and to do so by completely starting " +
+		"from scratch in order to implement algorithms that we had wanted to use during the course but had " +
+		"ran out of time to do so. Several attempts at academic honesty have been made and we also strongly " +
+		"discourage any current students who happen upon this content from using it in their own coursework, " +
+		"not only because you will be caught but because you are depriving yourself of the education you pay " +
+		"for. Bryan and I are aspiring Software Engineers and we take this project on in the hope of developing " +
+		"and improving the skills needed to be successful in industry, especially when it comes to dealing with " +
+		"distributed systems. The goal of this project is to provide a REST-accessible graph storage service that " +
 		"runs on port 3000 and is available as a resource named gs. For example, the service " +
-		"would listen at http://server-hostname:3000/gs. We want to develop distributed system " +
+		"would listen at <a style=\"color:#9C6708;\" href=\"http://server-hostname:3000/gs\" target=\"_blank\">" +
+		"http://server-hostname:3000/gs</a>.</p><p>&emsp;&emsp;We want to develop distributed system " +
 		"software to support this service so that it can store an amount of data that would " +
 		"not normally fit onto a single machine system. To accomplish this, we will simulate " +
 		"our server code as if it is being run on multiple, separate hosts simultaneously, " +
 		"using Docker to provide this functionality. A single server host in our system stores " +
 		"only a certain subset of the graphs stored in the system as a whole. We also have " +
 		"them keep track of a list of all the other server hostnames in the known system so " +
-		"that they can forward requests they receive for graphs that arent stored locally for " +
+		"that they can forward requests they receive for graphs that aren't stored locally for " +
 		"them. The plan is to distribute graphs among partitions that each have an active " +
 		"amount of server hosts assigned to them based on the total number of server hosts " +
 		"that exist in the system at the time of observation. This way each server host in a " +
 		"partition can store the same subset of graphs assigned to that partition, providing " +
 		"a measurable amount of fault-tolerance to the user if one of those hosts happens to " +
-		"crash or experience a network partition. <br><br>&emsp;&emsp;Scalability is achieved by allowing for the " +
+		"crash or experience a network partition.</p><p>&emsp;&emsp;Scalability is achieved by allowing for the " +
 		"user to change the system environment by adding or removing server hosts, based on " +
 		"their needs, using API calls which then have our distributed system software " +
 		"automatically reshuffle our partitioning and graph distribution across all active  " +
@@ -65,9 +78,9 @@ func graph_store() {
 		"sequence and timers to achieve consensus on a total causal order over any value given " +
 		"to us by the user. Due to the CAP theorem, we know that using partitions to attain " +
 		"fault tolerance means we cannot have a graph store that is both highly available and " +
-		"strongly consistent. In this project, we will favour strong consistency over having " +
+		"strongly consistent. In this project, we will favor strong consistency over having " +
 		"our system be highly available, meaning our service should only return responses to " +
-		"requests if it can guarantee that it is using the most recent data available to it.</li>" +
+		"requests if it can guarantee that it is using the most recent data available to it.</p></li>" +
 		"<li class=\"list-group-item\" style=\"text-align: center;\">" +
 		"Source code for this project can be located here:&emsp;&emsp;" +
 		"<a href=\"https://github.com/etzelm/consistent-graph-store-api\" target=\"_blank\">" +
