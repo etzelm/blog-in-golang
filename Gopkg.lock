@@ -97,6 +97,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/unrolled/secure"
+  packages = ["."]
+  revision = "a1cf62cc2159fff407728f118c41aece76c397fa"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
   revision = "49796115aa4b964c318aad4f3084fdb41e9aa067"
@@ -125,6 +131,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "1f9d6fa9a2d13238fd75a537e69fbc30f798cf9c878d7b9db782850225543843"
+  inputs-digest = "a30abe8bd81a79c3d8fdd65e9494feb8e0559b2fbdbad18cd672376924fda286"
   solver-name = "gps-cdcl"
   solver-version = 1

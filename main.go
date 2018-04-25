@@ -20,10 +20,12 @@ func main() {
 	}
 	log.Info("IP_PORT: ", IP_PORT)
 
+	gin.SetMode(gin.ReleaseMode)
 	server := gin.Default()
 	log.WithField("server", server).Info("Default Gin server create.")
 	server.LoadHTMLGlob("templates/*")
 	server.Use(static.Serve("/public", static.LocalFile("./public", true)))
+	//server.Use(static.Serve("/.well-known/acme-challenge/", static.LocalFile("./.well-known/acme-challenge/", true)))
 	LoadRoutes(server)
 	server.Run(IP_PORT)
 }

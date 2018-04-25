@@ -25,6 +25,6 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /
 COPY --from=0 /go/src/github.com/etzelm/blog-in-golang/blog-in-golang .
 COPY . .
-CMD ["./blog-in-golang"]  
+CMD ["./blog-in-golang"]
 
 EXPOSE 3000
