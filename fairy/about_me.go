@@ -77,13 +77,15 @@ func about_me() {
 		"<li class=\"list-group-item\"style=\"text-align: center;\">" +
 		"<script src=\"//platform.linkedin.com/in.js\" type=\"text/javascript\"></script>" +
 		"<script type=\"IN/MemberProfile\" data-id=\"https://www.linkedin.com/in/etzelm\" data-" +
-		"format=\"inline\" data-related=\"false\"></script></li>" +
+		"format=\"inline\" class=\"hidden-xs\" data-related=\"false\"></script></li>" +
 
 		"<li class=\"list-group-item\" style=\"text-align: center;\">" +
 		"<a href=\"https://github.com/etzelm\"target=\"_blank\">" +
 		"<img src=\"/public/github.png\" alt=\"Github\"height=\"45\" width=\"45\"></a>" +
 		"&emsp;&emsp;<a href=\"mailto:etzelm@live.com\">" +
-		"<img src=\"/public/email.png\" alt=\"Email\"height=\"30\" width=\"45\"></a></li>" +
+		"<img src=\"/public/email.png\" alt=\"Email\"height=\"30\" width=\"45\"></a>" +
+		"&emsp;&emsp;<a href=\"https://www.linkedin.com/in/etzelm/\" target=\"_blank\">" +
+		"<img src=\"/public/linkedin.png\" alt=\"LinkedIn\"height=\"45\" width=\"45\"></a></li>" +
 
 		"</div>" +
 		"</div>" +
