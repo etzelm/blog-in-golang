@@ -1,6 +1,8 @@
 # blog-in-golang
 Starting a blog using golang.
 
+Published: https://mitchelletzel.com
+
 Sample Local Test Commands:
 
  * go run main.go models.go handlers.go
