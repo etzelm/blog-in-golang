@@ -32,7 +32,7 @@ func graph_store() {
 
 	blurb := "A look at what goes into making a successful distributed system"
 	created := "April 10th, 2018"
-	modified := "April 18th, 2018"
+	modified := "April 25th, 2018"
 	hold := "<div class=\"well\" style=\"background-color:#DFF0D8;\">" +
 		//Start of the About Me paragraph and contact info
 		"<div class=\"panel panel-default\">" +
@@ -87,9 +87,9 @@ func graph_store() {
 		"<img src=\"/public/github.png\" alt=\"Github\"  height=\"45\" width=\"45\"></a>" +
 		"</div>" +
 		//Start of the container for
-		"<div class=\"container\">" +
+		"<div class=\"container-fluid\">" +
 		//Only used one row for the container
-		"<div class=\"row\">" +
+		"<div class=\"row row-centered\">" +
 		//Start of the column with face picture in it
 		"<div class=\"col-md-6 form-group\">" +
 		"<div class=\"panel panel-default\">" +
@@ -106,7 +106,7 @@ func graph_store() {
 		"chars: [a-zA-Z0-9] i.e. Alphanumeric w/ cases" +
 		"<br>size: 1 to 250 characters</li></div></div>" +
 		//Start of the column with education panel in it
-		"<div class=\"col-md-5 form-group\">" +
+		"<div class=\"col-md-6 form-group\">" +
 		//Start of the education panel
 		"<div class=\"panel panel-default\">" +
 		"<div class=\"panel-heading\" style=\"color:#A619FF;font-size: 1.17em\">Environment Variables Used:</div>" +

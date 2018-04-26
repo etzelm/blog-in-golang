@@ -3,7 +3,7 @@ Starting a blog using golang.
 
 Sample Local Test Commands:
 
- * go run main.go models.article.go handlers.article.go
+ * go run main.go models.go handlers.go
  * ../../../../bin/dep.exe ensure
  * java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb
  * go run main.go about_me.go graph_store.go google_SRE.go drop_tables.go create_table.go 1

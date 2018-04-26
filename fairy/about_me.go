@@ -32,11 +32,11 @@ func about_me() {
 
 	blurb := "Just a quick blurb about me and this blog"
 	created := "March 31st, 2018"
-	modified := "April 24th, 2018"
+	modified := "April 25th, 2018"
 	//		Start of the green well that backgrounds About Me post
 	hold := "<div class=\"well\" style=\"background-color:#DFF0D8;\">" +
 		//Start of the container for the face picture and education panel
-		"<div class=\"container\">" +
+		"<div class=\"container-fluid\">" +
 		//Only used one row for the container
 		"<div class=\"row\">" +
 		//Start of the column with face picture in it
