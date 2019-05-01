@@ -16,7 +16,7 @@ func main() {
 
 	IP_PORT := os.Getenv("ip_port")
 	if IP_PORT == "" {
-		IP_PORT = ":3000"
+		IP_PORT = ":80"
 	}
 	log.Info("IP_PORT: ", IP_PORT)
 

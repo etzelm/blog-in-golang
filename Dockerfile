@@ -27,4 +27,4 @@ COPY --from=0 /go/src/github.com/etzelm/blog-in-golang/blog-in-golang .
 COPY . .
 CMD ["./blog-in-golang"]
 
-EXPOSE 3000
+EXPOSE 80
