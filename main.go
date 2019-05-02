@@ -1,11 +1,11 @@
 package main
 
 import (
-	"os"
-
 	"github.com/gin-contrib/static"
+	"github.com/gin-gonic/autotls"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
+	"golang.org/x/crypto/acme/autocert"
 )
 
 // IP_PORT is this computers IP address
@@ -14,20 +14,19 @@ var IP_PORT string
 func main() {
 	log.Info("Server is starting...")
 
-	IP_PORT := os.Getenv("ip_port")
-	if IP_PORT == "" {
-		IP_PORT = ":80"
-	}
-	log.Info("IP_PORT: ", IP_PORT)
-
 	gin.SetMode(gin.ReleaseMode)
-	server := gin.Default()
-	log.WithField("server", server).Info("Default Gin server create.")
-	server.LoadHTMLGlob("templates/*")
-	server.Use(static.Serve("/public", static.LocalFile("./public", true)))
-	//server.Use(static.Serve("/.well-known/acme-challenge/", static.LocalFile("./.well-known/acme-challenge/", true)))
-	LoadRoutes(server)
-	server.Run(IP_PORT)
+	httpsServer := gin.Default()
+	httpsServer.LoadHTMLGlob("templates/*")
+	httpsServer.Use(static.Serve("/public", static.LocalFile("./public", true)))
+	LoadRoutes(httpsServer)
+	m := autocert.Manager{
+		Prompt:     autocert.AcceptTOS,
+		HostPolicy: autocert.HostWhitelist("mitchelletzel.com"),
+		Cache:      autocert.DirCache("certs"),
+	}
+
+	log.WithField("server", httpsServer).Info("Default Gin server created.")
+	log.Info(autotls.RunWithManager(httpsServer, &m))
 }
 
 // LoadRoutes does exactly that... loads all routes for the server.

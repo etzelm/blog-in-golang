@@ -28,3 +28,4 @@ COPY . .
 CMD ["./blog-in-golang"]
 
 EXPOSE 80
+EXPOSE 443

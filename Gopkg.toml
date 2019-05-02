@@ -9,6 +9,14 @@
   version = "1.2.0"
 
 [[constraint]]
+  name = "github.com/gin-gonic/autotls"
+  version = "0.0.2"
+
+[[constraint]]
+  name = "golang.org/x/crypto"
+  source = "https://github.com/golang/crypto.git"
+
+[[constraint]]
   name = "github.com/sirupsen/logrus"
   version = "1.0.4"
 
