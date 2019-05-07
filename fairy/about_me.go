@@ -32,7 +32,7 @@ func about_me() {
 
 	blurb := "Just a quick blurb about me and this blog"
 	created := "March 31st, 2018"
-	modified := "April 25th, 2018"
+	modified := "May 6th, 2019"
 	//		Start of the green well that backgrounds About Me post
 	hold := "<div class=\"well\" style=\"background-color:#DFF0D8;\">" +
 		//Start of the container for the face picture and education panel
@@ -65,19 +65,17 @@ func about_me() {
 		"<div class=\"panel-heading\" style=\"color:#A619FF;font-size: 1.17em\">About Me & Contact Info:</div>" +
 		"<ul class=\"list-group\" style=\"font-size: 1.07em;\">" +
 		"<li class=\"list-group-item\">" +
-		"&emsp;&emsp;By now you've hopefully guessed that my name is Mitchell " +
-		"Etzel and as a recent college graduate I've decided to start this blog to " +
-		"help foster and share my further eduction. I take these actions in the " +
-		"hope that they might help others along a similar journey one day. The " +
-		"goal is to dedicate this website to the study of distributed systems and things " +
-		"related to them as well. Distributed systems are all around us and in most of the " +
-		"web services we use nowadays. Considering that they have only gotten more popular over the " +
-		"last twenty years, I believe they deserve a more thorough and discerning study.</li>" +
-
-		"<li class=\"list-group-item\"style=\"text-align: center;\">" +
-		"<script src=\"//platform.linkedin.com/in.js\" type=\"text/javascript\"></script>" +
-		"<script type=\"IN/MemberProfile\" data-id=\"https://www.linkedin.com/in/etzelm\" data-" +
-		"format=\"inline\" class=\"hidden-xs\" data-related=\"false\"></script></li>" +
+		"&emsp;&emsp;By now you've hopefully guessed that my name is Mitchell Etzel and as a college graduate, " +
+		"as well as a recent member of the cyber-security industry, I've decided to maintain this blog to help foster and " +
+		"share some of my experiences in the hope that others may find them useful. The goal is to dedicate this website " +
+		"to the study of distributed systems and cyber-security, in addition to all topics I deem related along the way. " +
+		"Distributed systems are all around us and in most of the web services we use nowadays. Considering that they have " +
+		"only gotten more popular over the last twenty years, I believe they deserve a more thorough and discerning study. " +
+		"That also means that as an industry, through this study, we are quickly discovering that the web services we use " +
+		"in our day to day life are not as secure as we once imagined them to be. With different exploits like Spectre and " +
+		"Meltdown, boundaries that we once thought were insurmontable, like those between two virtual machines running on " +
+		"the same host, are now demonstratively not so impenetrable. One of the best goals that this blog could help to " +
+		"achieve is shedding a better light on how to make distributed systems more secure than they currently are.</li>" +
 
 		"<li class=\"list-group-item\" style=\"text-align: center;\">" +
 		"<a href=\"https://github.com/etzelm\"target=\"_blank\">" +
