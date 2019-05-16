@@ -86,6 +86,54 @@ func about_me() {
 		"<img src=\"/public/linkedin.png\" alt=\"LinkedIn\"height=\"45\" width=\"45\"></a></li>" +
 
 		"</div>" +
+
+		"<div class=\"panel panel-default\">" +
+		"<div class=\"panel-heading\" style=\"color:#A619FF;font-size: 1.17em\">Relevant Work History:</div>" +
+		"<ul class=\"list-group\" style=\"font-size: 1.07em;\">" +
+		"<li class=\"list-group-item\">" +
+		"<b>&emsp;&emsp;Software Engineer - ShieldX Networks&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;" +
+		"&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;" +
+		"&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;June 2018 - June 2019</b>" +
+		"<br><br>&emsp;&emsp;Software Engineer on the Orchestration(Back-end) Team:&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;" +
+		"&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;" +
+		"&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;June 2018 - January 2019" +
+		"<br>&emsp;&emsp;Team Focus: Integrating the ShieldX product with multiple On & Off Premise Cloud Platforms:" +
+		"<br>&emsp;&emsp;Main Language: Java" +
+		"<br>&emsp;&emsp;Main Cloud Platforms Worked With: VMware, Azure, AWS" +
+		"<br>&emsp;&emsp;Main Solo Projects:" +
+		"<ul><li>Azure Load Balancer Sandwich Setup Automation</li>" +
+		"<li>Deploy Microservice Instance to a VM Folder (VMware)</li>" +
+		"<li>Multi-cloud VM Tag Discovery and use with Resource Groups</li>" +
+		"</ul>" +
+		"<br>&emsp;&emsp;Software Engineer/Threat Researcher on the Security Platform Team:&emsp;&emsp;&emsp;&emsp;" +
+		"&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;" +
+		"&emsp;&emsp;&emsp;&emsp;     January 2019 - June 2019" +
+		"<br>&emsp;&emsp;Team Focus: Ensuring the Total Protection of all ShieldX & Customer Assets:" +
+		"<br>&emsp;&emsp;Main Languages: C, Regular Expressions, XML" +
+		"<br>&emsp;&emsp;Main Threat Report Companies Worked With: Telus, Idappcom, Packetstorm, ExploitDB, CVEs" +
+		"<br>&emsp;&emsp;Main Solo Projects:" +
+		"<ul><li>False Positive Fixes/Monitoring</li>" +
+		"<li>Honeypot Setup/Monitoring</li>" +
+		"<li>Generate a Majority of the New 2019 HTTP Threat Coverage</li>" +
+		"</ul><br>" +
+		"</li>" +
+		"<li class=\"list-group-item\">" +
+		"&emsp;&emsp;<b>Student Internship - Product Owner&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;" +
+		"&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;" +
+		"&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;January 2017 - June 2017</b>" +
+		"<br><br>&emsp;&emsp;Internship through UCSC School of Engineering’s Corporate Sponsorship Program:<br>" +
+		"<ul><li>SmartRevenue, a market research firm based out of Connecticut, came to us as a group of students " +
+		"requesting help prototyping a system for determining a consumer’s “digital path to purchase”</li>" +
+		"<li>Lead a team of 4 other students as Product Owner for the Data Collection Team, we focused on the " +
+		"URLs visited and Android Applications used when participants opted into our software</li>" +
+		"<li>Our team developed both a Chrome Extension and Android Application to help collect data from the " +
+		"pool of over 50,000 people they use in their demographic studies</li>" +
+		"<li>Created a website using AWS to act as an Admin Panel/ Web Interface for our Apps and Database</li>" +
+		"</ul><br>" +
+		"</li>" +
+
+		"</div>" +
+
 		"</div>" +
 		"<p style=\"text-align: center;\">Source code for this website can be located: " +
 		"<a style=\"color:#A619FF;\" href=\"https://github.com/etzelm/blog-in-golang\" target=\"_blank\">" +
