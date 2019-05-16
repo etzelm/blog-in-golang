@@ -32,7 +32,7 @@ func about_me() {
 
 	blurb := "Just a quick blurb about me and this blog"
 	created := "March 31st, 2018"
-	modified := "May 6th, 2019"
+	modified := "May 16th, 2019"
 	//		Start of the green well that backgrounds About Me post
 	hold := "<div class=\"well\" style=\"background-color:#DFF0D8;\">" +
 		//Start of the container for the face picture and education panel
@@ -94,27 +94,26 @@ func about_me() {
 		"<b><p style=\"text-align:left;\">&emsp;&emsp;Software Engineer - ShieldX Networks" +
 		"<span style=\"float:right;\">June 2018 - June 2019</span></p></b>" +
 		"</li><li class=\"list-group-item\">" +
-		"<p style=\"text-align:left;\">&emsp;&emsp;Software Engineer on the Orchestration(Back-end) Team:" +
-		"<span style=\"float:right;\">June 2018 - January 2019</span></p>" +
-		"&emsp;&emsp;Team Focus: Integrating the ShieldX product with multiple On & Off Premise Cloud Platforms:" +
-		"<br>&emsp;&emsp;Main Language: Java" +
-		"<br>&emsp;&emsp;Main Cloud Platforms Worked With: VMware, Azure, AWS" +
-		"<br>&emsp;&emsp;Main Solo Projects:" +
-		"<ul><li>Azure Load Balancer Sandwich Setup Automation</li>" +
-		"<li>Deploy Microservice Instance to a VM Folder (VMware)</li>" +
-		"<li>Multi-cloud VM Tag Discovery and use with Resource Groups</li>" +
-		"</ul></li><li class=\"list-group-item\">" +
-		"<p style=\"text-align:left;\">&emsp;&emsp;Software Engineer/Threat Researcher on the Security Platform Team:" +
+		"<p style=\"text-align:left;\">&emsp;&emsp;Software Engineer/Threat Researcher on the Security Platform:" +
 		"<span style=\"float:right;\">January 2019 - June 2019</span></p>" +
-		"&emsp;&emsp;Team Focus: Ensuring the Total Protection of all ShieldX & Customer Assets:" +
+		"&emsp;&emsp;Team Focus: Ensuring the Total Protection of all ShieldX & Customer Assets" +
 		"<br>&emsp;&emsp;Main Languages: C, Regular Expressions, XML" +
 		"<br>&emsp;&emsp;Main Threat Report Companies Worked With: Telus, Idappcom, Packetstorm, ExploitDB, CVEs" +
 		"<br>&emsp;&emsp;Main Solo Projects:" +
 		"<ul><li>False Positive Fixes/Monitoring</li>" +
 		"<li>Honeypot Setup/Monitoring</li>" +
 		"<li>Generate a Majority of the New 2019 HTTP Threat Coverage</li>" +
-		"</ul>" +
-		"</li>" +
+		"</ul></li><li class=\"list-group-item\">" +
+		"<p style=\"text-align:left;\">&emsp;&emsp;Software Engineer on the Orchestration(Back-end) Team:" +
+		"<span style=\"float:right;\">June 2018 - January 2019</span></p>" +
+		"&emsp;&emsp;Team Focus: Integrating the ShieldX product with multiple On & Off Premise Cloud Platforms" +
+		"<br>&emsp;&emsp;Main Language: Java" +
+		"<br>&emsp;&emsp;Main Cloud Platforms Worked With: VMware, Azure, AWS" +
+		"<br>&emsp;&emsp;Main Solo Projects:" +
+		"<ul><li>Azure Load Balancer Sandwich Setup Automation</li>" +
+		"<li>Deploy Microservice Instance to a VM Folder (VMware)</li>" +
+		"<li>Multi-cloud VM Tag Discovery and use with Resource Groups</li>" +
+		"</ul></li>" +
 		"<li class=\"list-group-item\">" +
 		"<p style=\"text-align:left;\">&emsp;&emsp;<b>Student Internship - Product Owner" +
 		"<span style=\"float:right;\">January 2017 - June 2017</span></p></b>" +
