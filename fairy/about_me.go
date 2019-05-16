@@ -91,37 +91,34 @@ func about_me() {
 		"<div class=\"panel-heading\" style=\"color:#A619FF;font-size: 1.17em\">Relevant Work History:</div>" +
 		"<ul class=\"list-group\" style=\"font-size: 1.07em;\">" +
 		"<li class=\"list-group-item\">" +
-		"<b>&emsp;&emsp;Software Engineer - ShieldX Networks&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;" +
-		"&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;" +
-		"&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;June 2018 - June 2019</b>" +
-		"<br><br>&emsp;&emsp;Software Engineer on the Orchestration(Back-end) Team:&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;" +
-		"&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;" +
-		"&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;June 2018 - January 2019" +
-		"<br>&emsp;&emsp;Team Focus: Integrating the ShieldX product with multiple On & Off Premise Cloud Platforms:" +
+		"<b><p style=\"text-align:left;\">&emsp;&emsp;Software Engineer - ShieldX Networks" +
+		"<span style=\"float:right;\">June 2018 - June 2019</span></p></b>" +
+		"</li><li class=\"list-group-item\">" +
+		"<p style=\"text-align:left;\">&emsp;&emsp;Software Engineer on the Orchestration(Back-end) Team:" +
+		"<span style=\"float:right;\">June 2018 - January 2019</span></p>" +
+		"&emsp;&emsp;Team Focus: Integrating the ShieldX product with multiple On & Off Premise Cloud Platforms:" +
 		"<br>&emsp;&emsp;Main Language: Java" +
 		"<br>&emsp;&emsp;Main Cloud Platforms Worked With: VMware, Azure, AWS" +
 		"<br>&emsp;&emsp;Main Solo Projects:" +
 		"<ul><li>Azure Load Balancer Sandwich Setup Automation</li>" +
 		"<li>Deploy Microservice Instance to a VM Folder (VMware)</li>" +
 		"<li>Multi-cloud VM Tag Discovery and use with Resource Groups</li>" +
-		"</ul>" +
-		"<br>&emsp;&emsp;Software Engineer/Threat Researcher on the Security Platform Team:&emsp;&emsp;&emsp;&emsp;" +
-		"&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;" +
-		"&emsp;&emsp;&emsp;&emsp;     January 2019 - June 2019" +
-		"<br>&emsp;&emsp;Team Focus: Ensuring the Total Protection of all ShieldX & Customer Assets:" +
+		"</ul></li><li class=\"list-group-item\">" +
+		"<p style=\"text-align:left;\">&emsp;&emsp;Software Engineer/Threat Researcher on the Security Platform Team:" +
+		"<span style=\"float:right;\">January 2019 - June 2019</span></p>" +
+		"&emsp;&emsp;Team Focus: Ensuring the Total Protection of all ShieldX & Customer Assets:" +
 		"<br>&emsp;&emsp;Main Languages: C, Regular Expressions, XML" +
 		"<br>&emsp;&emsp;Main Threat Report Companies Worked With: Telus, Idappcom, Packetstorm, ExploitDB, CVEs" +
 		"<br>&emsp;&emsp;Main Solo Projects:" +
 		"<ul><li>False Positive Fixes/Monitoring</li>" +
 		"<li>Honeypot Setup/Monitoring</li>" +
 		"<li>Generate a Majority of the New 2019 HTTP Threat Coverage</li>" +
-		"</ul><br>" +
+		"</ul>" +
 		"</li>" +
 		"<li class=\"list-group-item\">" +
-		"&emsp;&emsp;<b>Student Internship - Product Owner&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;" +
-		"&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;" +
-		"&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;January 2017 - June 2017</b>" +
-		"<br><br>&emsp;&emsp;Internship through UCSC School of Engineering’s Corporate Sponsorship Program:<br>" +
+		"<p style=\"text-align:left;\">&emsp;&emsp;<b>Student Internship - Product Owner" +
+		"<span style=\"float:right;\">January 2017 - June 2017</span></p></b>" +
+		"&emsp;&emsp;Internship through UCSC School of Engineering’s Corporate Sponsorship Program:<br>" +
 		"<ul><li>SmartRevenue, a market research firm based out of Connecticut, came to us as a group of students " +
 		"requesting help prototyping a system for determining a consumer’s “digital path to purchase”</li>" +
 		"<li>Lead a team of 4 other students as Product Owner for the Data Collection Team, we focused on the " +
