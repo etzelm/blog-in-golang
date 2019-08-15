@@ -2,4 +2,42 @@
 
 <!--Embed the header.html template at this location-->
 {{ template "header.html" .}}
-<br><br><br><br>
+
+        <!-- site content
+        ================================================== -->
+        <div class="s-content content">
+            <main class="row content__page">
+                
+                <article class="column large-full entry format-standard">
+
+                    {{.payload.ArticlePicture}}
+
+                    <div class="content__page-header entry__header">
+                        <h1 class="display-1 entry__title">
+                        {{.payload.PostTitle}}
+                        </h1>
+                        <ul class="entry__header-meta">
+                            <li class="author">Author: {{.payload.Author}}</li>
+                            <li class="date">First Posted: {{.payload.CreatedDate}}</li>
+                            <li class="date">Last Modified: {{.payload.ModifiedDate}}</li>
+                            <li class="cat-links">
+                                {{range .payload.Categories }}
+
+                                <a style="color:#9C6708;" href="/category/{{.Category}}">{{.Category}}</a>
+
+                                {{end}}
+                            </li>
+                        </ul>
+                    </div> <!-- end entry__header -->
+
+                    {{.payload.HTMLHold}}
+
+                </article> <!-- end column large-full entry-->
+
+            </main>
+
+        </div> <!-- end s-content -->
+
+
+<!--Embed the footer.html template at this location-->
+{{ template "footer.html" .}}

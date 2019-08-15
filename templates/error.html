@@ -1,0 +1,26 @@
+<!--error.html-->
+
+<!--Embed the header.html template at this location-->
+{{ template "header.html" .}}
+
+        <!-- site content
+        ================================================== -->
+        <div class="s-content content">
+            <main class="row content__page">
+                
+                <section class="column large-full entry format-standard">
+
+                    <div align="center">
+                        <img src="/public/images/error.png" alt="error" height="300" width="300">
+                        <h2>Uh oh, something went wrong!</h2>
+                        {{.error}}
+                    </div>
+
+                </section>
+
+            </main>
+
+        </div> <!-- end s-content -->
+
+<!--Embed the footer.html template at this location-->
+{{ template "footer.html" .}}

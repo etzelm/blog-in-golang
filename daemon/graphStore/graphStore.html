@@ -1,0 +1,140 @@
+                <!--graphStore.html-->
+
+                <div class="entry__content">
+
+                <p class="lead drop-cap">
+                Collaborating on this project with me is my former distributed systems classmate, <a style="color:#9C6708;" 
+                href="https://github.com/bryandmc" target="_blank">Bryan McCoid</a>. Our inspiration for this project was 
+                a desire to recreate some of our coursework, created by <a style="color:#9C6708;" 
+                href="https://github.com/palvaro" target="_blank">Peter Alvaro</a> of <a style="color:#9C6708;" 
+                href="https://disorderlylabs.github.io/" target="_blank">Disorderly Labs</a>, for public view and to do 
+                so by completely starting from scratch in order to implement algorithms that we had wanted to use during the 
+                course but had ran out of time to do so. Several attempts at academic honesty have been made and we also 
+                strongly discourage any current students who happen upon this content from using it in their own coursework, 
+                not only because you will be caught but because you are depriving yourself of the education you pay for. 
+                Bryan and I are aspiring Software Engineers and we take this project on in the hope of developing and 
+                improving the skills needed to be successful in industry, especially when it comes to dealing with 
+                distributed systems.  
+                </p>
+
+                <p>
+                The goal of the project is to provide a REST-accessible graph storage service that 
+                runs on port 3000 and is available as a resource named gs. For example, the service would listen at 
+                <a style="color:#9C6708;" href="http://server-hostname:3000/gs" target="_blank">
+                http://server-hostname:3000/gs</a>. We want to develop distributed system software to support this service so 
+                that it can store an amount of data that would not normally fit onto a single machine system. To accomplish 
+                this, we will simulate our server code as if it is being run on multiple, separate hosts simultaneously, 
+                using Docker to provide this functionality. A single server host in our system stores only a certain subset 
+                of the graphs stored in the system as a whole. We also have them keep track of a list of all the other server 
+                hostnames in the known system so that they can forward requests they receive for graphs that aren't stored 
+                locally for them. The plan is to distribute graphs among partitions that each have an active amount of server 
+                hosts assigned to them based on the total number of server hosts that exist in the system at the time of 
+                observation. This way each server host in a partition can store the same subset of graphs assigned to that 
+                partition, providing a measurable amount of fault-tolerance to the user if one of those hosts happens to 
+                crash or experience a network partition.
+                </p>
+
+                <p>
+                Scalability is achieved by allowing for the user to change the system environment by adding or removing 
+                server hosts, based on their needs, using API calls which then have our distributed system software 
+                automatically reshuffle our partitioning and graph distribution across all active server hosts to attain 
+                maximum fault-tolerance and minimize access latency. To ensure strong consistency among server hosts in 
+                a partition that stores the same subset of graphs in our system, we will use an algorithm called Raft that 
+                uses a 2 phase commit sequence and timers to achieve consensus on a total causal order over any value given 
+                to us by the user. Due to the CAP theorem, we know that using partitions to attain fault tolerance means we 
+                cannot have a graph store that is both highly available and strongly consistent. In this project, we will 
+                favor strong consistency over having our system be highly available, meaning our service should only return 
+                responses to requests if it can guarantee that it is using the most recent data available to it.
+                </p>
+
+                <div class="row">
+
+                    <div class="column large-6 tab-full">
+
+                        <div class="table-responsive">
+
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th style="color:#A619FF;">Input Format Specifications:</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td><b>Graph Names:</b> chars: [a-zA-Z0-9] i.e. Alphanumeric w/ cases size: 1 to 250 characters</td>
+                                </tr>
+                                <tr>
+                                    <td><b>Vertex Names:</b> chars: [a-zA-Z0-9] i.e. Alphanumeric w/ cases size: 1 to 250 characters</td>
+                                </tr>
+                                <tr>
+                                    <td><b>Edge Names:</b> chars: [a-zA-Z0-9] i.e. Alphanumeric w/ cases size: 1 to 250 characters</td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                    <div class="column large-6 tab-full">
+
+                        <div class="table-responsive">
+
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th style="color:#A619FF;">Environment Variables Used:</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td><b>PARTITIONS:</b> Tracks all active server hosts in our system</td>
+                                </tr>
+                                <tr>
+                                    <td><b>IP:</b> Stores docker network ip used for inter-node communication</td>
+                                </tr>
+                                <tr>
+                                    <td><b>PORT:</b> Stores local network port exposed by docker for the user</td>
+                                </tr>
+                                <tr>
+                                    <td><b>R:</b> Stores max number of hosts a partition can be given</td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </div> <!-- end row -->
+
+                <div class="table-responsive">
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="color:#A619FF;">Example Docker Commands:</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td><b>Starting a system with 4 active server hosts and a maximum partition size of 2:</b></td>
+                        </tr>
+                        <tr>
+                            <td>docker run -p 3001:3000 --ip=10.0.0.21:3000 --net=mynet -e IP="10.0.0.21:3000" -e PORT="3001" -e R=2 -e PARTITIONS = "10.0.0.21:3000,10.0.0.22:3000,10.0.0.23:3000,10.0.0.24:3000" mycontainer</td>
+                        </tr>
+                        <tr>
+                            <td>docker run -p 3002:3000 --ip=10.0.0.22:3000 --net=mynet -e IP="10.0.0.22:3000" -e PORT="3002" -e R=2 -e PARTITIONS = "10.0.0.21:3000,10.0.0.22:3000,10.0.0.23:3000,10.0.0.24:3000" mycontainer</td>
+                        </tr>
+                        <tr>
+                            <td>docker run -p 3003:3000 --ip=10.0.0.23:3000 --net=mynet -e IP="10.0.0.23:3000" -e PORT="3003" -e R=2 -e PARTITIONS = "10.0.0.21:3000,10.0.0.22:3000,10.0.0.23:3000,10.0.0.24:3000" mycontainer</td>
+                        </tr>
+                        <tr>
+                            <td>docker run -p 3004:3000 --ip=10.0.0.24:3000 --net=mynet -e IP="10.0.0.24:3000" -e PORT="3004" -e R=2 -e PARTITIONS = "10.0.0.21:3000,10.0.0.22:3000,10.0.0.23:3000,10.0.0.24:3000" mycontainer</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+
+                </div> <!-- end entry content -->

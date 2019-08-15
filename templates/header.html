@@ -1,49 +1,105 @@
 <!--header.html-->
 
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
 
-  <head>
-    <!--Use the `title` variable to set the title of the page-->
-    <title>{{ .title }}</title>
+    <!--- basic page needs
+    ================================================== -->
+    <meta charset="utf-8">
+    <title>{{.title}}</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- mobile specific metas
+    ================================================== -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta charset="UTF-8">
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <!--Use bootstrap to make the application look nice-->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-    <script async src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-    <style>
-      body { background: lightgrey; }
-      body { word-wrap: break-word }
-    </style>
-  </head>
+    <!-- CSS
+    ================================================== -->
+    <link rel="stylesheet" href="/public/css/base.css">
+    <link rel="stylesheet" href="/public/css/vendor.css">
+    <link rel="stylesheet" href="/public/css/main.css">
 
-  <body class="container">
+    <!-- script
+    ================================================== -->
+    <script src="/public/js/modernizr.js"></script>
 
-  <nav class="navbar navbar-inverse navbar-fixed-top">
-    <div class="container">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
+    <!-- favicons
+    ================================================== -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/public/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/public/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/public/images/favicon-16x16.png">
+    <link rel="manifest" href="/public/site.webmanifest">
 
-        <p class="navbar-text">&emsp;
-          <b><a href="/" style="color:MediumSeaGreen;">Sour Beer & Distributed Systems</a></b>
-        </p>
-      </div>
+</head>
 
-      <div id="navbar" class="collapse navbar-collapse">
-        <ul class="nav navbar-nav">
-          <li class="hidden-xs"><a href="/about">About Me</a></li>
-          <li class="hidden-xs"><a href="/feedback">Leave Feedback</a></li>
-          <li class="visible-xs navmenu-mobile"><a href="/about">About Me</a></li>
-          <li class="visible-xs navmenu-mobile"><a href="/feedback">Leave Feedback</a></li>
-        </ul>
-      </div>
+<body>
+
+    <!-- preloader
+    ================================================== -->
+    <div id="preloader">
+        <div id="loader" class="dots-fade">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
     </div>
-  </nav>
-    
+
+    <div id="top" class="s-wrap site-wrapper">
+
+        <!-- site header
+        ================================================== -->
+        <header class="s-header">
+
+            <div class="header__top">
+                <div class="header__logo">
+                    <a class="site-logo" href="/">
+                        <img src="/public/images/logo.svg" alt="Homepage">
+                    </a>
+                </div>
+
+                <!-- toggles -->
+                <a href="#0" class="header__menu-toggle"><span>Menu</span></a>
+
+            </div> <!-- end header__top -->
+
+            <nav class="header__nav-wrap">
+
+                <ul class="header__nav">
+                    <li class="current"><a href="/" title="">Home</a></li>
+                    <li><a href="/posts" title="">Blog Posts</a></li>
+                    <li class="has-children">
+                        <a href="#0" title="">Categories</a>
+                        <ul class="sub-menu">
+                        <li><a href="/category/Disciplines">Disciplines</a></li>
+                        <li><a href="/category/Distributed%20Systems">Distributed Systems</a></li>
+                        <li><a href="/category/My%20Projects">My Projects</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="/contact" title="">Contact Me</a></li>
+                </ul> <!-- end header__nav -->
+
+                <ul class="header__social">
+                    <li class="ss-github">
+                        <a href="https://github.com/etzelm" target="_blank">
+                            <span class="screen-reader-text">GitHub</span>
+                        </a>
+                    </li>
+                    <li class="ss-linkedin">
+                        <a href="https://www.linkedin.com/in/etzelm/" target="_blank">
+                            <span class="screen-reader-text">LinkedIn</span>
+                        </a>
+                    </li>
+                    <li class="ss-email">
+                        <a href="mailto:etzelm@live.com">
+                            <span class="screen-reader-text">Email</span>
+                        </a>
+                    </li>
+                </ul>
+
+            </nav> <!-- end header__nav-wrap -->
+
+            
+
+        </header> <!-- end s-header -->

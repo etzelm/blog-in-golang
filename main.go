@@ -8,9 +8,6 @@ import (
 	"golang.org/x/crypto/acme/autocert"
 )
 
-// IP_PORT is this computers IP address
-var IP_PORT string
-
 func main() {
 	log.Info("Server is starting...")
 
@@ -27,14 +24,16 @@ func main() {
 
 	log.WithField("server", httpsServer).Info("Default Gin server created.")
 	log.Info(autotls.RunWithManager(httpsServer, &m))
+	//httpsServer.Run("127.0.0.1:80")
 }
 
 // LoadRoutes does exactly that... loads all routes for the server.
 func LoadRoutes(server *gin.Engine) *gin.Engine {
-	server.GET("/", LandingPage)
-	server.GET("/about", AboutPage)
-	server.GET("/feedback", FeedbackPage)
-	server.POST("/feedback", FeedbackResponse)
-	server.GET("/article/:article_id", getArticle)
+	server.GET("/", AboutPage)
+	server.GET("/posts", PostPage)
+	server.GET("/contact", ContactPage)
+	server.POST("/contact", ContactResponse)
+	server.GET("/article/:article_id", ArticlePage)
+	server.GET("/category/:category", CategoryPage)
 	return server
 }

@@ -1,0 +1,63 @@
+<!--contact.html-->
+
+<!--Embed the header.html template at this location-->
+{{ template "header.html" .}}
+
+        <!-- site content
+        ================================================== -->
+        <div class="s-content content">
+            <main class="row content__page">
+                
+                <section class="column large-full entry format-standard">
+
+                    <div class="media-wrap">
+                        <div>
+                            <img src="/public/images/thumbs/contact/contact-1000.jpg" srcset="/public/images/thumbs/contact/contact-2000.jpg 2000w, 
+                                      /public/images/thumbs/contact/contact-1000.jpg 1000w, 
+                                      /public/images/thumbs/contact/contact-500.jpg 500w" sizes="(max-width: 2000px) 100vw, 2000px" alt="">
+                        </div>
+                    </div>
+
+                    <div class="content__page-header">
+                        <h1 class="display-1">
+                        Get In Touch.
+                        </h1>
+                    </div> <!-- end content__page-header -->
+        
+                    <form name="contactForm" id="contactForm" method="post" action="/contact" autocomplete="off">
+                        <fieldset>
+    
+                            <div class="form-field">
+                                <input name="name" id="cName" class="full-width" placeholder="Your Name (required)" value="" type="text" maxlength="40" required>
+                            </div>
+    
+                            <div class="form-field">
+                                <input name="email" id="cEmail" class="full-width" placeholder="Your Email (required)" value="" type="text" maxlength="40" required>
+                            </div>
+    
+                            <div class="form-field">
+                                <input name="website" id="cWebsite" class="full-width" placeholder="Website (optional)" value="" type="text">
+                            </div>
+    
+                            <div class="message form-field">
+                                <textarea name="message" id="cMessage" class="full-width" placeholder="Your Message (required)" required></textarea>
+                            </div>
+
+                            <label class="add-bottom">
+                                <input type="checkbox" name="robot" value="1">
+                                <span class="label-text">I'm Not A Robot</span>
+                            </label>
+    
+                            <input name="submit" id="submit" class="btn btn--primary btn-wide btn--large full-width" value="Send Message" type="submit">
+    
+                        </fieldset>
+                    </form> <!-- end form -->
+
+                </section>
+
+            </main>
+
+        </div> <!-- end s-content -->
+
+<!--Embed the footer.html template at this location-->
+{{ template "footer.html" .}}

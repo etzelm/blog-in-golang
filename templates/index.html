@@ -2,25 +2,84 @@
 
 <!--Embed the header.html template at this location-->
 {{ template "header.html" .}}
-<br><br><br><br><br>
 
-{{range .payload }}
-<div class="panel panel-success">
-    <div class="panel-heading">
-        <!--Create the link for the article based on its ID-->
-        <a style="color:MediumSeaGreen;" href="/article/{{.ID}}">
-        <!--Display the title of the article -->
-        <h2 class="panel-title">{{.Title}}</h2></a>
-    </div>
-    <div class="panel-body">
-        <!--Display the time created of the article-->
-        <p><u style="color:#A619FF;">Date Created:</u>&emsp;{{.Created}}</p>
-        <!--Display the last time modified of the article-->
-        <p><u style="color:#A619FF;">Last Modified:</u>&emsp;{{.Modified}}</p>
-        <!--Display the content of the article-->
-        <p>{{.Blurb}}</p>
-    </div>
-</div>
-{{end}}
+            <div class="s-content">
 
+            {{ if .IsCategory }}
 
+            <header class="listing-header">
+                <h1 class="h2">Category: {{.category}}</h1>
+            </header>
+
+            {{end}}
+            
+            <div class="masonry-wrap">
+
+                <div class="masonry">
+    
+                    <div class="grid-sizer"></div>
+    
+                    {{range .payload }}
+
+                    {{ if eq .PostType "standard" }}
+
+                    <article class="masonry__brick entry format-{{.PostType}} animate-this">
+                            
+                        {{.PanelPicture}}
+        
+                        <div class="entry__text">
+                            <div class="entry__header">
+    
+                                <h2 class="entry__title"><a href="/article/{{.PostID}}">{{.PostTitle}}</a></h2>
+                                <div class="entry__meta">
+                                    <span class="entry__meta">
+                                        Author: {{.Author}}
+                                    </span><br>
+                                    <span class="entry__meta-date">
+                                        Last Modified: {{.ModifiedDate}}
+                                    </span><br>
+                                    <span class="entry__meta-cat">
+                                        {{range .Categories }}
+
+                                        <a style="color:#9C6708;" href="/category/{{.Category}}">{{.Category}}</a>
+
+                                        {{end}}
+                                    </span>
+                                </div>
+                                
+                            </div>
+                            <div class="entry__excerpt">
+                                <p>
+                                {{.Excerpt}}
+                                </p>
+                            </div>
+                        </div>
+        
+                    </article> <!-- end article -->
+
+                    {{ else if eq .PostType "quote" }}
+
+                    <article class="masonry__brick entry format-{{.PostType}} animate-this">
+                            
+                        <div class="entry__thumb">
+                            <blockquote>
+                                <p>{{.Excerpt}}</p>
+    
+                                <cite>{{.Author}}</cite>
+                            </blockquote>
+                        </div>   
+        
+                    </article> <!-- end article -->
+                    
+                    {{end}}
+
+                    {{end}}
+    
+                </div> <!-- end masonry -->
+
+            </div> <!-- end masonry-wrap -->
+
+        </div> <!-- end s-content -->
+
+<!--Embed the footer.html template at this location-->
+{{ template "footer.html" .}}

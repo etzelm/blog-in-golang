@@ -17,8 +17,9 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func LandingPage(c *gin.Context) {
-	articles := getAllArticles()
+//PostPage : Gets All Article Panels and Dynamically Displays index.html Template
+func PostPage(c *gin.Context) {
+	panels := getArticlePanels()
 
 	// Call the HTML method of the Context to render a template
 	c.HTML(
@@ -28,101 +29,229 @@ func LandingPage(c *gin.Context) {
 		"index.html",
 		// Pass the data that the page uses
 		gin.H{
-			"title":   "Home Page",
-			"payload": articles,
+			"title":   "Blog Posts",
+			"payload": panels,
 		},
 	)
 
 }
 
-func AboutPage(c *gin.Context) {
-	if article, err := getArticleByID(0); err == nil {
+//CategoryPage : Gets Category Article Panels and Dynamically Displays index.html Template
+func CategoryPage(c *gin.Context) {
+	if category := c.Param("category"); category != "" {
+		panels := getCategoryPageArticlePanels(category)
+
+		if len(panels) <= 0 {
+			// If an invalid category is specified in the URL, abort with an error
+			c.HTML(
+				// Set the HTTP status to 404 (Not Found)
+				http.StatusNotFound,
+				// Use the error.html template
+				"error.html",
+				// Pass the data that the page uses
+				gin.H{
+					"title": "404 Server Error",
+					"error": "Please provide a valid category",
+				},
+			)
+
+			return
+		}
+
 		// Call the HTML method of the Context to render a template
 		c.HTML(
 			// Set the HTTP status to 200 (OK)
 			http.StatusOK,
 			// Use the index.html template
-			"article.html",
+			"index.html",
 			// Pass the data that the page uses
 			gin.H{
-				"title": article.Title,
+				"payload":    panels,
+				"category":   category,
+				"title":      category,
+				"IsCategory": true,
 			},
 		)
-		//Write Stored HTML from mongoDB to article.html
-		c.Writer.Write([]byte(article.Content))
+
 	} else {
-		// If the article is not found, abort with an error
-		c.AbortWithError(http.StatusNotFound, err)
+		// If an invalid category is specified in the URL, abort with an error
+		c.HTML(
+			// Set the HTTP status to 404 (Not Found)
+			http.StatusNotFound,
+			// Use the error.html template
+			"error.html",
+			// Pass the data that the page uses
+			gin.H{
+				"title": "404 Server Error",
+				"error": "Please provide a valid category",
+			},
+		)
+	}
+
+}
+
+//ArticlePage : Queries DynamoDB for a Specific Article and Dynamically Displays article.html
+func ArticlePage(c *gin.Context) {
+	// Check if the article ID is valid
+	if articleID, err := strconv.Atoi(c.Param("article_id")); err == nil {
+		// Check if the article exists
+		if article, err := getArticleByID(articleID); err == nil {
+			// Check the post type for appropriateness
+			if article.PostType != "quote" && article.PostType != "" {
+				// Call the HTML method of the Context to render a template
+				c.HTML(
+					// Set the HTTP status to 200 (OK)
+					http.StatusOK,
+					// Use the index.html template
+					"article.html",
+					// Pass the data that the page uses
+					gin.H{
+						"title":   article.ShortTitle,
+						"payload": article,
+					},
+				)
+			} else {
+				// If the article is not appropriate, abort with an error
+				c.HTML(
+					// Set the HTTP status to 403 (Forbidden)
+					http.StatusForbidden,
+					// Use the error.html template
+					"error.html",
+					// Pass the data that the page uses
+					gin.H{
+						"title": "403 Server Error",
+						"error": "Please provide a valid Article ID.",
+					},
+				)
+			}
+		} else {
+			// If the article is not found, abort with an error
+			c.HTML(
+				// Set the HTTP status to 404 (Not Found)
+				http.StatusNotFound,
+				// Use the error.html template
+				"error.html",
+				// Pass the data that the page uses
+				gin.H{
+					"title": "404 Server Error",
+					"error": "Please provide a valid Article ID.",
+				},
+			)
+		}
+	} else {
+		// If an invalid article ID is specified in the URL, abort with an error
+		c.HTML(
+			// Set the HTTP status to 404 (Not Found)
+			http.StatusNotFound,
+			// Use the error.html template
+			"error.html",
+			// Pass the data that the page uses
+			gin.H{
+				"title": "404 Server Error",
+				"error": "Please provide a valid Article ID.",
+			},
+		)
 	}
 }
 
-func FeedbackPage(c *gin.Context) {
-	feedbacks := getAllFeedback()
+//AboutPage : Displays the static about.html page
+func AboutPage(c *gin.Context) {
+	// Call the HTML method of the Context to render a template
+	c.HTML(
+		// Set the HTTP status to 200 (OK)
+		http.StatusOK,
+		// Use the about.html template
+		"about.html",
+		// Pass the data that the page uses
+		gin.H{
+			"title": "Mitchell Etzel",
+		},
+	)
+}
 
+//ContactPage : Displays the static contact.html page for GET requests
+func ContactPage(c *gin.Context) {
 	// Call the HTML method of the Context to render a template
 	c.HTML(
 		// Set the HTTP status to 200 (OK)
 		http.StatusOK,
 		// Use the index.html template
-		"feedback.html",
+		"contact.html",
 		// Pass the data that the page uses
 		gin.H{
-			"title":   "Leave Feedback",
-			"payload": feedbacks,
+			"title": "Contact Me",
 		},
 	)
 }
 
-func FeedbackResponse(c *gin.Context) {
-	var form FeedbackForm
+//ContactResponse : Saves the user's data in DynamoDB and displays static response.html
+func ContactResponse(c *gin.Context) {
+	var form ContactForm
 	c.Bind(&form)
 
-	name := template.HTMLEscapeString(form.Name)
-	feedback := template.HTMLEscapeString(form.Feedback)
-	if m, _ := regexp.MatchString("^[ a-zA-Z0-9]+( +[a-zA-Z0-9]+)*$", name); !m {
-		c.AbortWithStatusJSON(400, "Name should contain only alphanumeric characters and spaces!")
+	if form.RobotCheck != 1 {
+		c.HTML(
+			// Set the HTTP status to 400 (Bad Request)
+			http.StatusBadRequest,
+			// Use the error.html template
+			"error.html",
+			// Pass the data that the page uses
+			gin.H{
+				"title": "400 Server Error",
+				"error": "Don't be a robot please!",
+			},
+		)
 		return
 	}
-	log.Info("Name: ", name)
-	log.Info("Feedback: ", feedback)
 
-	if form.X == 1 {
-		log.Info("Public")
-	} else {
-		log.Info("Private")
+	name := template.HTMLEscapeString(form.Name)
+	if m, _ := regexp.MatchString("^[ a-zA-Z0-9]+( +[a-zA-Z0-9]+)*$", name); !m {
+		c.HTML(
+			// Set the HTTP status to 400 (Bad Request)
+			http.StatusBadRequest,
+			// Use the error.html template
+			"error.html",
+			// Pass the data that the page uses
+			gin.H{
+				"title": "400 Server Error",
+				"error": "Name should contain only alphanumeric characters and spaces!",
+			},
+		)
+		return
 	}
 
 	aid := os.Getenv("AWS_ACCESS_KEY_ID")
 	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
-	var my_credentials = credentials.NewStaticCredentials(aid, key, "")
+	var myCredentials = credentials.NewStaticCredentials(aid, key, "")
 
 	sess, err := session.NewSession(&aws.Config{
-		Credentials: my_credentials,
+		Credentials: myCredentials,
 		Region:      aws.String("us-west-1"),
-		Endpoint:    aws.String("http://localhost:8000"),
+		//Endpoint:    aws.String("http://localhost:8000"),
 	})
 	if err != nil {
 		log.Println(err)
+		c.HTML(
+			// Set the HTTP status to 400 (Bad Request)
+			http.StatusBadRequest,
+			// Use the error.html template
+			"error.html",
+			// Pass the data that the page uses
+			gin.H{
+				"title": "400 Server Error",
+				"error": err.Error(),
+			},
+		)
 		return
 	}
 
 	dbSvc := dynamodb.New(sess)
 
-	info := FeedbackInfo{
-		Feedback: feedback,
-		X:        form.X,
-	}
-
-	item := FeedbackItem{
-		Name: name,
-		Info: info,
-	}
-
-	av, err := dynamodbattribute.MarshalMap(item)
+	av, err := dynamodbattribute.MarshalMap(form)
 
 	input := &dynamodb.PutItemInput{
 		Item:      av,
-		TableName: aws.String("Feedback"),
+		TableName: aws.String("Contact"),
 	}
 
 	_, err = dbSvc.PutItem(input)
@@ -130,10 +259,19 @@ func FeedbackResponse(c *gin.Context) {
 	if err != nil {
 		fmt.Println("Got error calling PutItem:")
 		fmt.Println(err.Error())
-		os.Exit(1)
+		c.HTML(
+			// Set the HTTP status to 400 (Bad Request)
+			http.StatusBadRequest,
+			// Use the error.html template
+			"error.html",
+			// Pass the data that the page uses
+			gin.H{
+				"title": "400 Server Error",
+				"error": err.Error(),
+			},
+		)
+		return
 	}
-
-	feedbacks := getAllFeedback()
 
 	// Call the HTML method of the Context to render a template
 	c.HTML(
@@ -143,36 +281,7 @@ func FeedbackResponse(c *gin.Context) {
 		"response.html",
 		// Pass the data that the page uses
 		gin.H{
-			"title":   "Thank You!",
-			"payload": feedbacks,
+			"title": "Thank You!",
 		},
 	)
-}
-
-func getArticle(c *gin.Context) {
-	// Check if the article ID is valid
-	if articleID, err := strconv.Atoi(c.Param("article_id")); err == nil {
-		// Check if the article exists
-		if article, err := getArticleByID(articleID); err == nil {
-			// Call the HTML method of the Context to render a template
-			c.HTML(
-				// Set the HTTP status to 200 (OK)
-				http.StatusOK,
-				// Use the index.html template
-				"article.html",
-				// Pass the data that the page uses
-				gin.H{
-					"title": article.Title,
-				},
-			)
-			//Write Stored HTML from mongoDB to article.html
-			c.Writer.Write([]byte(article.Content))
-		} else {
-			// If the article is not found, abort with an error
-			c.AbortWithError(http.StatusNotFound, err)
-		}
-	} else {
-		// If an invalid article ID is specified in the URL, abort with an error
-		c.AbortWithStatus(http.StatusNotFound)
-	}
 }
