@@ -61,7 +61,7 @@ func graphStore() {
 
 	input := &dynamodb.PutItemInput{
 		Item:      av,
-		TableName: aws.String("New-Articles"),
+		TableName: aws.String("Live-Articles"),
 	}
 
 	_, err = dbSvc.PutItem(input)

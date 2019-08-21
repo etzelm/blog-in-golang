@@ -45,16 +45,16 @@ func googleSRE() {
 		Author:         "<a style=\"color:#9C6708;\" href=\"/\">Mitchell Etzel</a>",
 		Categories:     "Disciplines,Distributed Systems",
 		CreatedDate:    "April 11th, 2018",
-		Excerpt: "Paying homage to who many consider to be at the forefront of distributed systems " +
-			"through review and reflection on the O'Reilly book, <i><a style=\"color:#9C6708;\" " +
+		Excerpt: "If you've ever smelled bad SCRUM you're going to want to learn how to internalize " +
+			"these important lessons I've identified in the O'Reilly book, <i><a style=\"color:#9C6708;\" " +
 			"href=\"https://landing.google.com/sre/book.html\" target=\"_blank\">Site Reliability Engineering: " +
 			"How Google Runs Production Systems</a></i>.",
 		HTMLHold:     hh,
-		ModifiedDate: "August 10th, 2019",
+		ModifiedDate: "August 20th, 2019",
 		PanelPicture: pp,
 		PostID:       0,
-		PostTitle:    "Review & Reflection on Google's Site Reliabiliy Engineering",
-		ShortTitle:   "Reflection of Google's SRE",
+		PostTitle:    "How To Internalize Site Reliability Engineering's Top 3 Golden Lessons",
+		ShortTitle:   "SRE Internalization - Mitchell Etzel",
 		PostType:     "standard",
 	}
 
@@ -62,7 +62,7 @@ func googleSRE() {
 
 	input := &dynamodb.PutItemInput{
 		Item:      av,
-		TableName: aws.String("New-Articles"),
+		TableName: aws.String("Live-Articles"),
 	}
 
 	_, err = dbSvc.PutItem(input)

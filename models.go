@@ -94,7 +94,7 @@ func getArticlePanels() []Article {
 		ExpressionAttributeValues: expr.Values(),
 		FilterExpression:          expr.Filter(),
 		ProjectionExpression:      expr.Projection(),
-		TableName:                 aws.String("New-Articles"),
+		TableName:                 aws.String("Live-Articles"),
 	}
 
 	// Make the DynamoDB Query API call
@@ -169,7 +169,7 @@ func getCategoryPageArticlePanels(category string) []Article {
 		ExpressionAttributeValues: expr.Values(),
 		FilterExpression:          expr.Filter(),
 		ProjectionExpression:      expr.Projection(),
-		TableName:                 aws.String("New-Articles"),
+		TableName:                 aws.String("Live-Articles"),
 	}
 
 	// Make the DynamoDB Query API call
@@ -229,7 +229,7 @@ func getArticleByID(id int) (*Article, error) {
 	dbSvc := dynamodb.New(sess)
 
 	result, err := dbSvc.GetItem(&dynamodb.GetItemInput{
-		TableName: aws.String("New-Articles"),
+		TableName: aws.String("Live-Articles"),
 		Key: map[string]*dynamodb.AttributeValue{
 			"post-id": {
 				N: aws.String(strconv.Itoa(id)),

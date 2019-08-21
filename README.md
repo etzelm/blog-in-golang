@@ -1,5 +1,5 @@
 # blog-in-golang
-Starting a blog using golang.
+Started a professional blog using golang.
 
 Published: https://mitchelletzel.com
 
