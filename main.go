@@ -2,10 +2,9 @@ package main
 
 import (
 	"github.com/gin-contrib/static"
-	"github.com/gin-gonic/autotls"
+	"github.com/caddyserver/certmagic"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
-	"golang.org/x/crypto/acme/autocert"
 )
 
 func main() {
@@ -16,14 +15,13 @@ func main() {
 	httpsServer.LoadHTMLGlob("templates/*")
 	httpsServer.Use(static.Serve("/public", static.LocalFile("./public", true)))
 	LoadRoutes(httpsServer)
-	m := autocert.Manager{
-		Prompt:     autocert.AcceptTOS,
-		HostPolicy: autocert.HostWhitelist("mitchelletzel.com"),
-		Cache:      autocert.DirCache("certs"),
-	}
 
 	log.WithField("server", httpsServer).Info("Default Gin server created.")
-	log.Info(autotls.RunWithManager(httpsServer, &m))
+	
+	certmagic.DefaultACME.Agreed = true
+	certmagic.DefaultACME.Email = "etzelm@live.com"
+	log.Info(certmagic.HTTPS([]string{"mitchelletzel.com"}, httpsServer))
+
 	//httpsServer.Run("127.0.0.1:80")
 }
 

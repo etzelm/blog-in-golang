@@ -1,10 +1,7 @@
-FROM golang:1.9.2-alpine3.7
+FROM golang:1.14.2-alpine3.11
 
 # Need git for dep
 RUN apk add --no-cache git
-
-# Need dep to get dependencies
-RUN go get github.com/golang/dep/cmd/dep
 
 # Copy current dir (outside docker) to the proper directory (inside docker)
 COPY . src/github.com/etzelm/blog-in-golang/
@@ -13,7 +10,7 @@ COPY . src/github.com/etzelm/blog-in-golang/
 WORKDIR src/github.com/etzelm/blog-in-golang/
 
 # Get dependencies
-RUN dep ensure
+RUN go mod download
 
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o blog-in-golang .
 
