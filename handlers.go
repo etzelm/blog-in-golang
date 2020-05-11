@@ -285,3 +285,33 @@ func ContactResponse(c *gin.Context) {
 		},
 	)
 }
+
+//ListingsAPI : Gets All Realtor Listings
+func ListingsAPI(c *gin.Context) {
+	listings := getRealtorListings()
+
+	// Call the JSON method of the Context to return the results
+	c.JSON(200, listings)
+
+}
+
+//ListingAPI : Gets A Realtor Listing
+func ListingAPI(c *gin.Context) {
+
+	if listing := c.Param("listing"); listing != "" {
+
+		card := getRealtorListing(listing)
+
+		// Call the JSON method of the Context to return the results
+		c.JSON(200, card)
+
+	} else {
+
+		empty := []byte(``)
+
+		// Call the JSON method of the Context to 404
+		c.JSON(404, empty)
+
+	}
+
+}

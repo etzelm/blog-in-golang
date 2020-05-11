@@ -1,0 +1,27 @@
+{
+    "Bathrooms": "1",
+    "Bedrooms": "3",
+    "City": "Bend",
+    "Date Listed": "1559161257428",
+    "deleted": "false",
+    "Description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+    "Garage Size": "1 car",
+    "Last Modified": "1589161257428",
+    "List Photo": "https://realtor-site-images.s3-us-west-1.amazonaws.com/full-house.jpg",
+    "Lot Size": "1600 sqft",
+    "MLS": "1234567890",
+    "Neighborhood": "Wells Acres",
+    "Photo Array": [
+      "https://realtor-site-images.s3-us-west-1.amazonaws.com/full-house.jpg",
+      "https://realtor-site-images.s3-us-west-1.amazonaws.com/inside-one.jpeg",
+      "https://realtor-site-images.s3-us-west-1.amazonaws.com/inside-two.jpg",
+      "https://realtor-site-images.s3-us-west-1.amazonaws.com/inside-three.jpg",
+      "https://realtor-site-images.s3-us-west-1.amazonaws.com/inside-four.jpg"
+    ],
+    "Sales Price": "503,000",
+    "Square Feet": "1200 sqft",
+    "State": "OR",
+    "Street1": "123 Real Avenue",
+    "Street2": "Apt. 56",
+    "Zip Code": "97701"
+  }

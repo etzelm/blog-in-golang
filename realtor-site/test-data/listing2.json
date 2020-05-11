@@ -1,0 +1,27 @@
+{
+    "Bathrooms": "2.5",
+    "Bedrooms": "4",
+    "City": "Bend",
+    "Date Listed": "1544151257428",
+    "deleted": "false",
+    "Description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+    "Garage Size": "3 car",
+    "Last Modified": "1589151257428",
+    "List Photo": "https://realtor-site-images.s3-us-west-1.amazonaws.com/new-house.jpg",
+    "Lot Size": "3300 sqft",
+    "MLS": "1234567891",
+    "Neighborhood": "Farm Bureau",
+    "Photo Array": [
+      "https://realtor-site-images.s3-us-west-1.amazonaws.com/new-house.jpg",
+      "https://realtor-site-images.s3-us-west-1.amazonaws.com/inside-one.jpeg",
+      "https://realtor-site-images.s3-us-west-1.amazonaws.com/inside-two.jpg",
+      "https://realtor-site-images.s3-us-west-1.amazonaws.com/inside-three.jpg",
+      "https://realtor-site-images.s3-us-west-1.amazonaws.com/inside-four.jpg"
+    ],
+    "Sales Price": "665,000",
+    "Square Feet": "2100 sqft",
+    "State": "OR",
+    "Street1": "312 Fake Boulevard",
+    "Street2": "*",
+    "Zip Code": "97702"
+  }
