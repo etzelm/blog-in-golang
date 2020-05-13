@@ -20,14 +20,14 @@ export default class TileDeck extends React.Component {
         return (
             <div>
 
-                <br/><br/><br/>
+                <br/>
                 <CardColumns style={columnStyle} className="card-columns">
                     
                     {
 
                         this.props.cards
                                     .sort((a, b) => a['Last Modified'] < b['Last Modified'] ? 1 : -1)
-                                    .map((card) => (<Tile key={card.MLS} card={card} />))
+                                    .map((card) => (<Tile key={card.MLS} card={card} user={this.props.user}/>))
 
                     }
 

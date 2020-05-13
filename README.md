@@ -2,6 +2,7 @@
 Started a professional blog using golang.
 
 Published: https://blog.mitchelletzel.com
+
 Sample React App: https://blog.mitchelletzel.com/realtor
 
 Sample Local Test Commands:

@@ -84,6 +84,8 @@ type Listing struct {
 	SquareFeet   string   `json:"Square Feet"`
 	LotSize      string   `json:"Lot Size"`
 	Description  string   `json:"Description"`
+	User         string   `json:"User"`
+	Deleted      string   `json:"deleted"`
 }
 
 // Return a list of all the article panels for the Front Page
@@ -309,14 +311,15 @@ func getRealtorListings() []Listing {
 	}
 	dbSvc := dynamodb.New(sess)
 
-	filt := expression.Name("deleted").NotEqual(expression.Value("true"))
+	filt := expression.Name("deleted").NotEqual(expression.Value("anything"))
 
 	proj := expression.NamesList(expression.Name("MLS"), expression.Name("Street1"), expression.Name("Street2"),
-		expression.Name("City"), expression.Name("State"), expression.Name("Zip Code"),
+		expression.Name("City"), expression.Name("State"), expression.Name("Zip Code"), expression.Name("User"),
 		expression.Name("Neighborhood"), expression.Name("Sales Price"), expression.Name("Date Listed"),
 		expression.Name("Last Modified"), expression.Name("Bedrooms"), expression.Name("List Photo"),
 		expression.Name("Photo Array"), expression.Name("Bathrooms"), expression.Name("Garage Size"),
-		expression.Name("Square Feet"), expression.Name("Lot Size"), expression.Name("Description"))
+		expression.Name("Square Feet"), expression.Name("Lot Size"), expression.Name("Description"),
+		expression.Name("deleted"))
 
 	expr, err := expression.NewBuilder().WithFilter(filt).WithProjection(proj).Build()
 
@@ -374,11 +377,12 @@ func getRealtorListing(listing string) []Listing {
 	filt := expression.Name("MLS").Equal(expression.Value(listing))
 
 	proj := expression.NamesList(expression.Name("MLS"), expression.Name("Street1"), expression.Name("Street2"),
-		expression.Name("City"), expression.Name("State"), expression.Name("Zip Code"),
+		expression.Name("City"), expression.Name("State"), expression.Name("Zip Code"), expression.Name("User"),
 		expression.Name("Neighborhood"), expression.Name("Sales Price"), expression.Name("Date Listed"),
 		expression.Name("Last Modified"), expression.Name("Bedrooms"), expression.Name("List Photo"),
 		expression.Name("Photo Array"), expression.Name("Bathrooms"), expression.Name("Garage Size"),
-		expression.Name("Square Feet"), expression.Name("Lot Size"), expression.Name("Description"))
+		expression.Name("Square Feet"), expression.Name("Lot Size"), expression.Name("Description"),
+		expression.Name("deleted"))
 
 	expr, err := expression.NewBuilder().WithFilter(filt).WithProjection(proj).Build()
 

@@ -4,7 +4,7 @@ FROM golang:1.14.2-alpine3.11
 RUN apk add --no-cache git
 
 # Need npm for react
-RUN apk add --update npm
+# RUN apk add --update npm
 
 # Copy current dir (outside docker) to the proper directory (inside docker)
 COPY . src/github.com/etzelm/blog-in-golang/

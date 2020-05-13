@@ -15,7 +15,16 @@ export default class Home extends React.Component {
         const response = await fetch('/listings');
         const data = await response.json();
         console.log(data)
-        this.setState({ cards: data })
+
+        var listings = [];
+        for (var it=0; it<data.length; it++) {
+            const card = data[it];
+            if (card['deleted'] === "false") {
+                listings.push(card);
+            }
+        }
+
+        this.setState({ cards: listings })
 
     }
 
@@ -29,6 +38,7 @@ export default class Home extends React.Component {
 
         return (
             <div style={homeStyle}>
+                <br/><br/>
                 <TileDeck cards={this.state.cards}/>
             </div>
         );

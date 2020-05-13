@@ -51,7 +51,7 @@ export default class Listing extends React.Component {
             width: '70vw',
             height: '25vw',
             margin: 'auto',
-            paddingBottom: '7vw',
+            paddingBottom: '12vw',
             borderStyle: "solid",
             borderWidth: "8px"
         };
@@ -96,21 +96,25 @@ export default class Listing extends React.Component {
                 <br/><br/><br/>
                 <Card style={cardStyle}>
 
-                    <Carousel style={carouselStyle}>
-                        {
-                            photos && 
-                            photos.map((photo) => (
-                                <Carousel.Item style={itemStyle}>
-                                    <img
-                                    className="d-block w-100"
-                                    src={photo}
-                                    />
-                                </Carousel.Item>
-                            ))
-                        }  
-                    </Carousel>
+                    <p style={{ whiteSpace: 'pre-wrap' }}>
+                        <Carousel style={carouselStyle}>
+                            {
+                                photos && 
+                                photos.map((photo) => (
+                                    <Carousel.Item style={itemStyle}>
+                                        <img
+                                        className="d-block w-100"
+                                        src={photo}
+                                        alt={""}
+                                        />
+                                    </Carousel.Item>
+                                ))
+                            }  
+                        </Carousel>
+                        {'\u00A0'}{'\u000A'}
+                    </p>
 
-                    <br/><br/><br/>
+                    <br/>
                     <Card>
                         <Card.Body>
                         <Card.Title>{addr}</Card.Title>

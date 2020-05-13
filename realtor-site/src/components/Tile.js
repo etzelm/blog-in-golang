@@ -1,14 +1,16 @@
 import React from "react";
 import Card from 'react-bootstrap/Card'
+import Button from 'react-bootstrap/Button'
 
 export default class Tile extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            card: {}
+            card: this.props == null ? null : this.props.card
         };
         this.timeDifference = this.timeDifference.bind(this);
+        this.onStateChange = this.onStateChange.bind(this);
     }
 
     timeDifference(current, previous) {
@@ -46,6 +48,35 @@ export default class Tile extends React.Component {
         }
     }
 
+    async onStateChange(event) {
+        event.preventDefault()
+        console.log("submitted");
+
+        var newCard = this.props.card;
+        if ( this.props.card['deleted'] === "true" ) {
+            newCard['deleted'] = "false";
+        } else {
+            newCard['deleted'] = "true";
+        }
+
+        const rawResponse = await fetch('/listings/add/HowMuchDoesSecurityCost', {
+            method: 'POST',
+            headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(newCard)
+        });
+        const content = await rawResponse.json();
+
+        console.log(content);
+
+        this.setState({
+            card: newCard,
+        });
+
+    }
+
     render() {
         const imgStyle = {
             width: '100%', 
@@ -80,6 +111,23 @@ export default class Tile extends React.Component {
                         <Card.Text>{price}</Card.Text>
                         <Card.Text>{desc2}</Card.Text>
                         <Card.Text>{desc1}</Card.Text>
+                        {
+                            this.props.user &&
+                            <div>
+                                <a style={linkStyle} href={"/realtor/my-listing?MLS="+this.props.card['MLS']}>
+                                    <Button variant="primary">Edit Listing</Button>
+                                </a>
+                                {'       '}
+                                {
+                                    this.state.card["deleted"] === "true" &&
+                                    <Button variant="primary" onClick={this.onStateChange}>Publish Listing</Button>
+                                }
+                                {
+                                    this.state.card["deleted"] === "false" &&
+                                    <Button variant="primary" onClick={this.onStateChange}>Remove Listing</Button>
+                                }
+                            </div>
+                        }
                     </Card.Body>
                     <Card.Footer>
                         <small className="text-muted">Last updated: {ago}</small>
