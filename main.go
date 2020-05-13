@@ -16,7 +16,10 @@ func main() {
 	httpsServer.Use(static.Serve("/public", static.LocalFile("./public", true)))
 	httpsServer.Use(static.Serve("/realtor", static.LocalFile("./realtor-site/build", true)))
 	httpsServer.Use(static.Serve("/realtor/new", static.LocalFile("./realtor-site/build", true)))
+	httpsServer.Use(static.Serve("/realtor/search", static.LocalFile("./realtor-site/build", true)))
 	httpsServer.Use(static.Serve("/realtor/listing", static.LocalFile("./realtor-site/build", true)))
+	httpsServer.Use(static.Serve("/realtor/my-listing", static.LocalFile("./realtor-site/build", true)))
+	httpsServer.Use(static.Serve("/realtor/my-listings", static.LocalFile("./realtor-site/build", true)))
 	LoadRoutes(httpsServer)
 
 	log.WithField("server", httpsServer).Info("Default Gin server created.")
@@ -38,5 +41,7 @@ func LoadRoutes(server *gin.Engine) *gin.Engine {
 	server.GET("/category/:category", CategoryPage)
 	server.GET("/listings", ListingsAPI)
 	server.GET("/listing/:listing", ListingAPI)
+	server.POST("/listings/add/:key", AddListing)
+	server.POST("/upload/image/:user", UploadImage)
 	return server
 }
