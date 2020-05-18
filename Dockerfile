@@ -28,7 +28,7 @@ FROM alpine:latest
 RUN apk --no-cache add ca-certificates
 WORKDIR /
 COPY --from=0 /go/src/github.com/etzelm/blog-in-golang/blog-in-golang .
-COPY --from=0 /go/src/github.com/etzelm/blog-in-golang/realtor-site/build/* /realtor-site/build/
+COPY --from=0 /go/src/github.com/etzelm/blog-in-golang/realtor/build/* /realtor/build/
 COPY . .
 CMD ["./blog-in-golang"]
 

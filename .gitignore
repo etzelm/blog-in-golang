@@ -3,4 +3,4 @@ dynamodb/
 .vscode/
 .ebextensions/
 *.sh
-realtor-site/node_modules/
+realtor/node_modules/

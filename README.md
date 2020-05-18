@@ -1,16 +1,16 @@
 # blog-in-golang
 Started a professional blog using golang.
 
-Published: https://app.mitchelletzel.com
+Published: https://mitchelletzel.com
 
-Sample React App: https://app.mitchelletzel.com/realtor
+Sample React App: https://mitchelletzel.com/realtor
 
 Sample Local Test Commands:
 
- * go run main.go models.go handlers.go
- * ../../../../bin/dep.exe ensure
+ * go run app.go
+ * go mod download
  * java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb
- * go run main.go graphStore.go googleSRE.go 1
+ * cd daemon && go run app.go 1
 
  Docker Helper Commands:
 
