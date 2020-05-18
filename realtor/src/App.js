@@ -39,6 +39,7 @@ class App extends React.Component {
 
       window.gapi.load('auth2', () => {
         this.auth2 = window.gapi.auth2.init({
+          client_id: 'ThisIsSupposedToBeAnId',
         })
   
         this.auth2.then(() => {
@@ -65,6 +66,7 @@ class App extends React.Component {
         var opts = {
           width: 100,
           height: 25,
+          client_id: 'ThisIsSupposedToBeAnId',
           onsuccess: successCallback
         }
         window.gapi.signin2.render('loginButton', opts)
@@ -108,6 +110,7 @@ class App extends React.Component {
   signOut() {
     window.gapi.load('auth2', () => {
       this.auth2 = window.gapi.auth2.init({
+        client_id: 'ThisIsSupposedToBeAnId',
       })
 
       this.auth2.signOut().then(this.auth2.disconnect().then(function () {
