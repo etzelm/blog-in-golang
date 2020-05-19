@@ -7,8 +7,8 @@ Sample React App: https://mitchelletzel.com/realtor
 
 Sample Local Test Commands:
 
- * go run app.go
  * go mod download
+ * go run app.go
  * java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb
  * cd daemon && go run app.go 1
 

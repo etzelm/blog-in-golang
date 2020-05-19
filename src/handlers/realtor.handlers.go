@@ -18,8 +18,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-//ListingsAPI : Gets All Realtor Listings
-func ListingsAPI(c *gin.Context) {
+//ListingsGETAPI : Gets All Realtor Listings
+func ListingsGETAPI(c *gin.Context) {
 	listings := models.GetRealtorListings()
 
 	// Call the JSON method of the Context to return the results
@@ -27,8 +27,8 @@ func ListingsAPI(c *gin.Context) {
 
 }
 
-//ListingAPI : Gets A Realtor Listing
-func ListingAPI(c *gin.Context) {
+//ListingGETAPI : Gets A Realtor Listing
+func ListingGETAPI(c *gin.Context) {
 
 	if listing := c.Param("listing"); listing != "" {
 
@@ -48,8 +48,8 @@ func ListingAPI(c *gin.Context) {
 
 }
 
-//AddListing : Saves the user's data in DynamoDB and displays static response.html
-func AddListing(c *gin.Context) {
+//ListingPOSTAPI : Saves the user's data in DynamoDB and displays static response.html
+func ListingPOSTAPI(c *gin.Context) {
 
 	if key := c.Param("key"); key == "HowMuchDoesSecurityCost" {
 
@@ -125,8 +125,8 @@ func AddListing(c *gin.Context) {
 
 }
 
-//UploadImage : Upload an image to S3
-func UploadImage(c *gin.Context) {
+//UploadImagePOSTAPI : Upload an image to S3
+func UploadImagePOSTAPI(c *gin.Context) {
 
 	if user := c.Param("user"); user != "" {
 
@@ -159,7 +159,7 @@ func UploadImage(c *gin.Context) {
 			fileType := http.DetectContentType(buffer)
 			path := "/media/" + user + "/" + file.Filename
 			params := &s3.PutObjectInput{
-				Bucket:        aws.String("realtor-site-images"),
+				Bucket:        aws.String("blog-in-golang"),
 				Key:           aws.String(path),
 				Body:          fileBytes,
 				ContentLength: aws.Int64(size),

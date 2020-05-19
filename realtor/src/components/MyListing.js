@@ -133,7 +133,7 @@ export default class MyListing extends React.Component {
 
     onListChange({ meta, file }, status) {
         console.log(status, meta, file) 
-        const sml = "https://realtor-site-images.s3-us-west-1.amazonaws.com/media/";
+        const sml = "https://files.mitchelletzel.com/media/";
         const path = `${sml}${this.state.user}/${meta.name}`;
         if (this.state.card == null) {
             this.setState({
@@ -164,7 +164,7 @@ export default class MyListing extends React.Component {
 
     onArrayChange({ meta, file }, status) {
         console.log(status, meta, file) 
-        const sml = "https://realtor-site-images.s3-us-west-1.amazonaws.com/media/";
+        const sml = "https://files.mitchelletzel.com/media/";
         const path = `${sml}${this.state.user}/${meta.name}`;
         if (this.state.card == null) {
             this.setState({

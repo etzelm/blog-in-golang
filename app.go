@@ -1,8 +1,12 @@
 package main
 
 import (
+	"time"
+
 	"github.com/caddyserver/certmagic"
 	"github.com/etzelm/blog-in-golang/src/handlers"
+	"github.com/gin-contrib/cache"
+	"github.com/gin-contrib/cache/persistence"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -21,7 +25,7 @@ func main() {
 
 	certmagic.DefaultACME.Agreed = true
 	certmagic.DefaultACME.Email = "etzelm@live.com"
-	log.Info(certmagic.HTTPS([]string{"mitchelletzel.com"}, httpServer))
+	log.Info(certmagic.HTTPS([]string{"server.mitchelletzel.com"}, httpServer))
 
 	//httpServer.Run("127.0.0.1:80")
 
@@ -41,15 +45,18 @@ func LoadStaticFolderRoutes(server *gin.Engine) *gin.Engine {
 
 // LoadServerRoutes does exactly that... loads all api routes for the server.
 func LoadServerRoutes(server *gin.Engine) *gin.Engine {
-	server.GET("/", handlers.AboutPage)
-	server.GET("/posts", handlers.PostPage)
-	server.GET("/contact", handlers.ContactPage)
+
+	store := persistence.NewInMemoryStore(24 * time.Hour)
+	server.GET("/", cache.CachePage(store, 7*24*time.Hour, handlers.AboutPage))
+	server.GET("/posts", cache.CachePage(store, 24*time.Hour, handlers.PostPage))
+	server.GET("/contact", cache.CachePage(store, 7*24*time.Hour, handlers.ContactPage))
 	server.POST("/contact", handlers.ContactResponse)
-	server.GET("/article/:article_id", handlers.ArticlePage)
-	server.GET("/category/:category", handlers.CategoryPage)
-	server.GET("/listing/:listing", handlers.ListingAPI)
-	server.GET("/listings", handlers.ListingsAPI)
-	server.POST("/listings/add/:key", handlers.AddListing)
-	server.POST("/upload/image/:user", handlers.UploadImage)
+	server.GET("/article/:article_id", cache.CachePage(store, 24*time.Hour, handlers.ArticlePage))
+	server.GET("/category/:category", cache.CachePage(store, 24*time.Hour, handlers.CategoryPage))
+	server.GET("/listing/:listing", handlers.ListingGETAPI)
+	server.GET("/listings", handlers.ListingsGETAPI)
+	server.POST("/listings/add/:key", handlers.ListingPOSTAPI)
+	server.POST("/upload/image/:user", handlers.UploadImagePOSTAPI)
 	return server
+
 }

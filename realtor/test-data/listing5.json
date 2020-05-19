@@ -7,16 +7,16 @@
     "Description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
     "Garage Size": "1.5 car",
     "Last Modified": "1588001257428",
-    "List Photo": "https://realtor-site-images.s3-us-west-1.amazonaws.com/log-house.jpg",
+    "List Photo": "https://files.mitchelletzel.com/log-house.jpg",
     "Lot Size": "1700 sqft",
     "MLS": "1234567894",
     "Neighborhood": "Wells Acres",
     "Photo Array": [
-      "https://realtor-site-images.s3-us-west-1.amazonaws.com/log-house.jpg",
-      "https://realtor-site-images.s3-us-west-1.amazonaws.com/inside-one.jpeg",
-      "https://realtor-site-images.s3-us-west-1.amazonaws.com/inside-two.jpg",
-      "https://realtor-site-images.s3-us-west-1.amazonaws.com/inside-three.jpg",
-      "https://realtor-site-images.s3-us-west-1.amazonaws.com/inside-four.jpg"
+      "https://files.mitchelletzel.com/log-house.jpg",
+      "https://files.mitchelletzel.com/inside-one.jpeg",
+      "https://files.mitchelletzel.com/inside-two.jpg",
+      "https://files.mitchelletzel.com/inside-three.jpg",
+      "https://files.mitchelletzel.com/inside-four.jpg"
     ],
     "Sales Price": "457,000",
     "Square Feet": "1400 sqft",
