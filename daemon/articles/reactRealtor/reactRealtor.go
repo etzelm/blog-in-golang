@@ -48,10 +48,10 @@ func ReactRealtor() {
 		Categories:     "Disciplines,Frontend Development,My Projects",
 		CreatedDate:    "May 17th, 2020",
 		Excerpt: "I recently had the opportunity to explore the combined " +
-			"capabilities of the Go, Gin, and React frameworks for an interview " +
+			"capabilities of the Go, Gin, and React libraries for an interview " +
 			"assessment. This post is about that journey.",
 		HTMLHold:     hh,
-		ModifiedDate: "May 17th, 2020",
+		ModifiedDate: "May 19th, 2020",
 		PanelPicture: pp,
 		PostID:       3,
 		PostTitle:    "Go & React: A 1, 2 Punch Combo",

@@ -192,6 +192,7 @@ func ContactPage(c *gin.Context) {
 
 //ContactResponse : Saves the user's data in DynamoDB and displays static response.html
 func ContactResponse(c *gin.Context) {
+	c.Header("Cache-Control", "no-cache")
 	var form models.ContactForm
 	c.Bind(&form)
 

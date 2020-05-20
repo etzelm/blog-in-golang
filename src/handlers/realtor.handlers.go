@@ -20,6 +20,7 @@ import (
 
 //ListingsGETAPI : Gets All Realtor Listings
 func ListingsGETAPI(c *gin.Context) {
+	c.Header("Cache-Control", "no-cache")
 	listings := models.GetRealtorListings()
 
 	// Call the JSON method of the Context to return the results
@@ -29,6 +30,7 @@ func ListingsGETAPI(c *gin.Context) {
 
 //ListingGETAPI : Gets A Realtor Listing
 func ListingGETAPI(c *gin.Context) {
+	c.Header("Cache-Control", "no-cache")
 
 	if listing := c.Param("listing"); listing != "" {
 
@@ -50,6 +52,7 @@ func ListingGETAPI(c *gin.Context) {
 
 //ListingPOSTAPI : Saves the user's data in DynamoDB and displays static response.html
 func ListingPOSTAPI(c *gin.Context) {
+	c.Header("Cache-Control", "no-cache")
 
 	if key := c.Param("key"); key == "HowMuchDoesSecurityCost" {
 
@@ -127,6 +130,7 @@ func ListingPOSTAPI(c *gin.Context) {
 
 //UploadImagePOSTAPI : Upload an image to S3
 func UploadImagePOSTAPI(c *gin.Context) {
+	c.Header("Cache-Control", "no-cache")
 
 	if user := c.Param("user"); user != "" {
 

@@ -3,18 +3,164 @@
                 <div class="entry__content">
 
                 <p class="lead drop-cap">
-                I recently had the opportunity to explore the combined capabilities of the Go, Gin, and React frameworks for an 
+                I recently had the opportunity to explore the combined capabilities of the Go, Gin, and React libraries for an 
                 interview assessment. This post is about that journey and the steps I've taken after its completion. If you 
                 want to see the actual React page that was written for the assessment, you can find it hosted on this website 
                 <i><a style="color:#9C6708;" href="/realtor" target="_blank">here</a></i>. You can also find the React source 
                 code located in the same repository that is used for this website <i><a style="color:#9C6708;" 
-                href="https://github.com/etzelm/blog-in-golang" target="_blank">here</a></i>. The basis for the assessment was 
-                that I had approximately 8 hours to write a website for a theoretical realtor company that allowed for two 
-                requirements, a secured user that could create, edit, and delete house listings and an unsecured search feature 
-                for listings. The listings were given a pre-defined set of fields, including photos. To accomplish this quickly 
-                I decided to use my pre-existing Go/Gin server to host a new React application that uses an S3 bucket for image 
-                hosting and DynamoDB table to store the necessary information for each listing. The state this article and the 
-                related website are in as you are reading this is not the same as it was when the assessment was turned in.
+                href="https://github.com/etzelm/blog-in-golang" target="_blank">here</a></i>. </p>
+                
+                <p>
+                The basis for the assessment was that I had approximately 8 hours to write a website for a theoretical realtor 
+                company that allowed for two requirements, a secured user that could create, edit, and delete house listings and 
+                an unsecured search feature for listings. The listings were given a pre-defined set of fields, including photos. 
+                To accomplish this quickly I decided to use my pre-existing Go/Gin server to host a new React application that 
+                uses an S3 bucket for image hosting and DynamoDB table to store the necessary information for each listing. The 
+                state this article and the related website are in as you are reading this is not the same as it was when the 
+                assessment was turned in.
                 </p>
+
+                <p>
+                    <img src="https://files.mitchelletzel.com/posts/RG/RG-article2-1000.png" 
+                         srcset="https://files.mitchelletzel.com/posts/RG/RG-article2-2000.png 2000w, 
+                                 https://files.mitchelletzel.com/posts/RG/RG-article2-1000.png 1000w, 
+                                 https://files.mitchelletzel.com/posts/RG/RG-article2-500.png 500w" 
+                                 sizes="(max-width: 2000px) 100vw, 2000px" alt=""/>
+                </p>
+
+                <h3>So Why These Libraries?</h3>
+    
+                <p>
+                At this point you're probably wondering why I chose these particular libraries over similar ones that are 
+                currently available. Largely this was decided by two factors, the first being my prior work experience with the 
+                company I was interviewing with; which let me know that they like to use the React library for frontend 
+                development. I should mention that the assessment made no mention of what tools to use to complete the 
+                requirements. The second factor was that since I already had a Go/Gin server set-up that could handle proper 
+                https traffic, I wanted to show case the skills necessary to maintain and improve such a setup. One of the nice 
+                things I had pre-existing knowledge of, from a previous assessment, was that it is really easy to serve built 
+                Javascript libraries from a Go/Gin server. Here is the one additional function needed to get the React to be 
+                served from this existing website.
+                </p>
+
+    <pre><code>
+    // LoadStaticFolderRoutes loads all api routes that serve a static server folder.
+    func LoadStaticFolderRoutes(server *gin.Engine) *gin.Engine {
+        server.Use(static.Serve("/public", static.LocalFile("./public", true)))
+        server.Use(static.Serve("/realtor", static.LocalFile("./realtor/build", true)))
+        server.Use(static.Serve("/realtor/new", static.LocalFile("./realtor/build", true)))
+        server.Use(static.Serve("/realtor/search", static.LocalFile("./realtor/build", true)))
+        server.Use(static.Serve("/realtor/listing", static.LocalFile("./realtor/build", true)))
+        server.Use(static.Serve("/realtor/my-listing", static.LocalFile("./realtor/build", true)))
+        server.Use(static.Serve("/realtor/my-listings", static.LocalFile("./realtor/build", true)))
+        return server
+    }
+    </code></pre>
+
+                <p>
+                If at this point you are still not convinced that these were good choices, here are some general facts about 
+                each language/library that should help close the gap that exists in convincing of you:
+                </p>
+
+                <ul>
+                    <li>React Facts:
+                        <ul>
+                            <li>It's not a framework, it's a library of classes; an abstraction.</li>
+                            <li>Writing html inside javascript allows dynamic content creation.</li>
+                            <li>Using components, one can easily breakdown complex frontends.</li>
+                            <li>Passing props to components populates them with custom data.</li>
+                            <li>React supports type systems through propTypes. (bool, string)</li>
+                        </ul>
+                    </li>
+                    <li>Golang Facts:</li>
+                        <ul>
+                            <li>The designers were strongly motivated by their dislike of C++.</li>
+                            <li>Go provides static typing similar to C but with simpler syntaxes.</li>
+                            <li>Even with typing, you can use := to declare vars without types.</li>
+                            <li>Goroutines are concurrent threads in the same address space.</li>
+                            <li>Channels provide complex communication between goroutines.</li>
+                        </ul>
+                    </li>
+                    <li>Gin Facts:</li>
+                        <ul>
+                            <li>Gin is a web framework written in Go that performs really well.</li>
+                            <li>Developers save a lot of time from using common encapsulation.</li>
+                            <li>Excellent middleware support means tons of libraries to use.</li>
+                            <li>HTML templates give similar dynamic content delivery to React.</li>
+                            <li>Gin's Go roots provide good json processing support for APIs.</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <p>
+                    <img src="https://files.mitchelletzel.com/posts/RG/RG-article3-1000.png" 
+                         srcset="https://files.mitchelletzel.com/posts/RG/RG-article3-2000.png 2000w, 
+                                 https://files.mitchelletzel.com/posts/RG/RG-article3-1000.png 1000w, 
+                                 https://files.mitchelletzel.com/posts/RG/RG-article3-500.png 500w" 
+                                 sizes="(max-width: 2000px) 100vw, 2000px" alt=""/>
+                </p>
+
+                <h3>Designing the React Components</h3>
+
+                <p>
+                HTML builds up a majority of the web applications everyone uses nowadays. React components allow us to wrap up 
+                small sections of HTML and put them into individual classes with all the benefits of member variables and 
+                functions; in Javascript. Most developers will understand when I say that Javascript is not the first language 
+                college professors talk about when it comes to topics like Object Oriented Programming. When writing the website 
+                for this assessment, I built all of the content into 10 unique components. You can find a general, grouped
+                description of the components below:
+                </p>
+
+                <div class="row block-large-1-2 block-tab-full">
+                    <div class="column">
+                        <h4>App.js, Main.js, & NavBar.js.</h4>
+                        <p>
+                        This is the main starting point for all access to the react application, requests are funneled through 
+                        here. Most login logic takes place here and the navbar attaches to this render function before the page 
+                        router starts its real definition.
+                        </p>
+                    </div>
+
+                    <div class="column">
+                        <h4>Tile.js & TileDeck.js.</h4>
+                        <p>
+                        These components are the base of root and search pages of the React app. TileDeck takes in an array of  
+                        javascript objects and sends each one to a Tile to be displayed. One thing I hope to edit one day is the 
+                        row/column based display order of the individual Tiles in a TileDeck.
+                        </p>
+                    </div>
+
+                    <div class="column">
+                        <h4>Home.js & Search.js.</h4>
+                        <p>
+                        Both of these use Tile.js and TileDeck.js by making the same API call to the Go/Gin server and storing 
+                        the array of javascript objects received back into their state so that it can be passed to the child 
+                        components through their props. Search.js simply takes text input and does an exact match on state.
+                        </p>
+                    </div>
+
+                    <div class="column">
+                        <h4>Listing.js, MyListing.js, and MyListings.js.</h4>
+                        <p>
+                        The three components here make up the add, edit, and delete capabilities of the realtor webpage I 
+                        designed. MyListings.js uses Tile.js and TileDeck.js with conditional prop rendering to add special 
+                        action buttons that can be seen above.
+                        </p>
+                    </div>
+
+                </div>
+
+                <p>
+                Below, you can find a quote from Pete Hunt; one of the original members of the Facebook team that built 
+                and open-sourced React:
+                </p>
+
+                <blockquote>
+                    <p>
+                    “Single-page applications” are all the rage these days. These are web pages that load once, and when 
+                    the user clicks on a link or a button, JavaScript running on the page updates the address bar, but the 
+                    web page is not refreshed. Management of the address bar is done by something called a router.
+                    </p>
+                    <cite>https://github.com/petehunt/react-howto</cite>
+                </blockquote>
 
                 </div> <!-- end entry content -->
