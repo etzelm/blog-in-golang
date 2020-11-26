@@ -25,9 +25,9 @@ func main() {
 
 	certmagic.DefaultACME.Agreed = true
 	certmagic.DefaultACME.Email = "etzelm@live.com"
-	log.Info(certmagic.HTTPS([]string{"server.mitchelletzel.com"}, httpServer))
+	//log.Info(certmagic.HTTPS([]string{"server.mitchelletzel.com"}, httpServer))
 
-	//httpServer.Run("127.0.0.1:80")
+	httpServer.Run("127.0.0.1:80")
 
 }
 

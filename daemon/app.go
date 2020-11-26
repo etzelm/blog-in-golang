@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/etzelm/blog-in-golang/daemon/articles/awsEMR"
 	"github.com/etzelm/blog-in-golang/daemon/articles/googleSRE"
 	"github.com/etzelm/blog-in-golang/daemon/articles/graphStore"
 	"github.com/etzelm/blog-in-golang/daemon/articles/reactRealtor"
@@ -23,6 +24,8 @@ func main() {
 		googleSRE.GoogleSRE()
 	case "2":
 		reactRealtor.ReactRealtor()
+	case "3":
+		awsEMR.AmazonEMR()
 	case "42":
 		createTable()
 	//Execute Order 66 Meme
