@@ -54,7 +54,7 @@ func AmazonEMR() {
 		ModifiedDate: "November 26th, 2020",
 		PanelPicture: pp,
 		PostID:       4,
-		PostTitle:    "Amazon's Elastic Map Reduce Offering",
+		PostTitle:    "AWS's Elastic Map Reduce Offering",
 		ShortTitle:   "Intro to AWS EMR - Mitchell Etzel",
 		PostType:     "standard",
 	}

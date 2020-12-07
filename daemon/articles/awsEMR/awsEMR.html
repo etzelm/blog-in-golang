@@ -71,7 +71,95 @@
                 <h3>How does the data processing really happen?</h3>
                 
                 <p>
-                More to come...
+                When jobs are submitted to an EMR cluster, the work is split up into stages and those stages are split 
+                into containers. The whole point being that the primary server(s) can evenly distribute all of the 
+                containers in a stage across the secondary nodes living in the core and task groups, thus increasing 
+                the parallelization of a job's execution and decreasing the overall time it takes to finish the job.
+                Currently there are two main paradigms for structuring the jobs you can submit to an EMR cluster, their 
+                names are Map Reduce and Directed Acyclic Graph. Map Reduce jobs have a more rigid structure with a 
+                predefined set of stages that cant be changed where as Directed Acyclic Graphs allow engineers to use 
+                their imagination when architecting jobs to accomplish their needs.
+                </p>
+                <div class="row block-large-1-2 block-tab-full">
+                    <div class="column">
+                        <h4>Hadoop: Map Reduce</h4>
+                        <p>
+                        All of the containers in a submitted Map Reduce job are split into four predefined phases: 
+                        Splitting, Mapping, Shuffling, & Reducing. One famous, simple to understand, example of a Map 
+                        Reduce job is a word count program.
+                        </p>
+                    </div>
+                    <div class="column">
+                        <h4>Spark: Directed Acyclic Graph</h4>
+                        <p>
+                        All of the containers in a submitted Spark job are used to construct a free-form DAG (Directed 
+                        Acyclic Graph). The DAG is optimized by EMR by rearranging and combining containers where 
+                        possible in the job's execution.
+                        </p>
+                    </div>
+                </div>
+                <div class="media-wrap entry__media">
+                    <div class="entry__slider slider">
+                        <div class="slider__slides">
+                            <div class="slider__slide">
+                                <img src="https://files.mitchelletzel.com/posts/EMR/EMR-slide4-1000.png" 
+                                        srcset="https://files.mitchelletzel.com/posts/EMR/EMR-slide4-2000.png 2000w, 
+                                                https://files.mitchelletzel.com/posts/EMR/EMR-slide4-1000.png 1000w, 
+                                                https://files.mitchelletzel.com/posts/EMR/EMR-slide4-500.png 500w" 
+                                        sizes="(max-width: 2000px) 100vw, 2000px" alt="" >
+                            </div>
+                            <div class="slider__slide">
+                                <img src="https://files.mitchelletzel.com/posts/EMR/EMR-slide5-1000.png" 
+                                        srcset="https://files.mitchelletzel.com/posts/EMR/EMR-slide5-2000.png 2000w, 
+                                                https://files.mitchelletzel.com/posts/EMR/EMR-slide5-1000.png 1000w, 
+                                                https://files.mitchelletzel.com/posts/EMR/EMR-slide5-500.png 500w" 
+                                        sizes="(max-width: 2000px) 100vw, 2000px" alt="" >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <h3>Where does all of the data end up living?</h3>
+
+                <p>
+                Running jobs of either type will have to be executed using Hadoop File System(HDFS) as the underlying 
+                storage system because CPUs, even virtual ones, rely upon the POSIX standards to reliably read and 
+                write data to hard drives. HDFS uses block based storage like other file systems but with some slight 
+                differences. For one, its designed to have a much larger block size than a standard Operating System. 
+                Secondly, it creates copies of all of its blocks and replicates them to other servers in the cluster 
+                for fault tolerance and the increased chance that CPU power is available to work with the blocks' data 
+                locally. AWS has also written their own EMR File System(EMRFS) as an abstraction around using 
+                their S3 service to store your data long term so that you dont need to keep EMR clusters up 24/7 to 
+                persist your data. EMRFS does not offer POSIX standards but to work around that requirement AWS's  
+                Hadoop software pulls your data into the EMR cluster from S3 first in order for it to be processed and 
+                then it writes the output back out upon completion. This was really a game changer for customers 
+                looking to easily take advantage of short-lived, ephermal EMR clusters.
+                </p>
+                <div class="media-wrap entry__media">
+                    <div class="entry__slider slider">
+                        <div class="slider__slides">
+                            <div class="slider__slide">
+                                <img src="https://files.mitchelletzel.com/posts/EMR/EMR-slide6-1000.png" 
+                                        srcset="https://files.mitchelletzel.com/posts/EMR/EMR-slide6-2000.png 2000w, 
+                                                https://files.mitchelletzel.com/posts/EMR/EMR-slide6-1000.png 1000w, 
+                                                https://files.mitchelletzel.com/posts/EMR/EMR-slide6-500.png 500w" 
+                                        sizes="(max-width: 2000px) 100vw, 2000px" alt="" >
+                            </div>
+                            <div class="slider__slide">
+                                <img src="https://files.mitchelletzel.com/posts/EMR/EMR-slide7-1000.png" 
+                                        srcset="https://files.mitchelletzel.com/posts/EMR/EMR-slide7-2000.png 2000w, 
+                                                https://files.mitchelletzel.com/posts/EMR/EMR-slide7-1000.png 1000w, 
+                                                https://files.mitchelletzel.com/posts/EMR/EMR-slide7-500.png 500w" 
+                                        sizes="(max-width: 2000px) 100vw, 2000px" alt="" >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p>
+                Amazon Web Services' EMR is an amazing offering that really helps to bring big data companies out of 
+                their on-premise data centers and into the dynamic cloud. I've seen it revolutionize SaaS products 
+                and help to decrease monthly operating costs by over 10 times what a company was used to paying for 
+                hardware and maintenance. Even if you're not a part of a multi-million dollar company, this service 
+                makes it easier than ever to start learning about what it takes to process huge amounts of data.
                 </p>
 
                 </div> <!-- end entry content -->
