@@ -62,12 +62,12 @@
                 <h2 class="center-text">Lesson Two: Release Engineering</h2><br>
 
                 <p>
-                Planning and adhearing to the policies and procedures for releasing a project are some of the most important 
+                Planning and adhering to the policies and procedures for releasing a project are some of the most important 
                 things product owners can do, especially in regards to approving source code changes for production 
                 environments. Sadly at smaller companies, some of the worst and more frequent offenders of both tend to be the 
                 people who are supposed to enforce the rules themselves. In the section entitled 'Enforcement of Policies and 
                 Procedures' on page 89, I think it's best to point out that the code review process is streamlined to the point 
-                of allowing Goolge SREs to know what changes are included in a new release/build of a project and why they are 
+                of allowing Google SREs to know what changes are included in a new release/build of a project and why they are 
                 there. This can help to keep everyone honest and save time in several trouble-shooting scenarios. Internalizing 
                 this lesson is all about self-control and my preferred way to achieve this is effective discipline, without 
                 it there is little in the way of power struggles or authority complexes causing all sorts of trouble.
@@ -86,7 +86,7 @@
                 often only as strong as its product(s) and if issues continue to pile up in the dark than what does that 
                 signal about the health of the company? I think as individuals in the industry it can sometimes be tough to 
                 remember that there are two sides to this lesson. One side is internalizing the humility it takes to be able 
-                to silently accept responibility for any of your mistakes while trying to diagnose and discuss the root causes 
+                to silently accept responsibility for any of your mistakes while trying to diagnose and discuss the root causes 
                 of what went wrong. The other side of the lesson is internalizing humility for people when its their mistakes, 
                 especially when things get difficult and they aren't showing much, if any, humility themselves. The greatest 
                 stepping stone I've found for gaining humility is being able recognize my own faults and accept that I 
@@ -99,8 +99,8 @@
                 <h2 class="center-text">Lesson Four: Monitor Your Distributed Systems</h2><br>
 
                 <p>
-                There are several amazing reasons to monitor the important metrics of your distributed systems, theses metrics 
-                can include hardware performance, error occurences, and/or caching behaviors. One of the best ways to improve 
+                There are several amazing reasons to monitor the important metrics of your distributed systems. These metrics 
+                can include hardware performance, error occurrences, and/or caching behaviors. One of the best ways to improve 
                 your system and increase its performance is to use your monitoring to influence the prioritization of the work 
                 you put into it. Turning these metrics into real-time dashboards can help minimize down-times by increasing 
                 the visibility into active issues as soon as they come up. The topics below help to enumerate what engineers 
@@ -111,39 +111,59 @@
                     <div class="column">
                         <h4>Choose Your Metrics Wisely</h4>
                         <p>
-                        This is the main starting point for all access to the react application, requests are funneled through 
-                        here. Most login logic takes place here and the navbar attaches to this render function before the page 
-                        router starts its real definition.
+                        This will be one of the main starting points for the decisions made about the systems you are monitoring, 
+                        so if good choices aren't made here issues will trickle down. Typically there are two generic types of 
+                        metrics to monitor, ones you can automate a response to and the rest that you have to create an alerting 
+                        system for.
                         </p>
                     </div>
 
                     <div class="column">
                         <h4>Responsive, Real Time Dashboards</h4>
                         <p>
-                        These components help make the root/search pages. TileDeck takes an array of JSON objects to send to 
-                        Tiles for rendering. I want to improve the row/column based display order of the individual Tiles in a 
-                        TileDeck.
+                        A lot of the time there are a plethora of metrics to track per system in a product as a whole. This means 
+                        being able to see how everything as a whole is performing at a quick glance is extremely important for 
+                        lowering the mean time to resolution.
                         </p>
                     </div>
 
                     <div class="column">
                         <h4>Symptoms versus Causes</h4>
                         <p>
-                        Both of these use Tile.js/TileDeck.js by making API calls to pass an array of JSON objects through 
-                        their state and into the child components through props. Search.js takes text input and finds exact 
-                        matches in state.
+                        Your monitoring system should address two questions: what’s broken, and why? The "what’s broken" indicates 
+                        the symptom; the "why" indicates a (possibly intermediate) cause. Typically these should point to run-books 
+                        that help layout how similar problems have been resolved in the past. 
                         </p>
                     </div>
 
                     <div class="column">
                         <h4>The Four Golden Signals</h4>
                         <p>
-                        The three components here make up the add, edit, and delete capabilities of the listings. MyListing.js 
-                        uses Bootstrap and an HTML Form, along with conditional rendering, to allow users to either add or edit 
-                        listings.
+                        The four golden signals of monitoring are latency, traffic, errors, and saturation. If you can only 
+                        measure four metrics of your user-facing system, focus on these four and page a human when one signal is 
+                        problematic. your service will be at least decently covered by monitoring.
                         </p>
                     </div>
 
                 </div>
+
+                <img src="/public/images/icons/icon-five.svg" alt="icon-five" class="center-image-small">
+
+                <h2 class="center-text">Lesson Five: Eliminating Toil</h2><br>
+
+                <img src="https://files.mitchelletzel.com/posts/SRE/SRE-elim-toil.png" alt="SRE-elim-toil" class="center-image-long">
+
+                <p>
+                What is toil? Toil is the kind of work tied to running a production service that tends to be manual, repetitive, 
+                automatable, tactical, devoid of enduring value, and that scales linearly as a service grows. These tasks can 
+                be anything from gracefully decommissioning servers of a cluster or adding a templated set of infrastructure 
+                for a brand new client. This is why it's important to invest in time spent on engineering project work that 
+                will either reduce future toil or add service features. By having a machine automatically handle these tasks 
+                response times can go drastically down and cost savings can be realized in AWS bills as well as a larger pipeline 
+                to onboard new clients leading to increased revenue. Toil isn’t always and invariably bad, and everyone needs to be 
+                absolutely clear that some amount of toil is unavoidable in the SRE role, and indeed in almost any engineering role. 
+                It’s fine in small doses but toil becomes toxic when experienced in large quantities. If you’re burdened with too 
+                much toil, you should be very concerned and complain loudly. 
+                </p>
 
                 </div> <!-- end entry content -->

@@ -33,13 +33,13 @@ func GoogleSRE() {
 	}
 	dbSvc := dynamodb.New(sess)
 
-	data, err := ioutil.ReadFile("articles/googleSRE/articlePicture.html")
+	data, _ := ioutil.ReadFile("articles/googleSRE/articlePicture.html")
 	ap := string(data)
 
-	data, err = ioutil.ReadFile("articles/googleSRE/panelPicture.html")
+	data, _ = ioutil.ReadFile("articles/googleSRE/panelPicture.html")
 	pp := string(data)
 
-	data, err = ioutil.ReadFile("articles/googleSRE/googleSRE.html")
+	data, _ = ioutil.ReadFile("articles/googleSRE/googleSRE.html")
 	hh := string(data)
 
 	item := models.Item{
@@ -52,19 +52,19 @@ func GoogleSRE() {
 			"href=\"https://landing.google.com/sre/book.html\" target=\"_blank\">Site Reliability Engineering: " +
 			"How Google Runs Production Systems</a></i>.",
 		HTMLHold:     hh,
-		ModifiedDate: "August 20th, 2019",
+		ModifiedDate: "March 18th, 2022",
 		PanelPicture: pp,
 		PostID:       1,
-		PostTitle:    "How To Internalize Site Reliability Engineering's Top 3 Golden Lessons",
+		PostTitle:    "How To Internalize Site Reliability Engineering's Top 5 Golden Lessons",
 		ShortTitle:   "SRE Internalization - Mitchell Etzel",
 		PostType:     "standard",
 	}
 
-	av, err := dynamodbattribute.MarshalMap(item)
+	av, _ := dynamodbattribute.MarshalMap(item)
 
 	input := &dynamodb.PutItemInput{
 		Item:      av,
-		TableName: aws.String("Test-Articles"),
+		TableName: aws.String("Live-Articles"),
 	}
 
 	_, err = dbSvc.PutItem(input)
