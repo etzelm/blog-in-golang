@@ -5,7 +5,7 @@ Published: https://mitchelletzel.com
 
 Sample React App: https://mitchelletzel.com/realtor
 
-Sample Local Test Commands:
+Sample Local Test Commands: 
 
  * go mod download
  * go run app.go
