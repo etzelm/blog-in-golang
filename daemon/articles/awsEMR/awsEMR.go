@@ -33,13 +33,13 @@ func AmazonEMR() {
 	}
 	dbSvc := dynamodb.New(sess)
 
-	data, err := ioutil.ReadFile("articles/awsEMR/articlePicture.html")
+	data, _ := ioutil.ReadFile("articles/awsEMR/articlePicture.html")
 	ap := string(data)
 
-	data, err = ioutil.ReadFile("articles/awsEMR/panelPicture.html")
+	data, _ = ioutil.ReadFile("articles/awsEMR/panelPicture.html")
 	pp := string(data)
 
-	data, err = ioutil.ReadFile("articles/awsEMR/awsEMR.html")
+	data, _ = ioutil.ReadFile("articles/awsEMR/awsEMR.html")
 	hh := string(data)
 
 	item := models.Item{
@@ -53,13 +53,13 @@ func AmazonEMR() {
 		HTMLHold:     hh,
 		ModifiedDate: "November 26th, 2020",
 		PanelPicture: pp,
-		PostID:       4,
+		PostID:       3,
 		PostTitle:    "AWS's Elastic Map Reduce Offering",
-		ShortTitle:   "Intro to AWS EMR - Mitchell Etzel",
+		ShortTitle:   "Intro to AWS EMR",
 		PostType:     "standard",
 	}
 
-	av, err := dynamodbattribute.MarshalMap(item)
+	av, _ := dynamodbattribute.MarshalMap(item)
 
 	input := &dynamodb.PutItemInput{
 		Item:      av,

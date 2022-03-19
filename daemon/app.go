@@ -11,6 +11,7 @@ import (
 	"github.com/etzelm/blog-in-golang/daemon/articles/awsEMR"
 	"github.com/etzelm/blog-in-golang/daemon/articles/googleSRE"
 	"github.com/etzelm/blog-in-golang/daemon/articles/graphStore"
+	"github.com/etzelm/blog-in-golang/daemon/articles/infraCode"
 	"github.com/etzelm/blog-in-golang/daemon/articles/reactRealtor"
 	log "github.com/sirupsen/logrus"
 )
@@ -26,6 +27,8 @@ func main() {
 		reactRealtor.ReactRealtor()
 	case "3":
 		awsEMR.AmazonEMR()
+	case "4":
+		infraCode.InfraCode()
 	case "42":
 		createTable()
 	//Execute Order 66 Meme

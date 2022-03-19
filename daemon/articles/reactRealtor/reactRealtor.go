@@ -33,13 +33,13 @@ func ReactRealtor() {
 	}
 	dbSvc := dynamodb.New(sess)
 
-	data, err := ioutil.ReadFile("articles/reactRealtor/articlePicture.html")
+	data, _ := ioutil.ReadFile("articles/reactRealtor/articlePicture.html")
 	ap := string(data)
 
-	data, err = ioutil.ReadFile("articles/reactRealtor/panelPicture.html")
+	data, _ = ioutil.ReadFile("articles/reactRealtor/panelPicture.html")
 	pp := string(data)
 
-	data, err = ioutil.ReadFile("articles/reactRealtor/reactRealtor.html")
+	data, _ = ioutil.ReadFile("articles/reactRealtor/reactRealtor.html")
 	hh := string(data)
 
 	item := models.Item{
@@ -55,11 +55,11 @@ func ReactRealtor() {
 		PanelPicture: pp,
 		PostID:       3,
 		PostTitle:    "Go & React: A 1, 2 Punch Combo",
-		ShortTitle:   "Go & React - Mitchell Etzel",
+		ShortTitle:   "Go & React",
 		PostType:     "standard",
 	}
 
-	av, err := dynamodbattribute.MarshalMap(item)
+	av, _ := dynamodbattribute.MarshalMap(item)
 
 	input := &dynamodb.PutItemInput{
 		Item:      av,

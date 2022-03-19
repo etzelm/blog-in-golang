@@ -1,4 +1,4 @@
-package googleSRE
+package infraCode
 
 import (
 	"fmt"
@@ -14,8 +14,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// GoogleSRE function for addition/modification of GoogleSRE article
-func GoogleSRE() {
+// infraCode function for addition/modification of infraCode article
+func InfraCode() {
 	id := os.Getenv("AWS_ACCESS_KEY_ID")
 	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
 	log.Info("id: ", id)
@@ -33,35 +33,33 @@ func GoogleSRE() {
 	}
 	dbSvc := dynamodb.New(sess)
 
-	data, _ := ioutil.ReadFile("articles/googleSRE/articlePicture.html")
+	data, _ := ioutil.ReadFile("articles/infraCode/articlePicture.html")
 	ap := string(data)
 
-	data, _ = ioutil.ReadFile("articles/googleSRE/panelPicture.html")
+	data, _ = ioutil.ReadFile("articles/infraCode/panelPicture.html")
 	pp := string(data)
 
-	data, _ = ioutil.ReadFile("articles/googleSRE/googleSRE.html")
+	data, _ = ioutil.ReadFile("articles/infraCode/infraCode.html")
 	hh := string(data)
 
 	item := models.Item{
 		ArticlePicture: ap,
 		Author:         "<a style=\"color:#9C6708;\" href=\"/\">Mitchell Etzel</a>",
 		Categories:     "Disciplines,Distributed Systems",
-		CreatedDate:    "April 11th, 2018",
-		Excerpt: "If you've ever smelled bad SCRUM you're going to want to learn how to internalize " +
-			"these important lessons I've identified in the O'Reilly book, <i><a style=\"color:#9C6708;\" " +
-			"href=\"https://landing.google.com/sre/book.html\" target=\"_blank\">Site Reliability Engineering: " +
-			"How Google Runs Production Systems</a></i>.",
+		CreatedDate:    "March 19th, 2022",
+		Excerpt: "CloudFormation vs. CDK vs. Serverless Framework vs. Terraform: If you've ever had to deploy a " +
+			"repeatable set of AWS Infrastructure then it's likely that you've come across these tools. Let's " +
+			"jump into some of their strengths and weaknesses.",
 		HTMLHold:     hh,
-		ModifiedDate: "March 18th, 2022",
+		ModifiedDate: "March 19th, 2022",
 		PanelPicture: pp,
-		PostID:       1,
-		PostTitle:    "How To Internalize Site Reliability Engineering's Top 5 Golden Lessons",
-		ShortTitle:   "SRE Internalization",
+		PostID:       5,
+		PostTitle:    "A look at Infrastructure as Code in the AWS Cloud",
+		ShortTitle:   "IAC Compare and Contrast",
 		PostType:     "standard",
 	}
 
 	av, _ := dynamodbattribute.MarshalMap(item)
-
 	input := &dynamodb.PutItemInput{
 		Item:      av,
 		TableName: aws.String("Test-Articles"),

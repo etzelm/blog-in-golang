@@ -33,13 +33,13 @@ func GraphStore() {
 	}
 	dbSvc := dynamodb.New(sess)
 
-	data, err := ioutil.ReadFile("articles/graphStore/articlePicture.html")
+	data, _ := ioutil.ReadFile("articles/graphStore/articlePicture.html")
 	ap := string(data)
 
-	data, err = ioutil.ReadFile("articles/graphStore/panelPicture.html")
+	data, _ = ioutil.ReadFile("articles/graphStore/panelPicture.html")
 	pp := string(data)
 
-	data, err = ioutil.ReadFile("articles/graphStore/graphStore.html")
+	data, _ = ioutil.ReadFile("articles/graphStore/graphStore.html")
 	hh := string(data)
 
 	item := models.Item{
@@ -59,7 +59,7 @@ func GraphStore() {
 		PostType:     "standard",
 	}
 
-	av, err := dynamodbattribute.MarshalMap(item)
+	av, _ := dynamodbattribute.MarshalMap(item)
 
 	input := &dynamodb.PutItemInput{
 		Item:      av,
