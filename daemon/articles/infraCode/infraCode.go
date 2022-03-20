@@ -51,7 +51,7 @@ func InfraCode() {
 			"repeatable set of AWS Infrastructure then it's likely that you've come across these tools. Let's " +
 			"jump into some of their strengths and weaknesses.",
 		HTMLHold:     hh,
-		ModifiedDate: "March 19th, 2022",
+		ModifiedDate: "March 20th, 2022",
 		PanelPicture: pp,
 		PostID:       5,
 		PostTitle:    "A look at Infrastructure as Code in the AWS Cloud",

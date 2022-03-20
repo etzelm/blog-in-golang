@@ -4,7 +4,7 @@
 
                 <p class="lead drop-cap">
                 What’s with all the hype around Infrastructure as Code? Well Amazon wrote half of the tools being compared 
-                here so let's take a look at what they have to say:
+                here, so let's take a look at what they have to say:
                 </p>
 
                 <blockquote>
@@ -19,7 +19,7 @@
                 </blockquote>
 
                 <p>
-                Being practical with your implementation of infrastructure as code means applying the same rigor of application 
+                Being practical with your implementation of Infrastructure as Code means applying the same rigor of application 
                 development to the resource provisioning done in the cloud. Typically, this is done through creating multi-stage 
                 CI/CD pipelines to introduce automatic review with manual approval. Formatting and security linters, like 
                 tflint and tfsec for Terraform, are amazing tools to ensure high level quality bars for the code you write 
@@ -82,7 +82,7 @@
                 either through the AWS Management Console, AWS Command Line Interface, or AWS CloudFormation APIs. When 
                 actualizing changes to infrastructure through CloudFormation, stacks typically go through changes in parallel 
                 and steps have to be backed out manually if there are significant enough errors. When’s the right time to use 
-                CloudFormation? You want an 100% AWS Native Solution for maintaining the resources you deploy in your accounts  
+                CloudFormation? When you want an 100% AWS Native Solution for maintaining the resources you deploy in your accounts  
                 and are only trying to apply Infrastructure as Code principles to what you do inside AWS accounts. 
                 CloudFormation isn't recommended when your applications don’t need programmatic access to granular deployment 
                 tools to define their own processes. Here's an example of some CloudFormation code:
@@ -190,7 +190,7 @@ functions:
                 single access point to managing resources in other Cloud providers like Azure, GCP, and Okta. Once an 
                 application and all its environments are Terraform with proper CI/CD and active use it because practically 
                 impossible to miss critical infrastructure changes or security risks. So when’s the right time to use 
-                Terraform? Realistically, its when your software has intricate use of several Cloud services, including 
+                Terraform? Realistically, it's when your software has intricate use of several Cloud services, including 
                 AWS, and you desire a single tool for multi-cloud deployments that easily replicate complex environments
                 across several accounts. 
                 </p>
@@ -223,7 +223,7 @@ resource "aws_vpc" "example" {
                 All of these tools are amazing entry points to managing your cloud infrastructure as code rather than a 
                 series of manual process and possibly version-controlled scripts. I have used all of them in some sort 
                 of professional setting with extensive experience using both Terraform and the Serverless Framework. 
-                Each of them have there place and can bring positive additions to the processes they oversee. As usual 
+                Each of them have their place and can bring positive additions to the processes they oversee. As usual 
                 though, a tool is only as good as the person using it so it's up to the individual users to define what 
                 their standards are and how they want to enforce them to actualize the changes they want to see. 
                 Hopefully you've found this article as an interesting insight into the different ways to implement IaC 
