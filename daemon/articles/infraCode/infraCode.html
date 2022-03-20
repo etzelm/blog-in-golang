@@ -61,7 +61,7 @@
                     <div class="column">
                         <h4>Terraform</h4>
                         <p>
-                        HashiCorp Configuration Language (HCL) allows for concise descriptions of resources using blocks, 
+                        HashiCorp Configuration Language (HCL) allows for the concise descriptions of resources using blocks, 
                         arguments, and expressions. Extensible providers allow Terraform to manage a wide range of resources, 
                         including IaaS, PaaS, SaaS, & hardware services.
                         </p>
@@ -85,10 +85,11 @@
                 CloudFormation? You want an 100% AWS Native Solution for maintaining the resources you deploy in your accounts  
                 and are only trying to apply Infrastructure as Code principles to what you do inside AWS accounts. 
                 CloudFormation isn't recommended when your applications don’t need programmatic access to granular deployment 
-                tools to define their own processes. Here's an example of some CloudFormation code: 
+                tools to define their own processes. Here's an example of some CloudFormation code:
                 </p>
 
 <pre><code>
+# Source: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/quickref-ec2.html
 {
     "Resources" : {
         "EC2Instance" : {
@@ -153,13 +154,14 @@
                 serverless applications. This option easily manages your code as well as your infrastructure & supports 
                 multiple languages: Node.js, Python, Java, and more. S.F. translates all of its syntax in serverless.yml 
                 and packages your code into an AWS CloudFormation template so that it can automatically deploy them 
-                together for you. Comes with a CLI that offers structure, automation and best practices out-of-the-box.
+                together for you. It comes with a CLI that offers structure, automation and best practices out-of-the-box.
                 When’s the right time to use the Serverless Framework? When there's a new application to write or a want
                 to completely modernize old ones and you want a single tool to handle the software as well as the 
                 infrastructure to support them.
                 </p>
 
 <pre><code>
+# Source: https://github.com/serverless/examples/blob/v3/aws-node-express-api/serverless.yml
 service: aws-node-express-api
 frameworkVersion: '3'
 
@@ -173,4 +175,59 @@ functions:
     events:
         - httpApi: '*'
 </code></pre>
+
+                <h3>Terraform: A Multi-Cloud IaC Framework</h3>
+
+                <p>
+                <img src="https://files.mitchelletzel.com/posts/IAC/IAC-article4-1000.png" 
+                    srcset="https://files.mitchelletzel.com/posts/IAC/IAC-article4-1000.png 1000w, 
+                            https://files.mitchelletzel.com/posts/IAC/IAC-article4-500.png 500w" 
+                            sizes="(max-width: 1000px) 100vw, 1000px" alt=""/>
+                Terraform offers a consistent and reliable environment for infrastructure management and includes easy 
+                but secure access to shared state and secret data as well as access controls for approving changes. Even 
+                if the resources being managed are only in the AWS Cloud, Terraform can help to manage resources 
+                CloudFormation can’t; e.g.: Postgres Schema inside AuroraDB on RDS. The real power comes from having a 
+                single access point to managing resources in other Cloud providers like Azure, GCP, and Okta. Once an 
+                application and all its environments are Terraform with proper CI/CD and active use it because practically 
+                impossible to miss critical infrastructure changes or security risks. So when’s the right time to use 
+                Terraform? Realistically, its when your software has intricate use of several Cloud services, including 
+                AWS, and you desire a single tool for multi-cloud deployments that easily replicate complex environments
+                across several accounts. 
+                </p>
+
+<pre><code>
+# Source: https://registry.terraform.io/providers/hashicorp/aws/latest/docs
+terraform {
+    required_providers {
+        aws = {
+        source  = "hashicorp/aws"
+        version = "~> 3.0"
+        }
+    }
+}
+    
+# Configure the AWS Provider
+provider "aws" {
+    region = "us-east-1"
+}
+
+# Create a VPC
+resource "aws_vpc" "example" {
+    cidr_block = "10.0.0.0/16"
+}
+</code></pre>
+
+                <h3>Closing Remarks</h3>
+
+                <p>
+                All of these tools are amazing entry points to managing your cloud infrastructure as code rather than a 
+                series of manual process and possibly version-controlled scripts. I have used all of them in some sort 
+                of professional setting with extensive experience using both Terraform and the Serverless Framework. 
+                Each of them have there place and can bring positive additions to the processes they oversee. As usual 
+                though, a tool is only as good as the person using it so it's up to the individual users to define what 
+                their standards are and how they want to enforce them to actualize the changes they want to see. 
+                Hopefully you've found this article as an interesting insight into the different ways to implement IaC 
+                in your AWS, and possibly other, cloud environments.
+                </p>
+
                 </div> <!-- end entry content -->
