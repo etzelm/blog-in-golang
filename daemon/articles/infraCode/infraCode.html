@@ -70,7 +70,7 @@
                 </div>
 
                 <h3>CloudFormation: An “AWS Native” Solution</h3>
-                
+
                 <p>
                 <img src="https://files.mitchelletzel.com/posts/IAC/IAC-article2-1000.png" 
                     srcset="https://files.mitchelletzel.com/posts/IAC/IAC-article2-2000.png 2000w, 
@@ -97,8 +97,18 @@
                 "InstanceType" : { "Ref" : "InstanceType" },
                 "SecurityGroups" : [ { "Ref" : "InstanceSecurityGroup" } ],
                 "KeyName" : { "Ref" : "KeyName" },
-                "ImageId" : { "Fn::FindInMap" : [ "AWSRegionArch2AMI", { "Ref" : "AWS::Region" },
-                                { "Fn::FindInMap" : [ "AWSInstanceType2Arch", { "Ref" : "InstanceType" }, "Arch" ] } ] }
+                "ImageId" : { 
+                    "Fn::FindInMap" : [ 
+                        "AWSRegionArch2AMI", 
+                        { "Ref" : "AWS::Region" },
+                        { "Fn::FindInMap" : [ 
+                            "AWSInstanceType2Arch", 
+                            { "Ref" : "InstanceType" }, 
+                            "Arch" 
+                            ] 
+                        }
+                    ] 
+                }
             }
         },
         "InstanceSecurityGroup" : {
@@ -117,4 +127,50 @@
 }      
 </code></pre>
 
+                <h3>Cloud Development Kit: Open-source SDK Framework</h3>
+
+                <p>
+                <img src="https://files.mitchelletzel.com/posts/IAC/IAC-article3-1000.png" 
+                    srcset="https://files.mitchelletzel.com/posts/IAC/IAC-article3-2000.png 2000w, 
+                            https://files.mitchelletzel.com/posts/IAC/IAC-article3-1000.png 1000w, 
+                            https://files.mitchelletzel.com/posts/IAC/IAC-article3-500.png 500w" 
+                            sizes="(max-width: 2000px) 100vw, 2000px" alt=""/>
+                Amazon provides the Cloud Development Kit as a way to more directly write custom application code in the 
+                pre-existing language you're most comfortable with. By combining the basic building blocks of CDK code 
+                together, you can quickly and easily create complex architectures for deployment. Where as automating 
+                multiple phase deployments with JSON/YAML using CloudFormation can take some pretty custom logic, CDK 
+                empowers developers to do more with less lines of code. When’s the right time to use Amazon's Cloud 
+                Development Kit? If there is a custom application that you would like to programmatically integrate with 
+                infrastructure deployments. Deployments should have granular phases that can allow for concepts like 
+                automation and parallelization, otherwise this option becomes a little bit overkill. AWS also offers 
+                pre-existing libraries of common infrastructure patterns in the AWS Construct Library.
+                </p>
+
+                <h3>Serverless Framework: A Lambda First IaC Approach</h3>
+
+                <p>
+                The Serverless Framework is one of the simplest ways to develop infinitely scalable, pay-per-execution 
+                serverless applications. This option easily manages your code as well as your infrastructure & supports 
+                multiple languages: Node.js, Python, Java, and more. S.F. translates all of its syntax in serverless.yml 
+                and packages your code into an AWS CloudFormation template so that it can automatically deploy them 
+                together for you. Comes with a CLI that offers structure, automation and best practices out-of-the-box.
+                When’s the right time to use the Serverless Framework? When there's a new application to write or a want
+                to completely modernize old ones and you want a single tool to handle the software as well as the 
+                infrastructure to support them.
+                </p>
+
+<pre><code>
+service: aws-node-express-api
+frameworkVersion: '3'
+
+provider:
+    name: aws
+    runtime: nodejs14.x
+
+functions:
+    api:
+    handler: handler.handler
+    events:
+        - httpApi: '*'
+</code></pre>
                 </div> <!-- end entry content -->
