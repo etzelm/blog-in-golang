@@ -3,8 +3,118 @@
                 <div class="entry__content">
 
                 <p class="lead drop-cap">
-                What’s with all the hype around Infrastructure as Code?
-
+                What’s with all the hype around Infrastructure as Code? Well Amazon wrote half of the tools being compared 
+                here so let's take a look at what they have to say:
                 </p>
+
+                <blockquote>
+                    <p>
+                    Infrastructure was traditionally provisioned using a combination of scripts and manual processes. 
+                    Sometimes these scripts were stored in version control systems or documented step by step in text 
+                    files or run-books. Often the person writing the run books is not the same person executing these 
+                    scripts or following through the run-books. This results in the creation of new environments not 
+                    always being repeatable, reliable, or consistent.
+                    </p>
+                    <cite>https://docs.aws.amazon.com/whitepapers/latest/introduction-devops-aws/infrastructure-as-code.html</cite>
+                </blockquote>
+
+                <p>
+                Being practical with your implementation of infrastructure as code means applying the same rigor of application 
+                development to the resource provisioning done in the cloud. Typically, this is done through creating multi-stage 
+                CI/CD pipelines to introduce automatic review with manual approval. Formatting and security linters, like 
+                tflint and tfsec for Terraform, are amazing tools to ensure high level quality bars for the code you write 
+                just like you would do with Java or Golang. All of this enables one to take a modularized approach to 
+                infrastructure patterns so you can rubber-stamp what is deployed in your development, quality assurance, 
+                and production environments.
+                </p>
+
+                <h3>Here are the tools being compared:</h3>
+
+                <div class="row block-large-1-2 block-tab-full">
+                    <div class="column">
+                        <h4>CloudFormation</h4>
+                        <p>
+                        An “AWS Native” Solution. Resources are written in text files using JavaScript Object Notation (JSON) 
+                        or Yet Another Markup Language (YAML). A CloudFormation template is deployed into the AWS environment 
+                        as a "stack" of different resources.
+                        </p>
+                    </div>
+
+                    <div class="column">
+                        <h4>Cloud Development Kit</h4>
+                        <p>
+                        An open-source software development framework to model and provision your cloud application resources. 
+                        Enables you to model application infrastructure using TypeScript, Python, Java, and .NET. Utilizes 
+                        AWS CloudFormation in the background.
+                        </p>
+                    </div>
+
+                    <div class="column">
+                        <h4>Serverless Framework</h4>
+                        <p>
+                        Serverless Framework is the one of the simplest way to develop infinitely scalable, pay-per-execution 
+                        serverless applications. Manages your code as well as your infrastructure & supports multiple languages:
+                        (Node.js, Python, Java, and more)                    
+                        </p>
+                    </div>
+
+                    <div class="column">
+                        <h4>Terraform</h4>
+                        <p>
+                        HashiCorp Configuration Language (HCL) allows for concise descriptions of resources using blocks, 
+                        arguments, and expressions. Extensible providers allow Terraform to manage a wide range of resources, 
+                        including IaaS, PaaS, SaaS, & hardware services.
+                        </p>
+                    </div>
+
+                </div>
+
+                <h3>CloudFormation: An “AWS Native” Solution</h3>
+                
+                <p>
+                <img src="https://files.mitchelletzel.com/posts/IAC/IAC-article2-1000.png" 
+                    srcset="https://files.mitchelletzel.com/posts/IAC/IAC-article2-2000.png 2000w, 
+                            https://files.mitchelletzel.com/posts/IAC/IAC-article2-1000.png 1000w, 
+                            https://files.mitchelletzel.com/posts/IAC/IAC-article2-500.png 500w" 
+                            sizes="(max-width: 2000px) 100vw, 2000px" alt=""/>
+                You can use a single CloudFormation template to create and update an entire environment or separate templates 
+                to manage multiple layers within an environment. There are several options when it comes to managing stacks, 
+                either through the AWS Management Console, AWS Command Line Interface, or AWS CloudFormation APIs. When 
+                actualizing changes to infrastructure through CloudFormation, stacks typically go through changes in parallel 
+                and steps have to be backed out manually if there are significant enough errors. When’s the right time to use 
+                CloudFormation? You want an 100% AWS Native Solution for maintaining the resources you deploy in your accounts  
+                and are only trying to apply Infrastructure as Code principles to what you do inside AWS accounts. 
+                CloudFormation isn't recommended when your applications don’t need programmatic access to granular deployment 
+                tools to define their own processes. Here's an example of some CloudFormation code: 
+                </p>
+
+<pre><code>
+{
+    "Resources" : {
+        "EC2Instance" : {
+            "Type" : "AWS::EC2::Instance",
+            "Properties" : {
+                "InstanceType" : { "Ref" : "InstanceType" },
+                "SecurityGroups" : [ { "Ref" : "InstanceSecurityGroup" } ],
+                "KeyName" : { "Ref" : "KeyName" },
+                "ImageId" : { "Fn::FindInMap" : [ "AWSRegionArch2AMI", { "Ref" : "AWS::Region" },
+                                { "Fn::FindInMap" : [ "AWSInstanceType2Arch", { "Ref" : "InstanceType" }, "Arch" ] } ] }
+            }
+        },
+        "InstanceSecurityGroup" : {
+            "Type" : "AWS::EC2::SecurityGroup",
+            "Properties" : {
+                "GroupDescription" : "Enable SSH access via port 22",
+                "SecurityGroupIngress" : [ {
+                    "IpProtocol" : "tcp",
+                    "FromPort" : "22",
+                    "ToPort" : "22",
+                    "CidrIp" : { "Ref" : "SSHLocation"}
+                } ]
+            }
+        }
+    }
+}      
+</code></pre>
 
                 </div> <!-- end entry content -->
