@@ -1,0 +1,42 @@
+<!--contact.html-->
+
+<!--Embed the header.html template at this location-->
+{{ template "header.html" .}}
+
+        <!-- site content
+        ================================================== -->
+        <div class="s-content content">
+            <main class="row content__page">
+                
+                <section class="column large-full entry format-standard">
+
+                    <div class="content__page-header">
+                        <h1 class="display-1">
+                        Please login below:
+                        </h1>
+                    </div> <!-- end content__page-header -->
+        
+                    <form name="authForm" id="authForm" method="post" action="/auth" autocomplete="off">
+                        <fieldset>
+    
+                            <div class="form-field">
+                                <input name="email" id="cEmail" class="full-width" placeholder="Your Email (required)" value="" type="text" maxlength="40" required>
+                            </div>
+    
+                            <div class="form-field">
+                                <input name="password" id="cPassword" class="full-width" placeholder="Password (required)" value="" type="password" maxlength="40" required>
+                            </div>
+    
+                            <input name="submit" id="submit" class="btn btn--primary btn-wide btn--large full-width" value="Login" type="submit">
+    
+                        </fieldset>
+                    </form> <!-- end form -->
+
+                </section>
+
+            </main>
+
+        </div> <!-- end s-content -->
+
+<!--Embed the footer.html template at this location-->
+{{ template "footer.html" .}}

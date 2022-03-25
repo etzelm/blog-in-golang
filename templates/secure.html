@@ -1,0 +1,26 @@
+<!--response.html-->
+
+<!--Embed the header.html template at this location-->
+{{ template "header.html" .}}
+
+        <!-- site content
+        ================================================== -->
+        <div class="s-content content">
+            <main class="row content__page">
+                
+                <section class="column large-full entry format-standard">
+
+                    <div align="center">
+                        <img src="/public/images/awesome.png" alt="Kitty" height="225" width="300">
+                        <h2>You're Awesome!!!</h2>
+                        Thanks for reaching out to me {{.payload}} @ {{.ip}}, I'll be in touch as soon as possible!
+                    </div>
+
+                </section>
+
+            </main>
+
+        </div> <!-- end s-content -->
+
+<!--Embed the footer.html template at this location-->
+{{ template "footer.html" .}}

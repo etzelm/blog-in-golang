@@ -55,6 +55,9 @@ func LoadServerRoutes(server *gin.Engine) *gin.Engine {
 	server.GET("/category/:category", cache.CachePage(store, 24*time.Hour, handlers.CategoryPage))
 	server.GET("/listing/:listing", handlers.ListingGETAPI)
 	server.GET("/listings", handlers.ListingsGETAPI)
+	server.GET("/auth", handlers.AuthPage)
+	server.POST("/auth", handlers.AuthResponse)
+	server.GET("/secure", handlers.SecurePage)
 	server.POST("/listings/add/:key", handlers.ListingPOSTAPI)
 	server.POST("/upload/image/:user", handlers.UploadImagePOSTAPI)
 	return server
