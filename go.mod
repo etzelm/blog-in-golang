@@ -11,8 +11,8 @@ require (
 	github.com/golang/protobuf v1.4.2 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/sirupsen/logrus v1.6.0
-	golang.org/x/crypto v0.1.0
-	golang.org/x/net v0.7.0 // indirect
+	golang.org/x/crypto v0.14.0
+	golang.org/x/net v0.17.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 )
 
