@@ -27,7 +27,8 @@ func main() {
 	certmagic.DefaultACME.Email = "etzelm@live.com"
 	//log.Info(certmagic.HTTPS([]string{"server.mitchelletzel.com"}, httpServer))
 
-	httpServer.Run()
+	//httpServer.Run()
+	httpServer.RunTLS(":8080", "/config/ssl/SSLcertificate.crt", "/config/ssl/SSLprivatekey.key")
 
 }
 
