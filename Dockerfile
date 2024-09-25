@@ -1,4 +1,4 @@
-FROM golang:1.14.2-alpine3.11
+FROM golang:1.23.1-alpine3.20
 
 # Need git for dep
 RUN apk add --no-cache git
@@ -22,9 +22,9 @@ WORKDIR src/github.com/etzelm/blog-in-golang/
 
 # Build go server
 RUN go mod download
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o blog-in-golang .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o blog-in-golang .
 
-FROM alpine:latest  
+FROM alpine:3.20 
 RUN apk --no-cache add ca-certificates
 WORKDIR /
 COPY --from=0 /go/src/github.com/etzelm/blog-in-golang/blog-in-golang .
