@@ -18,10 +18,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Check
+      - name: Build
         shell: bash
         run: |
-          echo TESTING OUTPUT
-          echo "The TEST is: ${TEST} or $TEST or "
-          echo $TEST
-          printenv
+          echo STARTING BUILD
+          docker build -t blog .
