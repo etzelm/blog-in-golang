@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:24.04
 
 ARG RUNNER_VERSION="2.319.1"
 ARG DEBIAN_FRONTEND=noninteractive

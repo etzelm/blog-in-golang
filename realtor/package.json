@@ -4,14 +4,14 @@
   "private": true,
   "dependencies": {
     "react": "^16.13.1",
-    "react-bootstrap": "^2.10.5",
+    "react-bootstrap": "^1.0.1",
     "react-dom": "^16.13.1",
     "react-dropzone-uploader": "^2.11.0",
     "react-google-oauth": "^1.0.0",
-    "react-notifications": "^1.7.4",
-    "react-router-dom": "^6.26.2",
+    "react-notifications": "^1.6.0",
+    "react-router-dom": "^5.1.2",
     "react-scripts": "5.0.1",
-    "react-uuid": "^2.0.0"
+    "react-uuid": "^1.0.2"
   },
   "scripts": {
     "start": "react-scripts start",
