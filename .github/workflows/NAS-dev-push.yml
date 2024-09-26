@@ -20,3 +20,4 @@ jobs:
           echo TESTING OUTPUT
           echo "The TEST is: ${TEST} or $TEST or "
           echo $TEST
+          printenv
