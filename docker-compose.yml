@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  blog-in-golang:
+    image: blog:latest
+    container_name: blog-in-golang
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    ports:
+      - "83:8080/tcp"
+    volumes:
+      - '/share/Container/blog-in-golang:/config'
+    environment:
+      AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
+      AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"

@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  github-runner:
+    image: github-runner:latest
+    container_name: github-runner
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    environment:
+      REPO: "etzelm/blog-in-golang"
+      TOKEN: "${GITHUB_TOKEN}"
