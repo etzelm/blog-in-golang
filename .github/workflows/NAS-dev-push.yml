@@ -11,6 +11,10 @@ jobs:
 
   build:
     runs-on: [self-hosted, Linux, X64, nas]
+    env:
+        NAS_ADDR: ${{ secrets.NAS_ADDR }}
+        NAS_USER: ${{ secrets.NAS_USER }}
+        NAS_PASS: ${{ secrets.NAS_PASS }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
