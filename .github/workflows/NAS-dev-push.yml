@@ -27,3 +27,4 @@ jobs:
           yarn build
           popd
           docker build -t blog .
+          docker system prune -f
