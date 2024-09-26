@@ -1,0 +1,21 @@
+name: NAS-dev-push
+# This workflow deploys develop branch blog changes to my NAS
+on:
+  push:
+    branches:
+      - 'develop'
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+
+  build:
+    runs-on: [self-hosted, Linux, X64, nas]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run shell commands test
+        shell: bash
+        run: |
+           echo $TEST
+           cat /etc/os-release
