@@ -22,4 +22,8 @@ jobs:
         shell: bash
         run: |
           echo STARTING BUILD
+          pushd realtor
+          npm install
+          yarn build
+          popd
           docker build -t blog .
