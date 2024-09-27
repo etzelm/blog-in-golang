@@ -22,9 +22,13 @@ jobs:
         shell: bash
         run: |
           echo STARTING BUILD
+          BRANCH="${{ github.ref }"
+          echo $BRANCH
+          if [[ $BRANCH -eq "master" ]]; then TAG="latest"; else TAG="$BRANCH"; fi
+          echo $TAG
           pushd realtor
           npm install
           yarn build
           popd
-          docker build -t blog .
+          docker build -t blog:$TAG .
           docker system prune -f
