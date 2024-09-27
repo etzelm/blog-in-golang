@@ -1,14 +1,14 @@
 version: "3"
 
 services:
-  blog-in-golang:
-    image: blog:latest
-    container_name: blog-in-golang
+  blog-in-golang-dev:
+    image: blog:develop
+    container_name: blog-in-golang-dev
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped
     ports:
-      - "83:8080/tcp"
+      - "84:8080/tcp"
     volumes:
       - '/share/Container/blog-in-golang:/config'
     environment:

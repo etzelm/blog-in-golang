@@ -36,6 +36,9 @@ jobs:
         NAS_ADDR: ${{ secrets.NAS_ADDR }}
         NAS_USER: ${{ secrets.NAS_USER }}
         NAS_PASS: ${{ secrets.NAS_PASS }}
+        NAS_ARGS: ${{ secrets.NAS_ARGS }}
+        NAS_DIR: ${{ secrets.NAS_DIR }}
+        NAS_BIN: ${{ secrets.NAS_BIN }}
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     steps:
@@ -54,4 +57,5 @@ jobs:
           yarn build
           popd
           docker build -t blog:$TAG .
+          sshpass -p $NAS_PASS ssh $NAS_USER@$NAS_ADDR $NAS_ARGS -t "cd $NAS_DIR-$BRANCH; $NAS_BIN/docker compose up --force-recreate -d"
           docker system prune -f
