@@ -39,6 +39,8 @@ jobs:
         NAS_ARGS: ${{ secrets.NAS_ARGS }}
         NAS_DIR: ${{ secrets.NAS_DIR }}
         NAS_BIN: ${{ secrets.NAS_BIN }}
+        DISTRIBUTION_ID1: ${{ secrets.DISTRIBUTION_ID1 }}
+        DISTRIBUTION_ID2: ${{ secrets.DISTRIBUTION_ID2 }}
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     steps:
@@ -59,3 +61,5 @@ jobs:
           docker build -t blog:$TAG .
           sshpass -p $NAS_PASS ssh $NAS_USER@$NAS_ADDR $NAS_ARGS -t "cd $NAS_DIR-$BRANCH; $NAS_BIN/docker compose up --force-recreate -d"
           docker system prune -f
+          if [[ $BRANCH == "master" ]]; then aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID1 --paths '/*'; fi
+          if [[ $BRANCH == "master" ]]; then aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID2 --paths '/*'; fi
