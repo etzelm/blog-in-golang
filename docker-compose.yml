@@ -12,5 +12,5 @@ services:
     volumes:
       - '/share/Container/blog-in-golang:/config'
     environment:
-      AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
       AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
+      AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"

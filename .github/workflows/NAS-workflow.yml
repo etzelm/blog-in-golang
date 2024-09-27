@@ -1,0 +1,57 @@
+name: blog-in-golang-nas
+# This workflow deploys blog changes to my NAS
+on:
+  push:
+    branches:
+      - 'develop'
+      - 'master'
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+
+  NAS-build:
+    if: github.ref != 'refs/heads/master' && github.ref != 'refs/heads/develop'
+    runs-on: [self-hosted, Linux, X64, nas]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build
+        shell: bash
+        run: |
+          echo STARTING BUILD
+          BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+          echo "BRANCH: $BRANCH"
+          pushd realtor
+          npm install
+          yarn build
+          popd
+          go mod download
+          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o blog-in-golang .
+
+  NAS-deploy:
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop'
+    runs-on: [self-hosted, Linux, X64, nas]
+    env:
+        NAS_ADDR: ${{ secrets.NAS_ADDR }}
+        NAS_USER: ${{ secrets.NAS_USER }}
+        NAS_PASS: ${{ secrets.NAS_PASS }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build
+        shell: bash
+        run: |
+          echo STARTING BUILD
+          BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+          echo "BRANCH: $BRANCH"
+          if [[ $BRANCH == "master" ]]; then TAG="latest"; else TAG="$BRANCH"; fi
+          echo "TAG: $TAG"
+          pushd realtor
+          npm install
+          yarn build
+          popd
+          docker build -t blog:$TAG .
+          docker system prune -f
