@@ -28,7 +28,7 @@ func main() {
 	//log.Info(certmagic.HTTPS([]string{"server.mitchelletzel.com"}, httpServer))
 
 	//httpServer.Run()
-	httpServer.RunTLS(":8080", "/config/ssl/SSLcertificate.crt", "/config/ssl/SSLprivatekey.key")
+	httpServer.RunTLS(":8080", "/config/ssl/live/nas.mitchelletzel.com/fullchain.pem", "/config/ssl/live/nas.mitchelletzel.com/privkey.pem")
 
 }
 
