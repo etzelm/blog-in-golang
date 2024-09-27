@@ -1,9 +1,9 @@
 version: "3"
 
 services:
-  blog-in-golang-dev:
+  blog-in-golang-develop:
     image: blog:develop
-    container_name: blog-in-golang-dev
+    container_name: blog-in-golang-develop
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped
