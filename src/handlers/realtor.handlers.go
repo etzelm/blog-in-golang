@@ -18,7 +18,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-//ListingsGETAPI : Gets All Realtor Listings
+// ListingsGETAPI : Gets All Realtor Listings
 func ListingsGETAPI(c *gin.Context) {
 	c.Header("Cache-Control", "no-cache")
 	listings := models.GetRealtorListings()
@@ -28,7 +28,7 @@ func ListingsGETAPI(c *gin.Context) {
 
 }
 
-//ListingGETAPI : Gets A Realtor Listing
+// ListingGETAPI : Gets A Realtor Listing
 func ListingGETAPI(c *gin.Context) {
 	c.Header("Cache-Control", "no-cache")
 
@@ -50,7 +50,7 @@ func ListingGETAPI(c *gin.Context) {
 
 }
 
-//ListingPOSTAPI : Saves the user's data in DynamoDB and displays static response.html
+// ListingPOSTAPI : Saves the user's data in DynamoDB and displays static response.html
 func ListingPOSTAPI(c *gin.Context) {
 	c.Header("Cache-Control", "no-cache")
 
@@ -86,7 +86,7 @@ func ListingPOSTAPI(c *gin.Context) {
 
 		dbSvc := dynamodb.New(sess)
 
-		av, err := dynamodbattribute.MarshalMap(listing)
+		av, _ := dynamodbattribute.MarshalMap(listing)
 
 		input := &dynamodb.PutItemInput{
 			Item:      av,
@@ -128,7 +128,7 @@ func ListingPOSTAPI(c *gin.Context) {
 
 }
 
-//UploadImagePOSTAPI : Upload an image to S3
+// UploadImagePOSTAPI : Upload an image to S3
 func UploadImagePOSTAPI(c *gin.Context) {
 	c.Header("Cache-Control", "no-cache")
 
@@ -169,7 +169,7 @@ func UploadImagePOSTAPI(c *gin.Context) {
 				ContentLength: aws.Int64(size),
 				ContentType:   aws.String(fileType),
 			}
-			resp, err := svc.PutObject(params)
+			resp, _ := svc.PutObject(params)
 
 			fmt.Printf("response %s", awsutil.StringValue(resp))
 		}
