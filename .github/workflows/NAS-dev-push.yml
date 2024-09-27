@@ -22,7 +22,7 @@ jobs:
         shell: bash
         run: |
           echo STARTING BUILD
-          BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
+          BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
           echo "BRANCH: $BRANCH"
           if [[ $BRANCH -eq "master" ]]; then TAG="latest"; else TAG="$BRANCH"; fi
           echo "TAG: $TAG"
