@@ -18,8 +18,7 @@ import (
 func ReactRealtor() {
 	id := os.Getenv("AWS_ACCESS_KEY_ID")
 	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
-	log.Info("id: ", id)
-	log.Info("key: ", key)
+
 	var myCredentials = credentials.NewStaticCredentials(id, key, "")
 
 	sess, err := session.NewSession(&aws.Config{
