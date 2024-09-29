@@ -39,6 +39,12 @@ jobs:
         NAS_ARGS: ${{ secrets.NAS_ARGS }}
         NAS_DIR: ${{ secrets.NAS_DIR }}
         NAS_BIN: ${{ secrets.NAS_BIN }}
+        GCP_ADDR: ${{ secrets.GCP_ADDR }}
+        GCP_USER: ${{ secrets.GCP_USER }}
+        GCP_PASS: ${{ secrets.GCP_PASS }}
+        GCP_ARGS: ${{ secrets.GCP_ARGS }}
+        GCP_DIR: ${{ secrets.GCP_DIR }}
+        GCP_BIN: ${{ secrets.GCP_BIN }}
         DISTRIBUTION_ID1: ${{ secrets.DISTRIBUTION_ID1 }}
         DISTRIBUTION_ID2: ${{ secrets.DISTRIBUTION_ID2 }}
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
