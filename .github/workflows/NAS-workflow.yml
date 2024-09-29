@@ -54,12 +54,6 @@ jobs:
           echo "BRANCH: $BRANCH"
           if [[ $BRANCH == "master" ]]; then TAG="latest"; else TAG="$BRANCH"; fi
           echo "TAG: $TAG"
-          pushd realtor
-          npm install
-          yarn build
-          popd
-          docker build -t blog:$TAG .
-          sshpass -p $NAS_PASS ssh $NAS_USER@$NAS_ADDR $NAS_ARGS -t "cd $NAS_DIR-$BRANCH; $NAS_BIN/docker compose up --force-recreate -d"
           if [[ $BRANCH == "master" ]]
           then 
             docker save blog > blog.tar
