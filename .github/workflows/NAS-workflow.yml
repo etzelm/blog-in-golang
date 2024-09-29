@@ -58,8 +58,24 @@ jobs:
           echo STARTING BUILD
           BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
           echo "BRANCH: $BRANCH"
-          if [[ $BRANCH == "master" ]]; then TAG="latest"; else TAG="$BRANCH"; fi
+          if [[ $BRANCH == "master" ]]
+          then 
+            TAG="latest"
+            export ARTICLES="Live-Articles"
+          else 
+            TAG="$BRANCH"
+            export ARTICLES="Test-Articles"
+          fi
           echo "TAG: $TAG"
+          echo "Articles: ${ARTICLES}"
+          echo PUSHING ARTICLES CHANGES
+          pushd daemon
+          go run app.go 0
+          go run app.go 1
+          go run app.go 2
+          go run app.go 3
+          go run app.go 4
+          popd
           echo BUILDING REACT APP
           pushd realtor
           npm install
@@ -79,5 +95,13 @@ jobs:
             ssh -i ~/.ssh/gcp_rsa $GCP_ARGS $GCP_USER@$GCP_ADDR -t "cd $GCP_DIR; rm -rf blog.tar"
             aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID1 --paths '/*'
             aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID2 --paths '/*'
+            echo WAITING FOR INVALIDATIONS TO FINISH
+            sleep 40
+            echo RUNNING TESTS TO CACHE CLOUDFRONT CONTENT
+            while IFS= read -r line
+            do
+              echo $line
+              curl "$line" > /dev/null
+            done < .github/workflows/urls.txt
           fi
           docker system prune -f

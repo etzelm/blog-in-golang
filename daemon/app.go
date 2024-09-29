@@ -20,14 +20,19 @@ func main() {
 	//Switch Case Depends on Article ID Number
 	switch args := os.Args[1:]; args[0] {
 	case "0":
+		log.Info("Pushing changes for GraphStore")
 		graphStore.GraphStore()
 	case "1":
+		log.Info("Pushing changes for GoogleSRE")
 		googleSRE.GoogleSRE()
 	case "2":
+		log.Info("Pushing changes for ReactRealtor")
 		reactRealtor.ReactRealtor()
 	case "3":
+		log.Info("Pushing changes for AmazonEMR")
 		awsEMR.AmazonEMR()
 	case "4":
+		log.Info("Pushing changes for InfraCode")
 		infraCode.InfraCode()
 	case "42":
 		createTable()
@@ -42,8 +47,6 @@ func main() {
 func createTable() {
 	id := os.Getenv("AWS_ACCESS_KEY_ID")
 	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
-	log.Info("id: ", id)
-	log.Info("key: ", key)
 	var myCredentials = credentials.NewStaticCredentials(id, key, "")
 
 	sess, err := session.NewSession(&aws.Config{
@@ -100,8 +103,6 @@ func createTable() {
 func dropTable() {
 	id := os.Getenv("AWS_ACCESS_KEY_ID")
 	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
-	log.Info("id: ", id)
-	log.Info("key: ", key)
 	var myCredentials = credentials.NewStaticCredentials(id, key, "")
 
 	sess, err := session.NewSession(&aws.Config{

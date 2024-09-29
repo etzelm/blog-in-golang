@@ -18,8 +18,7 @@ import (
 func GoogleSRE() {
 	id := os.Getenv("AWS_ACCESS_KEY_ID")
 	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
-	log.Info("id: ", id)
-	log.Info("key: ", key)
+
 	var myCredentials = credentials.NewStaticCredentials(id, key, "")
 
 	sess, err := session.NewSession(&aws.Config{
@@ -62,9 +61,10 @@ func GoogleSRE() {
 
 	av, _ := dynamodbattribute.MarshalMap(item)
 
+	table := os.Getenv("ARTICLES")
 	input := &dynamodb.PutItemInput{
 		Item:      av,
-		TableName: aws.String("Test-Articles"),
+		TableName: aws.String(table),
 	}
 
 	_, err = dbSvc.PutItem(input)
