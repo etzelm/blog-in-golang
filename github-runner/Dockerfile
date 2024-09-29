@@ -17,10 +17,11 @@ RUN cd /home/docker && mkdir actions-runner && cd actions-runner \
     && curl -O -L https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz \
     && tar xzf ./actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz
 RUN chown -R docker ~docker && /home/docker/actions-runner/bin/installdependencies.sh
-COPY --chmod=0755 start.sh start.sh
+COPY start.sh start.sh
 RUN chmod +x start.sh
-RUN chmod 777 start.sh
-RUN sed -i 's/\r//' start.sh
+COPY gcp_rsa /home/docker/.ssh/gcp_rsa
+RUN chmod 400 /home/docker/.ssh/gcp_rsa
+RUN chown docker:docker -R /home/docker/.ssh/
 
 USER docker
-ENTRYPOINT ["bash", "-c", "./start.sh"]
+ENTRYPOINT ["./start.sh"]
