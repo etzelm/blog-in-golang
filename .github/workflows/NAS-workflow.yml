@@ -60,6 +60,15 @@ jobs:
           popd
           docker build -t blog:$TAG .
           sshpass -p $NAS_PASS ssh $NAS_USER@$NAS_ADDR $NAS_ARGS -t "cd $NAS_DIR-$BRANCH; $NAS_BIN/docker compose up --force-recreate -d"
+          if [[ $BRANCH == "master" ]]
+          then 
+            docker save blog > blog.tar
+            scp -i ~/.ssh/gcp_rsa $GCP_ARGS blog.tar $GCP_USER@$GCP_ADDR:$GCP_DIR.
+            ssh -i ~/.ssh/gcp_rsa $GCP_ARGS $GCP_USER@$GCP_ADDR -t "cd $GCP_DIR; $GCP_BIN/docker load --input blog.tar"
+            ssh -i ~/.ssh/gcp_rsa $GCP_ARGS $GCP_USER@$GCP_ADDR -t "cd $GCP_DIR; $GCP_BIN/docker compose up --force-recreate -d"
+            ssh -i ~/.ssh/gcp_rsa $GCP_ARGS $GCP_USER@$GCP_ADDR -t "cd $GCP_DIR; $GCP_BIN/docker system prune -a"
+            ssh -i ~/.ssh/gcp_rsa $GCP_ARGS $GCP_USER@$GCP_ADDR -t "cd $GCP_DIR; rm -rf blog.tar"
+            aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID1 --paths '/*'
+            aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID2 --paths '/*'
+          fi
           docker system prune -f
-          if [[ $BRANCH == "master" ]]; then aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID1 --paths '/*'; fi
-          if [[ $BRANCH == "master" ]]; then aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID2 --paths '/*'; fi
