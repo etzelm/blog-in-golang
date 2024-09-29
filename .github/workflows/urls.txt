@@ -14,8 +14,12 @@ https://mitchelletzel.com/public/images/apple-touch-icon.png
 https://mitchelletzel.com/public/images/favicon-32x32.png
 https://mitchelletzel.com/posts
 https://mitchelletzel.com/contact
+https://mitchelletzel.com/category/Disciplines
+https://mitchelletzel.com/category/Distributed%20Systems
+https://mitchelletzel.com/category/My%20Projects
 https://mitchelletzel.com/realtor
 https://mitchelletzel.com/realtor/new
+https://mitchelletzel.com/realtor/search
 https://mitchelletzel.com/realtor/js/api.js
 https://mitchelletzel.com/realtor/js/platform.js
 https://mitchelletzel.com/realtor/css/bootstrap.min.css

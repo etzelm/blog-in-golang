@@ -29,18 +29,79 @@ jobs:
           go mod download
           CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o blog-in-golang .
 
-  NAS-tests:
+  NAS-deploy:
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop'
     runs-on: [self-hosted, Linux, X64, nas]
+    env:
+        NAS_ADDR: ${{ secrets.NAS_ADDR }}
+        NAS_USER: ${{ secrets.NAS_USER }}
+        NAS_PASS: ${{ secrets.NAS_PASS }}
+        NAS_ARGS: ${{ secrets.NAS_ARGS }}
+        NAS_DIR: ${{ secrets.NAS_DIR }}
+        NAS_BIN: ${{ secrets.NAS_BIN }}
+        GCP_ADDR: ${{ secrets.GCP_ADDR }}
+        GCP_USER: ${{ secrets.GCP_USER }}
+        GCP_PASS: ${{ secrets.GCP_PASS }}
+        GCP_ARGS: ${{ secrets.GCP_ARGS }}
+        GCP_DIR: ${{ secrets.GCP_DIR }}
+        GCP_BIN: ${{ secrets.GCP_BIN }}
+        DISTRIBUTION_ID1: ${{ secrets.DISTRIBUTION_ID1 }}
+        DISTRIBUTION_ID2: ${{ secrets.DISTRIBUTION_ID2 }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Tests
+      - name: Build
         shell: bash
         run: |
-          echo RUNNING TESTS TO CACHE CLOUDFRONT CONTENT
-          while IFS= read -r line
-          do
-            echo $line
-            curl "$line" > /dev/null
-          done < .github/workflows/urls.txt
+          echo STARTING BUILD
+          BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+          echo "BRANCH: $BRANCH"
+          if [[ $BRANCH == "master" ]]
+          then 
+            TAG="latest"
+            export ARTICLES="Live-Articles"
+          else 
+            TAG="$BRANCH"
+            export ARTICLES="Test-Articles"
+          fi
+          echo "TAG: $TAG"
+          echo "Articles: ${ARTICLES}"
+          echo PUSHING ARTICLES CHANGES
+          pushd daemon
+          go run app.go 0
+          go run app.go 1
+          go run app.go 2
+          go run app.go 3
+          go run app.go 4
+          popd
+          echo BUILDING REACT APP
+          pushd realtor
+          npm install
+          yarn build
+          popd
+          echo BUILDING AND REFRESHING NAS DOCKER CONTAINER
+          docker build -t blog:$TAG .
+          sshpass -p $NAS_PASS ssh $NAS_USER@$NAS_ADDR $NAS_ARGS -t "cd $NAS_DIR-$BRANCH; $NAS_BIN/docker compose up --force-recreate -d"
+          if [[ $BRANCH == "master" ]]
+          then 
+            echo REFRESHING GCP DOCKER CONTAINER
+            docker save blog:latest > blog.tar
+            scp -i ~/.ssh/gcp_rsa $GCP_ARGS blog.tar $GCP_USER@$GCP_ADDR:$GCP_DIR.
+            ssh -i ~/.ssh/gcp_rsa $GCP_ARGS $GCP_USER@$GCP_ADDR -t "cd $GCP_DIR; $GCP_BIN/docker load --input blog.tar"
+            ssh -i ~/.ssh/gcp_rsa $GCP_ARGS $GCP_USER@$GCP_ADDR -t "cd $GCP_DIR; $GCP_BIN/docker compose up --force-recreate -d"
+            ssh -i ~/.ssh/gcp_rsa $GCP_ARGS $GCP_USER@$GCP_ADDR -t "cd $GCP_DIR; $GCP_BIN/docker system prune -f"
+            ssh -i ~/.ssh/gcp_rsa $GCP_ARGS $GCP_USER@$GCP_ADDR -t "cd $GCP_DIR; rm -rf blog.tar"
+            aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID1 --paths '/*'
+            aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID2 --paths '/*'
+            echo WAITING FOR INVALIDATIONS TO FINISH
+            sleep 40
+            echo RUNNING TESTS TO CACHE CLOUDFRONT CONTENT
+            while IFS= read -r line
+            do
+              echo $line
+              curl "$line" > /dev/null
+            done < .github/workflows/urls.txt
+          fi
+          docker system prune -f
