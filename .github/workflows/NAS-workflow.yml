@@ -39,6 +39,12 @@ jobs:
         NAS_ARGS: ${{ secrets.NAS_ARGS }}
         NAS_DIR: ${{ secrets.NAS_DIR }}
         NAS_BIN: ${{ secrets.NAS_BIN }}
+        GCP_ADDR: ${{ secrets.GCP_ADDR }}
+        GCP_USER: ${{ secrets.GCP_USER }}
+        GCP_PASS: ${{ secrets.GCP_PASS }}
+        GCP_ARGS: ${{ secrets.GCP_ARGS }}
+        GCP_DIR: ${{ secrets.GCP_DIR }}
+        GCP_BIN: ${{ secrets.GCP_BIN }}
         DISTRIBUTION_ID1: ${{ secrets.DISTRIBUTION_ID1 }}
         DISTRIBUTION_ID2: ${{ secrets.DISTRIBUTION_ID2 }}
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -54,15 +60,18 @@ jobs:
           echo "BRANCH: $BRANCH"
           if [[ $BRANCH == "master" ]]; then TAG="latest"; else TAG="$BRANCH"; fi
           echo "TAG: $TAG"
+          echo BUILDING REACT APP
           pushd realtor
           npm install
           yarn build
           popd
+          echo BUILDING AND REFRESHING NAS DOCKER CONTAINER
           docker build -t blog:$TAG .
           sshpass -p $NAS_PASS ssh $NAS_USER@$NAS_ADDR $NAS_ARGS -t "cd $NAS_DIR-$BRANCH; $NAS_BIN/docker compose up --force-recreate -d"
           if [[ $BRANCH == "master" ]]
           then 
-            docker save blog > blog.tar
+            echo REFRESHING GCP DOCKER CONTAINER
+            docker save blog:latest > blog.tar
             scp -i ~/.ssh/gcp_rsa $GCP_ARGS blog.tar $GCP_USER@$GCP_ADDR:$GCP_DIR.
             ssh -i ~/.ssh/gcp_rsa $GCP_ARGS $GCP_USER@$GCP_ADDR -t "cd $GCP_DIR; $GCP_BIN/docker load --input blog.tar"
             ssh -i ~/.ssh/gcp_rsa $GCP_ARGS $GCP_USER@$GCP_ADDR -t "cd $GCP_DIR; $GCP_BIN/docker compose up --force-recreate -d"
