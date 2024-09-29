@@ -60,9 +60,19 @@ jobs:
           echo "BRANCH: $BRANCH"
           if [[ $BRANCH == "master" ]]; then TAG="latest"; else TAG="$BRANCH"; fi
           echo "TAG: $TAG"
+          echo BUILDING REACT APP
+          pushd realtor
+          npm install
+          yarn build
+          popd
+          echo BUILDING AND REFRESHING NAS DOCKER CONTAINER
+          docker build -t blog:$TAG .
+          sshpass -p $NAS_PASS ssh $NAS_USER@$NAS_ADDR $NAS_ARGS -t "cd $NAS_DIR-$BRANCH; $NAS_BIN/docker compose up --force-recreate -d"
           if [[ $BRANCH == "master" ]]
           then 
-            docker save blog > blog.tar
+            echo REFRESHING GCP DOCKER CONTAINER
+            docker save blog:latest > blog.tar
+            scp -i ~/.ssh/gcp_rsa $GCP_ARGS blog.tar $GCP_USER@$GCP_ADDR:$GCP_DIR.
             ssh -i ~/.ssh/gcp_rsa $GCP_ARGS $GCP_USER@$GCP_ADDR -t "cd $GCP_DIR; $GCP_BIN/docker load --input blog.tar"
             ssh -i ~/.ssh/gcp_rsa $GCP_ARGS $GCP_USER@$GCP_ADDR -t "cd $GCP_DIR; $GCP_BIN/docker compose up --force-recreate -d"
             ssh -i ~/.ssh/gcp_rsa $GCP_ARGS $GCP_USER@$GCP_ADDR -t "cd $GCP_DIR; $GCP_BIN/docker system prune -f"
