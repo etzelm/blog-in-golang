@@ -1,0 +1,15 @@
+version: "3"
+
+services:
+  blog-in-golang:
+    image: blog:latest
+    container_name: blog-in-golang
+    restart: unless-stopped
+    ports:
+      - "443:8080/tcp"
+    environment:
+      AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
+      AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
+      ARTICLES: "Live-Articles"
+      DEPLOYMENT: "GCP"
+      DOMAIN: "test.mitchelletzel.com"
