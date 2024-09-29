@@ -62,9 +62,10 @@ func GoogleSRE() {
 
 	av, _ := dynamodbattribute.MarshalMap(item)
 
+	table := os.Getenv("ARTICLES")
 	input := &dynamodb.PutItemInput{
 		Item:      av,
-		TableName: aws.String("Test-Articles"),
+		TableName: aws.String(table),
 	}
 
 	_, err = dbSvc.PutItem(input)

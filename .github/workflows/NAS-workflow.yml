@@ -58,8 +58,24 @@ jobs:
           echo STARTING BUILD
           BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
           echo "BRANCH: $BRANCH"
-          if [[ $BRANCH == "master" ]]; then TAG="latest"; else TAG="$BRANCH"; fi
+          if [[ $BRANCH == "master" ]]
+          then 
+            TAG="latest"
+            export ARTICLES="Live-Articles"
+          else 
+            TAG="$BRANCH"
+            export ARTICLES="Test-Articles"
+          fi
           echo "TAG: $TAG"
+          echo "Articles: ${ARTICLES}"
+          echo PUSHING ARTICLES CHANGES
+          pushd daemon
+          go run app.go 0
+          go run app.go 1
+          go run app.go 2
+          go run app.go 3
+          go run app.go 4
+          popd
           echo BUILDING REACT APP
           pushd realtor
           npm install
