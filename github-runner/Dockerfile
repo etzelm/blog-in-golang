@@ -21,7 +21,7 @@ COPY start.sh start.sh
 RUN chmod +x start.sh
 COPY gcp_rsa /home/docker/.ssh/gcp_rsa
 RUN chmod 400 /home/docker/.ssh/gcp_rsa
-RUN chown docker /home/docker/.ssh/gcp_rsa
+RUN chown docker:docker -R /home/docker/.ssh/
 
 USER docker
 ENTRYPOINT ["./start.sh"]
