@@ -4,4 +4,5 @@ dynamodb/
 .ebextensions/
 *.tar
 realtor/node_modules/
+github-runner/gcp_rsa
 .DS_Store

@@ -26,9 +26,7 @@ func main() {
 
 	env := os.Getenv("DEPLOYMENT")
 	domain := os.Getenv("DOMAIN")
-	if env == "NAS" {
-		httpServer.RunTLS(":8080", "/config/ssl/live/"+domain+"/fullchain.pem", "/config/ssl/live/"+domain+"/privkey.pem")
-	} else if env == "GCP" {
+	if env == "NAS" || env == "GCP" {
 		certmagic.DefaultACME.Agreed = true
 		certmagic.DefaultACME.Email = "etzelm@live.com"
 		log.Info(certmagic.HTTPS([]string{domain}, httpServer))

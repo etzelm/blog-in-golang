@@ -8,7 +8,8 @@ services:
       - no-new-privileges:true
     restart: unless-stopped
     ports:
-      - "83:8080/tcp"
+      - "83:443/tcp"
+      - "84:80/tcp"
     volumes:
       - '/share/Container/blog-in-golang:/config'
     environment:

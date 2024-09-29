@@ -19,6 +19,9 @@ RUN cd /home/docker && mkdir actions-runner && cd actions-runner \
 RUN chown -R docker ~docker && /home/docker/actions-runner/bin/installdependencies.sh
 COPY start.sh start.sh
 RUN chmod +x start.sh
+COPY gcp_rsa /home/docker/.ssh/gcp_rsa
+RUN chmod 400 /home/docker/.ssh/gcp_rsa
+RUN chown docker /home/docker/.ssh/gcp_rsa
 
 USER docker
 ENTRYPOINT ["./start.sh"]
