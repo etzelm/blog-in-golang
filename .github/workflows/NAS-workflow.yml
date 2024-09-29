@@ -35,11 +35,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Build
+      - name: Tests
         shell: bash
         run: |
           echo RUNNING TESTS TO CACHE CLOUDFRONT CONTENT
           while IFS= read -r line
           do
-            curl "$line"
+            echo $line
+            curl "$line" > /dev/null
           done < .github/workflows/urls.txt
