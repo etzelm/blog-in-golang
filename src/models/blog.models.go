@@ -18,7 +18,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-//ContactForm : structure used to grab user data from /contact POST requests
+// ContactForm : structure used to grab user data from /contact POST requests
 type ContactForm struct {
 	Name       string `json:"name" form:"name" binding:"required"`
 	Email      string `json:"email" form:"email" binding:"required"`
@@ -27,7 +27,7 @@ type ContactForm struct {
 	RobotCheck int    `json:"robot" form:"robot"`
 }
 
-//Item : structure used to get data from DynamoDB requests
+// Item : structure used to get data from DynamoDB requests
 type Item struct {
 	ArticlePicture string `json:"article-picture"`
 	Author         string `json:"author"`
@@ -43,7 +43,7 @@ type Item struct {
 	PostType       string `json:"post-type"`
 }
 
-//Article : structure used to make DynamoDB data functional
+// Article : structure used to make DynamoDB data functional
 type Article struct {
 	ArticlePicture template.HTML `json:"article-picture"`
 	Author         template.HTML `json:"author"`
@@ -59,7 +59,7 @@ type Article struct {
 	PostType       string        `json:"post-type"`
 }
 
-//Category : structure used to access data in HTML Templates
+// Category : structure used to access data in HTML Templates
 type Category struct {
 	Category string `json:"category"`
 }
@@ -229,8 +229,9 @@ func GetArticleByID(id int) (*Article, error) {
 	}
 	dbSvc := dynamodb.New(sess)
 
+	table := os.Getenv("ARTICLES")
 	result, err := dbSvc.GetItem(&dynamodb.GetItemInput{
-		TableName: aws.String("Test-Articles"),
+		TableName: aws.String(table),
 		Key: map[string]*dynamodb.AttributeValue{
 			"post-id": {
 				N: aws.String(strconv.Itoa(id)),

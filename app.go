@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"time"
 
 	"github.com/caddyserver/certmagic"
@@ -23,16 +24,21 @@ func main() {
 	LoadServerRoutes(httpServer)
 	log.WithField("server", httpServer).Info("Default Gin server created.")
 
-	certmagic.DefaultACME.Agreed = true
-	certmagic.DefaultACME.Email = "etzelm@live.com"
-	//log.Info(certmagic.HTTPS([]string{"server.mitchelletzel.com"}, httpServer))
-
-	httpServer.Run()
+	env := os.Getenv("DEPLOYMENT")
+	domain := os.Getenv("DOMAIN")
+	if env == "NAS" || env == "GCP" {
+		certmagic.DefaultACME.Agreed = true
+		certmagic.DefaultACME.Email = "etzelm@live.com"
+		log.Info(certmagic.HTTPS([]string{domain}, httpServer))
+	} else {
+		httpServer.Run()
+	}
 
 }
 
 // LoadStaticFolderRoutes loads all api routes that serve a static server folder.
 func LoadStaticFolderRoutes(server *gin.Engine) *gin.Engine {
+
 	server.Use(static.Serve("/public", static.LocalFile("./public", true)))
 	server.Use(static.Serve("/realtor", static.LocalFile("./realtor/build", true)))
 	server.Use(static.Serve("/realtor/new", static.LocalFile("./realtor/build", true)))
@@ -41,6 +47,7 @@ func LoadStaticFolderRoutes(server *gin.Engine) *gin.Engine {
 	server.Use(static.Serve("/realtor/my-listing", static.LocalFile("./realtor/build", true)))
 	server.Use(static.Serve("/realtor/my-listings", static.LocalFile("./realtor/build", true)))
 	return server
+
 }
 
 // LoadServerRoutes does exactly that... loads all api routes for the server.

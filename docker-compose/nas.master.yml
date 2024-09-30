@@ -1,0 +1,20 @@
+version: "3"
+
+services:
+  blog-in-golang-master:
+    image: blog:latest
+    container_name: blog-in-golang-master
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    ports:
+      - "83:443/tcp"
+      - "84:80/tcp"
+    volumes:
+      - '/share/Container/blog-in-golang:/config'
+    environment:
+      AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
+      AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
+      ARTICLES: "Live-Articles"
+      DEPLOYMENT: "NAS"
+      DOMAIN: "nas.mitchelletzel.com"

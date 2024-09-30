@@ -18,7 +18,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-//PostPage : Gets All Article Panels and Dynamically Displays index.html Template
+// PostPage : Gets All Article Panels and Dynamically Displays index.html Template
 func PostPage(c *gin.Context) {
 	c.Header("Cache-Control", "public, max-age=86400")
 	panels := models.GetArticlePanels()
@@ -38,7 +38,7 @@ func PostPage(c *gin.Context) {
 
 }
 
-//CategoryPage : Gets Category Article Panels and Dynamically Displays index.html Template
+// CategoryPage : Gets Category Article Panels and Dynamically Displays index.html Template
 func CategoryPage(c *gin.Context) {
 	c.Header("Cache-Control", "public, max-age=86400")
 	if category := c.Param("category"); category != "" {
@@ -93,7 +93,7 @@ func CategoryPage(c *gin.Context) {
 
 }
 
-//ArticlePage : Queries DynamoDB for a Specific Article and Dynamically Displays article.html
+// ArticlePage : Queries DynamoDB for a Specific Article and Dynamically Displays article.html
 func ArticlePage(c *gin.Context) {
 	c.Header("Cache-Control", "public, max-age=86400")
 	// Check if the article ID is valid
@@ -158,7 +158,7 @@ func ArticlePage(c *gin.Context) {
 	}
 }
 
-//AboutPage : Displays the static about.html page
+// AboutPage : Displays the static about.html page
 func AboutPage(c *gin.Context) {
 	c.Header("Cache-Control", "public, max-age=604800")
 	// Call the HTML method of the Context to render a template
@@ -174,7 +174,7 @@ func AboutPage(c *gin.Context) {
 	)
 }
 
-//ContactPage : Displays the static contact.html page for GET requests
+// ContactPage : Displays the static contact.html page for GET requests
 func ContactPage(c *gin.Context) {
 	c.Header("Cache-Control", "public, max-age=604800")
 	// Call the HTML method of the Context to render a template
@@ -190,7 +190,7 @@ func ContactPage(c *gin.Context) {
 	)
 }
 
-//ContactResponse : Saves the user's data in DynamoDB and displays static response.html
+// ContactResponse : Saves the user's data in DynamoDB and displays static response.html
 func ContactResponse(c *gin.Context) {
 	c.Header("Cache-Control", "no-cache")
 	var form models.ContactForm
@@ -254,7 +254,7 @@ func ContactResponse(c *gin.Context) {
 
 	dbSvc := dynamodb.New(sess)
 
-	av, err := dynamodbattribute.MarshalMap(form)
+	av, _ := dynamodbattribute.MarshalMap(form)
 
 	input := &dynamodb.PutItemInput{
 		Item:      av,
