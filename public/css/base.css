@@ -426,6 +426,8 @@ textarea {
   -webkit-flex-flow: row wrap;
   -ms-flex-flow: row wrap;
   flex-flow: row wrap;
+  z-index: -1 !important;
+  position: relative !important;
 }
 
 .row .row {
