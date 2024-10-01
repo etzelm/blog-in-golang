@@ -2056,8 +2056,6 @@ input::-moz-focus-inner {
 @media screen and (max-width:1800px) {
   .masonry-wrap {
     max-width: 1260px;
-    z-index: 0;
-    position: relative;
   }
 
   .listing-header {
@@ -2112,8 +2110,6 @@ input::-moz-focus-inner {
 @media screen and (max-width:1500px) {
   .masonry-wrap {
     max-width: 900px;
-    z-index: 0;
-    position: relative;
   }
 
   .listing-header {
@@ -2161,8 +2157,6 @@ input::-moz-focus-inner {
 
   .masonry-wrap {
     max-width: 580px;
-    z-index: 0;
-    position: relative;
   }
 
   .listing-header {
@@ -2823,7 +2817,7 @@ body.search-is-visible {
   }
 
   .header__top {
-    z-index: 100;
+    z-index: 9999;
     background: #111111;
     width: 100%;
     height: 78px;
@@ -2873,7 +2867,7 @@ body.search-is-visible {
     opacity: 1 !important;
     visibility: visible !important;
     position: absolute !important;
-    z-index: 99 !important;
+    z-index: 9998 !important;
   }
 
   .nav-wrap-is-visible .header__search-trigger {
