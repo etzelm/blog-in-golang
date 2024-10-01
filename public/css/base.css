@@ -284,12 +284,12 @@ summary {
 
 /* Add the correct display in IE 10+. */
 template {
-  display: none;
+  display: none !important; 
 }
 
 /* Add the correct display in IE 10. */
 [hidden] {
-  display: none;
+  display: none !important;
 }
 
 
@@ -827,7 +827,7 @@ textarea {
   }
 
   .hide-on-tablet {
-    display: none;
+    display: none !important; 
   }
 
 }
@@ -940,7 +940,7 @@ textarea {
   }
 
   .hide-on-mobile {
-    display: none;
+    display: none !important; 
   }
 
 }
@@ -1226,7 +1226,7 @@ textarea {
 /* misc helper classes
  * -------------------------------------- */
 .is-hidden {
-  display: none;
+  display: none !important; 
 }
 
 .is-invisible {

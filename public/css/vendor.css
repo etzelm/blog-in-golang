@@ -84,7 +84,7 @@
   float: left;
   height: 100%;
   min-height: 1px;
-  display: none;
+  display: none !important; 
 }
 
 [dir="rtl"] .slick-slide {
@@ -96,7 +96,7 @@
 }
 
 .slick-slide.slick-loading img {
-  display: none;
+  display: none !important; 
 }
 
 .slick-slide.dragging img {
@@ -118,7 +118,7 @@
 }
 
 .slick-arrow.slick-hidden {
-  display: none;
+  display: none !important; 
 }
 
 
@@ -369,7 +369,7 @@
 }
 
 .lity-hide {
-  display: none;
+  display: none !important; 
 }
 
 
