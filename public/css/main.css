@@ -2054,6 +2054,8 @@ input::-moz-focus-inner {
 @media screen and (max-width:1800px) {
   .masonry-wrap {
     max-width: 1260px;
+    z-index: -1 !important;
+    position: relative !important;
   }
 
   .listing-header {
@@ -2104,6 +2106,8 @@ input::-moz-focus-inner {
 @media screen and (max-width:1500px) {
   .masonry-wrap {
     max-width: 900px;
+    z-index: -1 !important;
+    position: relative !important;
   }
 
   .listing-header {
@@ -2149,6 +2153,8 @@ input::-moz-focus-inner {
 
   .masonry-wrap {
     max-width: 580px;
+    z-index: -1 !important;
+    position: relative !important;
   }
 
   .listing-header {
