@@ -2852,8 +2852,8 @@ body.search-is-visible {
   }
 
   .nav-wrap-is-visible .header__nav-wrap {
-    opacity: 1;
-    visibility: visible;
+    opacity: 1 !important;
+    visibility: visible !important;
   }
 
   .nav-wrap-is-visible .header__search-trigger {
