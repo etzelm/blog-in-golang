@@ -2054,7 +2054,7 @@ input::-moz-focus-inner {
 @media screen and (max-width:1800px) {
   .masonry-wrap {
     max-width: 1260px;
-    z-index: 10;
+    z-index: 0;
     position: relative;
   }
 
@@ -2106,7 +2106,7 @@ input::-moz-focus-inner {
 @media screen and (max-width:1500px) {
   .masonry-wrap {
     max-width: 900px;
-    z-index: 10;
+    z-index: 0;
     position: relative;
   }
 
@@ -2153,7 +2153,7 @@ input::-moz-focus-inner {
 
   .masonry-wrap {
     max-width: 580px;
-    z-index: 10;
+    z-index: 0;
     position: relative;
   }
 
