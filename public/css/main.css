@@ -2153,8 +2153,8 @@ input::-moz-focus-inner {
 
   .masonry-wrap {
     max-width: 580px;
-    z-index: -1 !important;
-    position: relative !important;
+    z-index: 10;
+    position: relative;
   }
 
   .listing-header {
