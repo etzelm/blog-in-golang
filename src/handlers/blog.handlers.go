@@ -176,11 +176,7 @@ func AboutPage(c *gin.Context) {
 
 // ContactPage : Displays the static contact.html page for GET requests
 func ContactPage(numOne *int, numTwo *int) gin.HandlerFunc {
-	log.Info("numOne: ", *numOne)
-	log.Info("numTwo: ", *numTwo)
 	fn := func(c *gin.Context) {
-		log.Info("numOne: ", *numOne)
-		log.Info("numTwo: ", *numTwo)
 		c.Header("Cache-Control", "no-cache")
 		// Call the HTML method of the Context to render a template
 		c.HTML(
@@ -201,16 +197,11 @@ func ContactPage(numOne *int, numTwo *int) gin.HandlerFunc {
 
 // ContactResponse : Saves the user's data in DynamoDB and displays static response.html
 func ContactResponse(numOne *int, numTwo *int) gin.HandlerFunc {
-	log.Info("numOne: ", *numOne)
-	log.Info("numTwo: ", *numTwo)
 	fn := func(c *gin.Context) {
 		c.Header("Cache-Control", "no-cache")
 		var form models.ContactForm
 		c.Bind(&form)
 
-		log.Info("RobotNum: ", form.RobotNum)
-		log.Info("numOne: ", *numOne)
-		log.Info("numTwo: ", *numTwo)
 		if form.RobotCheck != 1 || form.RobotNum != *numOne+*numTwo {
 			c.HTML(
 				// Set the HTTP status to 400 (Bad Request)

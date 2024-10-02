@@ -32,9 +32,7 @@ func main() {
 		for range time.Tick(time.Hour * 3) {
 			go func() {
 				RandomOne = randRange(1, 9)
-				log.Info("Changing RandomOne: ", RandomOne)
 				RandomTwo = randRange(1, 9)
-				log.Info("Changing RandomTwo: ", RandomTwo)
 			}()
 		}
 	}()
