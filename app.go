@@ -29,7 +29,7 @@ func main() {
 	log.WithField("server", httpServer).Info("Default Gin server created.")
 
 	go func() {
-		for range time.Tick(time.Hour * 3) {
+		for range time.Tick(time.Minute * 3) {
 			go func() {
 				RandomOne = randRange(1, 9)
 				log.Info("Changing RandomOne: ", RandomOne)
