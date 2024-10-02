@@ -177,6 +177,7 @@ func AboutPage(c *gin.Context) {
 // ContactPage : Displays the static contact.html page for GET requests
 func ContactPage(RandomOne int, RandomTwo int) gin.HandlerFunc {
 	fn := func(c *gin.Context) {
+		c.Header("Cache-Control", "no-cache")
 		// Call the HTML method of the Context to render a template
 		c.HTML(
 			// Set the HTTP status to 200 (OK)
