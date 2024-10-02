@@ -25,7 +25,7 @@ type ContactForm struct {
 	Website    string `json:"website" form:"website"`
 	Message    string `json:"message" form:"message" binding:"required"`
 	RobotCheck int    `json:"robot" form:"robot"`
-	RobotNum   int    `json:"number" form:"robot"`
+	RobotNum   int    `json:"number" form:"number"`
 }
 
 // Item : structure used to get data from DynamoDB requests

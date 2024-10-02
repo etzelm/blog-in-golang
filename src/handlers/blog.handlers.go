@@ -201,6 +201,9 @@ func ContactResponse(RandomOne int, RandomTwo int) gin.HandlerFunc {
 		var form models.ContactForm
 		c.Bind(&form)
 
+		log.Info("RobotNum: ", form.RobotNum)
+		log.Info("RandomOne: ", RandomOne)
+		log.Info("RandomTwo: ", RandomTwo)
 		if form.RobotCheck != 1 && form.RobotNum != RandomOne+RandomTwo {
 			c.HTML(
 				// Set the HTTP status to 400 (Bad Request)
