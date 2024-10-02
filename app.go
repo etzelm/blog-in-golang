@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math/rand/v2"
 	"os"
 	"time"
 
@@ -13,6 +14,9 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var RandomOne int = 4
+var RandomTwo int = 2
+
 func main() {
 
 	log.Info("Server is starting...")
@@ -23,6 +27,17 @@ func main() {
 	LoadStaticFolderRoutes(httpServer)
 	LoadServerRoutes(httpServer)
 	log.WithField("server", httpServer).Info("Default Gin server created.")
+
+	go func() {
+		for range time.Tick(time.Hour * 3) {
+			go func() {
+				RandomOne = randRange(1, 9)
+				log.Info("Changing RandomOne: ", RandomOne)
+				RandomTwo = randRange(1, 9)
+				log.Info("Changing RandomTwo: ", RandomTwo)
+			}()
+		}
+	}()
 
 	env := os.Getenv("DEPLOYMENT")
 	domain := os.Getenv("DOMAIN")
@@ -56,8 +71,8 @@ func LoadServerRoutes(server *gin.Engine) *gin.Engine {
 	store := persistence.NewInMemoryStore(24 * time.Hour)
 	server.GET("/", cache.CachePage(store, 7*24*time.Hour, handlers.AboutPage))
 	server.GET("/posts", cache.CachePage(store, 24*time.Hour, handlers.PostPage))
-	server.GET("/contact", cache.CachePage(store, 7*24*time.Hour, handlers.ContactPage))
-	server.POST("/contact", handlers.ContactResponse)
+	server.GET("/contact", handlers.ContactPage(RandomOne, RandomTwo))
+	server.POST("/contact", handlers.ContactResponse(RandomOne, RandomTwo))
 	server.GET("/article/:article_id", cache.CachePage(store, 24*time.Hour, handlers.ArticlePage))
 	server.GET("/category/:category", cache.CachePage(store, 24*time.Hour, handlers.CategoryPage))
 	server.GET("/listing/:listing", handlers.ListingGETAPI)
@@ -69,4 +84,8 @@ func LoadServerRoutes(server *gin.Engine) *gin.Engine {
 	server.POST("/upload/image/:user", handlers.UploadImagePOSTAPI)
 	return server
 
+}
+
+func randRange(min, max int) int {
+	return rand.IntN(max-min) + min
 }
