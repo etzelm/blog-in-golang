@@ -315,7 +315,7 @@ body {
   -moz-font-smoothing: grayscale;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
-  -webkit-overflow-scrolling: touch;
+  -webkit-overflow-scrolling: auto !important;
   -webkit-text-size-adjust: none;
 }
 
@@ -426,8 +426,13 @@ textarea {
   -webkit-flex-flow: row wrap;
   -ms-flex-flow: row wrap;
   flex-flow: row wrap;
-  z-index: -1 !important;
+  opacity: .99 !important;
+  z-index: 0 !important;
   position: relative !important;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translate3d(0,0,0);
+  -webkit-transform: translate3d(0,0,0);
 }
 
 .row .row {
@@ -1262,6 +1267,14 @@ textarea {
 
 .full-width {
   width: 100%;
+}
+
+.half-width {
+  width: 50%;
+}
+
+.quarter-width {
+  width: 25%;
 }
 
 .text-center {

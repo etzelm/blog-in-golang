@@ -175,120 +175,131 @@ func AboutPage(c *gin.Context) {
 }
 
 // ContactPage : Displays the static contact.html page for GET requests
-func ContactPage(c *gin.Context) {
-	c.Header("Cache-Control", "public, max-age=604800")
-	// Call the HTML method of the Context to render a template
-	c.HTML(
-		// Set the HTTP status to 200 (OK)
-		http.StatusOK,
-		// Use the index.html template
-		"contact.html",
-		// Pass the data that the page uses
-		gin.H{
-			"title": "Contact Me",
-		},
-	)
+func ContactPage(RandomOne int, RandomTwo int) gin.HandlerFunc {
+	fn := func(c *gin.Context) {
+		c.Header("Cache-Control", "no-cache")
+		// Call the HTML method of the Context to render a template
+		c.HTML(
+			// Set the HTTP status to 200 (OK)
+			http.StatusOK,
+			// Use the index.html template
+			"contact.html",
+			// Pass the data that the page uses
+			gin.H{
+				"title":     "Contact Me",
+				"RandomOne": RandomOne,
+				"RandomTwo": RandomTwo,
+			},
+		)
+	}
+	return gin.HandlerFunc(fn)
 }
 
 // ContactResponse : Saves the user's data in DynamoDB and displays static response.html
-func ContactResponse(c *gin.Context) {
-	c.Header("Cache-Control", "no-cache")
-	var form models.ContactForm
-	c.Bind(&form)
+func ContactResponse(RandomOne int, RandomTwo int) gin.HandlerFunc {
+	fn := func(c *gin.Context) {
+		c.Header("Cache-Control", "no-cache")
+		var form models.ContactForm
+		c.Bind(&form)
 
-	if form.RobotCheck != 1 {
+		log.Info("RobotNum: ", form.RobotNum)
+		log.Info("RandomOne: ", RandomOne)
+		log.Info("RandomTwo: ", RandomTwo)
+		if form.RobotCheck != 1 || form.RobotNum != RandomOne+RandomTwo {
+			c.HTML(
+				// Set the HTTP status to 400 (Bad Request)
+				http.StatusBadRequest,
+				// Use the error.html template
+				"error.html",
+				// Pass the data that the page uses
+				gin.H{
+					"title": "400 Server Error",
+					"error": "Don't be a robot please!",
+				},
+			)
+			return
+		}
+
+		name := template.HTMLEscapeString(form.Name)
+		if m, _ := regexp.MatchString("^[ a-zA-Z0-9]+( +[a-zA-Z0-9]+)*$", name); !m {
+			c.HTML(
+				// Set the HTTP status to 400 (Bad Request)
+				http.StatusBadRequest,
+				// Use the error.html template
+				"error.html",
+				// Pass the data that the page uses
+				gin.H{
+					"title": "400 Server Error",
+					"error": "Name should contain only alphanumeric characters and spaces!",
+				},
+			)
+			return
+		}
+
+		aid := os.Getenv("AWS_ACCESS_KEY_ID")
+		key := os.Getenv("AWS_SECRET_ACCESS_KEY")
+		var myCredentials = credentials.NewStaticCredentials(aid, key, "")
+
+		sess, err := session.NewSession(&aws.Config{
+			Credentials: myCredentials,
+			Region:      aws.String("us-west-1"),
+			//Endpoint:    aws.String("http://localhost:8000"),
+		})
+		if err != nil {
+			log.Println(err)
+			c.HTML(
+				// Set the HTTP status to 400 (Bad Request)
+				http.StatusBadRequest,
+				// Use the error.html template
+				"error.html",
+				// Pass the data that the page uses
+				gin.H{
+					"title": "400 Server Error",
+					"error": err.Error(),
+				},
+			)
+			return
+		}
+
+		dbSvc := dynamodb.New(sess)
+
+		av, _ := dynamodbattribute.MarshalMap(form)
+
+		input := &dynamodb.PutItemInput{
+			Item:      av,
+			TableName: aws.String("Contact"),
+		}
+
+		_, err = dbSvc.PutItem(input)
+
+		if err != nil {
+			fmt.Println("Got error calling PutItem:")
+			fmt.Println(err.Error())
+			c.HTML(
+				// Set the HTTP status to 400 (Bad Request)
+				http.StatusBadRequest,
+				// Use the error.html template
+				"error.html",
+				// Pass the data that the page uses
+				gin.H{
+					"title": "400 Server Error",
+					"error": err.Error(),
+				},
+			)
+			return
+		}
+
+		// Call the HTML method of the Context to render a template
 		c.HTML(
-			// Set the HTTP status to 400 (Bad Request)
-			http.StatusBadRequest,
-			// Use the error.html template
-			"error.html",
+			// Set the HTTP status to 200 (OK)
+			http.StatusOK,
+			// Use the index.html template
+			"response.html",
 			// Pass the data that the page uses
 			gin.H{
-				"title": "400 Server Error",
-				"error": "Don't be a robot please!",
+				"title": "Thank You!",
 			},
 		)
-		return
 	}
-
-	name := template.HTMLEscapeString(form.Name)
-	if m, _ := regexp.MatchString("^[ a-zA-Z0-9]+( +[a-zA-Z0-9]+)*$", name); !m {
-		c.HTML(
-			// Set the HTTP status to 400 (Bad Request)
-			http.StatusBadRequest,
-			// Use the error.html template
-			"error.html",
-			// Pass the data that the page uses
-			gin.H{
-				"title": "400 Server Error",
-				"error": "Name should contain only alphanumeric characters and spaces!",
-			},
-		)
-		return
-	}
-
-	aid := os.Getenv("AWS_ACCESS_KEY_ID")
-	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
-	var myCredentials = credentials.NewStaticCredentials(aid, key, "")
-
-	sess, err := session.NewSession(&aws.Config{
-		Credentials: myCredentials,
-		Region:      aws.String("us-west-1"),
-		//Endpoint:    aws.String("http://localhost:8000"),
-	})
-	if err != nil {
-		log.Println(err)
-		c.HTML(
-			// Set the HTTP status to 400 (Bad Request)
-			http.StatusBadRequest,
-			// Use the error.html template
-			"error.html",
-			// Pass the data that the page uses
-			gin.H{
-				"title": "400 Server Error",
-				"error": err.Error(),
-			},
-		)
-		return
-	}
-
-	dbSvc := dynamodb.New(sess)
-
-	av, _ := dynamodbattribute.MarshalMap(form)
-
-	input := &dynamodb.PutItemInput{
-		Item:      av,
-		TableName: aws.String("Contact"),
-	}
-
-	_, err = dbSvc.PutItem(input)
-
-	if err != nil {
-		fmt.Println("Got error calling PutItem:")
-		fmt.Println(err.Error())
-		c.HTML(
-			// Set the HTTP status to 400 (Bad Request)
-			http.StatusBadRequest,
-			// Use the error.html template
-			"error.html",
-			// Pass the data that the page uses
-			gin.H{
-				"title": "400 Server Error",
-				"error": err.Error(),
-			},
-		)
-		return
-	}
-
-	// Call the HTML method of the Context to render a template
-	c.HTML(
-		// Set the HTTP status to 200 (OK)
-		http.StatusOK,
-		// Use the index.html template
-		"response.html",
-		// Pass the data that the page uses
-		gin.H{
-			"title": "Thank You!",
-		},
-	)
+	return gin.HandlerFunc(fn)
 }

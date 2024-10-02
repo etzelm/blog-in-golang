@@ -25,6 +25,7 @@ type ContactForm struct {
 	Website    string `json:"website" form:"website"`
 	Message    string `json:"message" form:"message" binding:"required"`
 	RobotCheck int    `json:"robot" form:"robot"`
+	RobotNum   int    `json:"number" form:"number"`
 }
 
 // Item : structure used to get data from DynamoDB requests
@@ -87,7 +88,7 @@ func GetArticlePanels() []Article {
 		expression.Name("author"), expression.Name("categories"), expression.Name("excerpt"),
 		expression.Name("modified-date"), expression.Name("panel-picture"))
 
-	expr, err := expression.NewBuilder().WithFilter(filt).WithProjection(proj).Build()
+	expr, _ := expression.NewBuilder().WithFilter(filt).WithProjection(proj).Build()
 
 	params := &dynamodb.ScanInput{
 		ExpressionAttributeNames:  expr.Names(),
@@ -98,7 +99,7 @@ func GetArticlePanels() []Article {
 	}
 
 	// Make the DynamoDB Query API call
-	result, err := dbSvc.Scan(params)
+	result, _ := dbSvc.Scan(params)
 
 	articles := []Article{}
 
@@ -162,7 +163,7 @@ func GetCategoryPageArticlePanels(category string) []Article {
 		expression.Name("author"), expression.Name("categories"), expression.Name("excerpt"),
 		expression.Name("modified-date"), expression.Name("panel-picture"))
 
-	expr, err := expression.NewBuilder().WithFilter(filt).WithProjection(proj).Build()
+	expr, _ := expression.NewBuilder().WithFilter(filt).WithProjection(proj).Build()
 
 	params := &dynamodb.ScanInput{
 		ExpressionAttributeNames:  expr.Names(),
@@ -173,7 +174,7 @@ func GetCategoryPageArticlePanels(category string) []Article {
 	}
 
 	// Make the DynamoDB Query API call
-	result, err := dbSvc.Scan(params)
+	result, _ := dbSvc.Scan(params)
 
 	articles := []Article{}
 

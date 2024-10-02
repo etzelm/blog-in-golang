@@ -14,7 +14,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-//Listing : structure used to make DynamoDB data functional
+// Listing : structure used to make DynamoDB data functional
 type Listing struct {
 	MLS          string   `json:"MLS"`
 	Street1      string   `json:"Street1"`
@@ -65,7 +65,7 @@ func GetRealtorListings() []Listing {
 		expression.Name("Square Feet"), expression.Name("Lot Size"), expression.Name("Description"),
 		expression.Name("deleted"))
 
-	expr, err := expression.NewBuilder().WithFilter(filt).WithProjection(proj).Build()
+	expr, _ := expression.NewBuilder().WithFilter(filt).WithProjection(proj).Build()
 
 	params := &dynamodb.ScanInput{
 		ExpressionAttributeNames:  expr.Names(),
@@ -76,7 +76,7 @@ func GetRealtorListings() []Listing {
 	}
 
 	// Make the DynamoDB Query API call
-	result, err := dbSvc.Scan(params)
+	result, _ := dbSvc.Scan(params)
 
 	listings := []Listing{}
 
@@ -128,7 +128,7 @@ func GetRealtorListing(listing string) []Listing {
 		expression.Name("Square Feet"), expression.Name("Lot Size"), expression.Name("Description"),
 		expression.Name("deleted"))
 
-	expr, err := expression.NewBuilder().WithFilter(filt).WithProjection(proj).Build()
+	expr, _ := expression.NewBuilder().WithFilter(filt).WithProjection(proj).Build()
 
 	params := &dynamodb.ScanInput{
 		ExpressionAttributeNames:  expr.Names(),
@@ -139,7 +139,7 @@ func GetRealtorListing(listing string) []Listing {
 	}
 
 	// Make the DynamoDB Query API call
-	result, err := dbSvc.Scan(params)
+	result, _ := dbSvc.Scan(params)
 
 	listings := []Listing{}
 
