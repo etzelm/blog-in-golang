@@ -14,8 +14,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var RandomOne int = 4
-var RandomTwo int = 2
+var RandomOne int = randRange(1, 9)
+var RandomTwo int = randRange(1, 9)
 
 func main() {
 

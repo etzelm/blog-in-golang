@@ -2866,8 +2866,6 @@ body.search-is-visible {
   .nav-wrap-is-visible .header__nav-wrap {
     opacity: 1 !important;
     visibility: visible !important;
-    position: absolute !important;
-    z-index: 9998 !important;
   }
 
   .nav-wrap-is-visible .header__search-trigger {
