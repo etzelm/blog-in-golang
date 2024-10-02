@@ -196,7 +196,7 @@ func ContactResponse(c *gin.Context) {
 	var form models.ContactForm
 	c.Bind(&form)
 
-	if form.RobotCheck != 1 {
+	if form.RobotCheck != 1 && form.RobotNum != 9 {
 		c.HTML(
 			// Set the HTTP status to 400 (Bad Request)
 			http.StatusBadRequest,
