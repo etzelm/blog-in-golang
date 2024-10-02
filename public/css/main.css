@@ -86,7 +86,7 @@ body {
 }
 
 body.nav-wrap-is-visible {
-  overflow: hidden;
+  overflow: visible;
 }
 
 body.ss-bg-white {

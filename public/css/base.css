@@ -315,7 +315,7 @@ body {
   -moz-font-smoothing: grayscale;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
-  -webkit-overflow-scrolling: touch;
+  -webkit-overflow-scrolling: auto !important;
   -webkit-text-size-adjust: none;
 }
 
