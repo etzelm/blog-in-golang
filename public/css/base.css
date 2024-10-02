@@ -426,8 +426,13 @@ textarea {
   -webkit-flex-flow: row wrap;
   -ms-flex-flow: row wrap;
   flex-flow: row wrap;
+  opacity: .99 !important;
+  z-index: 0 !important;
+  position: relative !important;
   backface-visibility: hidden;
-  -webkit-backface-visibility: hidden
+  -webkit-backface-visibility: hidden;
+  transform: translate3d(0,0,0);
+  -webkit-transform: translate3d(0,0,0);
 }
 
 .row .row {

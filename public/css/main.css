@@ -2868,8 +2868,6 @@ body.search-is-visible {
     visibility: visible !important;
     position: absolute !important;
     z-index: 9998 !important;
-    transform: translate3d(0,0,0);
-    -webkit-transform: translate3d(0,0,0);
   }
 
   .nav-wrap-is-visible .header__search-trigger {
