@@ -426,7 +426,7 @@ textarea {
   -webkit-flex-flow: row wrap;
   -ms-flex-flow: row wrap;
   flex-flow: row wrap;
-  z-index: -1 !important;
+  z-index: 0 !important;
   position: relative !important;
 }
 
@@ -1266,6 +1266,10 @@ textarea {
 
 .half-width {
   width: 50%;
+}
+
+.quarter-width {
+  width: 25%;
 }
 
 .text-center {
