@@ -75,7 +75,7 @@
                 Currently there are two main paradigms for structuring the jobs you can submit to an EMR cluster, their 
                 names are Map Reduce and Directed Acyclic Graph. Map Reduce jobs have a more rigid structure with a 
                 predefined set of stages that cant be changed where as Directed Acyclic Graphs allow engineers to use 
-                their imagination when architecting jobs to accomplish their needs.
+                their imagination when writing jobs to accomplish their needs.
                 </p>
                 <div class="row block-large-1-2 block-tab-full">
                     <div class="column">
@@ -125,11 +125,11 @@
                 Secondly, it creates copies of all of its blocks and replicates them to other servers in the cluster 
                 for fault tolerance and the increased chance that CPU power is available to work with the blocks' data 
                 locally. AWS has also written their own EMR File System(EMRFS) as an abstraction around using 
-                their S3 service to store your data long term so that you dont need to keep EMR clusters up 24/7 to 
+                their S3 service to store your data long term so that you don't need to keep EMR clusters up 24/7 to 
                 persist your data. EMRFS does not offer POSIX standards but to work around that requirement AWS's  
                 Hadoop software pulls your data into the EMR cluster from S3 first in order for it to be processed and 
                 then it writes the output back out upon completion. This was really a game changer for customers 
-                looking to easily take advantage of short-lived, ephermal EMR clusters.
+                looking to easily take advantage of short-lived, ephemeral EMR clusters.
                 </p>
                 <div class="media-wrap entry__media">
                     <div class="entry__slider slider">

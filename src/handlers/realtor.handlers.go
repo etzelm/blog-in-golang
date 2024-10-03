@@ -71,13 +71,13 @@ func ListingPOSTAPI(c *gin.Context) {
 		if err != nil {
 			log.Println(err)
 			c.HTML(
-				// Set the HTTP status to 400 (Bad Request)
-				http.StatusBadRequest,
+				// Set the HTTP status to 500 (Internal Server Error)
+				http.StatusInternalServerError,
 				// Use the error.html template
 				"error.html",
 				// Pass the data that the page uses
 				gin.H{
-					"title": "400 Server Error",
+					"title": "500 Internal Server Error",
 					"error": err.Error(),
 				},
 			)
@@ -99,13 +99,13 @@ func ListingPOSTAPI(c *gin.Context) {
 			fmt.Println("Got error calling PutItem:")
 			fmt.Println(err.Error())
 			c.HTML(
-				// Set the HTTP status to 400 (Bad Request)
-				http.StatusBadRequest,
+				// Set the HTTP status to 500 (Internal Server Error)
+				http.StatusInternalServerError,
 				// Use the error.html template
 				"error.html",
 				// Pass the data that the page uses
 				gin.H{
-					"title": "400 Server Error",
+					"title": "500 Internal Server Error",
 					"error": err.Error(),
 				},
 			)
