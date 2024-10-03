@@ -7,9 +7,11 @@ Sample React App: https://mitchelletzel.com/realtor
 
 Sample Local Test Commands: 
 
- * go mod download
- * go run app.go
+ * cd realtor && npm install
+ * yarn build
+ * cd ../ && go mod download
  * java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb
+ * go run app.go
  * cd daemon && go run app.go 1
 
  Docker Helper Commands:
