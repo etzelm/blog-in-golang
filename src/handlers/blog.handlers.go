@@ -20,7 +20,7 @@ import (
 
 // PostPage : Gets All Article Panels and Dynamically Displays index.html Template
 func PostPage(c *gin.Context) {
-	c.Header("Cache-Control", "public, max-age=86400")
+	c.Header("Cache-Control", "public, max-age=31536000")
 	panels := models.GetArticlePanels()
 
 	// Call the HTML method of the Context to render a template
@@ -40,7 +40,7 @@ func PostPage(c *gin.Context) {
 
 // CategoryPage : Gets Category Article Panels and Dynamically Displays index.html Template
 func CategoryPage(c *gin.Context) {
-	c.Header("Cache-Control", "public, max-age=86400")
+	c.Header("Cache-Control", "public, max-age=31536000")
 	if category := c.Param("category"); category != "" {
 		panels := models.GetCategoryPageArticlePanels(category)
 
@@ -95,7 +95,7 @@ func CategoryPage(c *gin.Context) {
 
 // ArticlePage : Queries DynamoDB for a Specific Article and Dynamically Displays article.html
 func ArticlePage(c *gin.Context) {
-	c.Header("Cache-Control", "public, max-age=86400")
+	c.Header("Cache-Control", "public, max-age=31536000")
 	// Check if the article ID is valid
 	if articleID, err := strconv.Atoi(c.Param("article_id")); err == nil {
 		// Check if the article exists
@@ -160,7 +160,7 @@ func ArticlePage(c *gin.Context) {
 
 // AboutPage : Displays the static about.html page
 func AboutPage(c *gin.Context) {
-	c.Header("Cache-Control", "public, max-age=604800")
+	c.Header("Cache-Control", "public, max-age=31536000")
 	// Call the HTML method of the Context to render a template
 	c.HTML(
 		// Set the HTTP status to 200 (OK)
