@@ -2,7 +2,9 @@
 # blog-in-golang
 
 Started a professional blog using golang.
+
 Published: <https://mitchelletzel.com>
+
 Sample React App: <https://mitchelletzel.com/realtor>
 
 Sample Local Test Commands:
