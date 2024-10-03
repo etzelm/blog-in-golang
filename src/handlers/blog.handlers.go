@@ -204,13 +204,13 @@ func ContactResponse(numOne *int, numTwo *int) gin.HandlerFunc {
 
 		if form.RobotCheck != 1 || form.RobotNum != *numOne+*numTwo {
 			c.HTML(
-				// Set the HTTP status to 400 (Bad Request)
-				http.StatusBadRequest,
+				// Set the HTTP status to 401 (Unauthorized)
+				http.StatusUnauthorized,
 				// Use the error.html template
 				"error.html",
 				// Pass the data that the page uses
 				gin.H{
-					"title": "400 Server Error",
+					"title": "401 (Unauthorized)",
 					"error": "Don't be a robot please!",
 				},
 			)
