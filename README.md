@@ -17,5 +17,9 @@ Sample Local Test Commands:
  * docker stop $(docker ps -aq)
  * docker rm $(docker ps -aq)
  * docker rmi --force $(docker images -q)
- * docker build -t blog .
+ * docker build -t blog:develop .
  * docker run -d -p 8080:3000 blog
+ * docker compose up --force-recreate -d
+ * docker compose down
+ * docker system prune -a
+ 
