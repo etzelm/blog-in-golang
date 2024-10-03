@@ -17,7 +17,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-//AuthPage : Gets Authenticaton Details And Verify "Client"
+// AuthPage : Gets Authenticaton Details And Verify "Client"
 func AuthPage(c *gin.Context) {
 	c.Header("Cache-Control", "no-cache")
 
@@ -35,7 +35,7 @@ func AuthPage(c *gin.Context) {
 
 }
 
-//SecurePage : Display login details
+// SecurePage : Display login details
 func SecurePage(c *gin.Context) {
 	c.Header("Cache-Control", "no-cache")
 
@@ -54,7 +54,7 @@ func SecurePage(c *gin.Context) {
 			"error.html",
 			// Pass the data that the page uses
 			gin.H{
-				"title": "400 Server Error",
+				"title": "400 Client Error",
 			},
 		)
 		return
@@ -76,7 +76,7 @@ func SecurePage(c *gin.Context) {
 
 }
 
-//AuthResponse : Saves the user's data in DynamoDB and displays static response.html
+// AuthResponse : Saves the user's data in DynamoDB and displays static response.html
 func AuthResponse(c *gin.Context) {
 	c.Header("Cache-Control", "no-cache")
 	var form models.AuthForm
@@ -112,13 +112,13 @@ func AuthResponse(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		c.HTML(
-			// Set the HTTP status to 400 (Bad Request)
-			http.StatusBadRequest,
+			// Set the HTTP status to 500 (Internal Server Error)
+			http.StatusInternalServerError,
 			// Use the error.html template
 			"error.html",
 			// Pass the data that the page uses
 			gin.H{
-				"title": "400 Server Error",
+				"title": "500 Internal Server Error",
 				"error": err.Error(),
 			},
 		)
@@ -150,7 +150,7 @@ func AuthResponse(c *gin.Context) {
 			"error.html",
 			// Pass the data that the page uses
 			gin.H{
-				"title": "400 Server Error",
+				"title": "400 Client Error",
 			},
 		)
 		return
