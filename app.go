@@ -3,6 +3,7 @@ package main
 import (
 	"math/rand/v2"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/caddyserver/certmagic"
@@ -52,6 +53,7 @@ func main() {
 // LoadStaticFolderRoutes loads all api routes that serve a static server folder.
 func LoadStaticFolderRoutes(server *gin.Engine) *gin.Engine {
 
+	server.Use(staticCacheMiddleware())
 	server.Use(static.Serve("/public", static.LocalFile("./public", true)))
 	server.Use(static.Serve("/realtor", static.LocalFile("./realtor/build", true)))
 	server.Use(static.Serve("/realtor/new", static.LocalFile("./realtor/build", true)))
@@ -86,4 +88,23 @@ func LoadServerRoutes(server *gin.Engine) *gin.Engine {
 
 func randRange(min, max int) int {
 	return rand.IntN(max-min) + min
+}
+
+func staticCacheMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Apply the Cache-Control header to the static files
+		if strings.HasPrefix(c.Request.URL.Path, "/public/") {
+			c.Header("Cache-Control", "public, max-age=31536000")
+		} else if strings.HasPrefix(c.Request.URL.Path, "/realtor/js/") {
+			c.Header("Cache-Control", "public, max-age=31536000")
+		} else if strings.HasPrefix(c.Request.URL.Path, "/realtor/css/") {
+			c.Header("Cache-Control", "public, max-age=31536000")
+		} else if strings.HasPrefix(c.Request.URL.Path, "/realtor/images/") {
+			c.Header("Cache-Control", "public, max-age=31536000")
+		} else if strings.HasPrefix(c.Request.URL.Path, "/realtor/static/") {
+			c.Header("Cache-Control", "public, max-age=31536000")
+		}
+		// Continue to the next middleware or handler
+		c.Next()
+	}
 }
