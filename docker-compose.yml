@@ -1,0 +1,15 @@
+version: "3"
+
+services:
+  blog-in-golang-local:
+    image: blog:develop
+    container_name: blog-in-golang-local
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    ports:
+      - "80:8080/tcp"
+    environment:
+      AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
+      AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
+      ARTICLES: "Test-Articles"
