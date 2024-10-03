@@ -117,13 +117,13 @@ func ArticlePage(c *gin.Context) {
 			} else {
 				// If the article is not appropriate, abort with an error
 				c.HTML(
-					// Set the HTTP status to 403 (Forbidden)
-					http.StatusForbidden,
+					// Set the HTTP status to 401 (Unauthorized)
+					http.StatusUnauthorized,
 					// Use the error.html template
 					"error.html",
 					// Pass the data that the page uses
 					gin.H{
-						"title": "403 Server Error",
+						"title": "401 (Unauthorized)",
 						"error": "Please provide a valid Article ID.",
 					},
 				)
@@ -226,7 +226,7 @@ func ContactResponse(numOne *int, numTwo *int) gin.HandlerFunc {
 				"error.html",
 				// Pass the data that the page uses
 				gin.H{
-					"title": "400 Server Error",
+					"title": "400 Client Error",
 					"error": "Name should contain only alphanumeric characters and spaces!",
 				},
 			)
@@ -245,13 +245,13 @@ func ContactResponse(numOne *int, numTwo *int) gin.HandlerFunc {
 		if err != nil {
 			log.Println(err)
 			c.HTML(
-				// Set the HTTP status to 400 (Bad Request)
-				http.StatusBadRequest,
+				// Set the HTTP status to 500 (Internal Server Error)
+				http.StatusInternalServerError,
 				// Use the error.html template
 				"error.html",
 				// Pass the data that the page uses
 				gin.H{
-					"title": "400 Server Error",
+					"title": "500 Internal Server Error",
 					"error": err.Error(),
 				},
 			)
@@ -273,13 +273,13 @@ func ContactResponse(numOne *int, numTwo *int) gin.HandlerFunc {
 			fmt.Println("Got error calling PutItem:")
 			fmt.Println(err.Error())
 			c.HTML(
-				// Set the HTTP status to 400 (Bad Request)
-				http.StatusBadRequest,
+				// Set the HTTP status to 500 (Internal Server Error)
+				http.StatusInternalServerError,
 				// Use the error.html template
 				"error.html",
 				// Pass the data that the page uses
 				gin.H{
-					"title": "400 Server Error",
+					"title": "500 Internal Server Error",
 					"error": err.Error(),
 				},
 			)
