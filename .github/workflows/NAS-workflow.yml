@@ -45,6 +45,7 @@ jobs:
         GCP_ARGS: ${{ secrets.GCP_ARGS }}
         GCP_DIR: ${{ secrets.GCP_DIR }}
         GCP_BIN: ${{ secrets.GCP_BIN }}
+        GAPI: ${{ secrets.GAPI }}
         DISTRIBUTION_ID1: ${{ secrets.DISTRIBUTION_ID1 }}
         DISTRIBUTION_ID2: ${{ secrets.DISTRIBUTION_ID2 }}
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -78,6 +79,10 @@ jobs:
           popd
           echo BUILDING REACT APP
           pushd realtor
+          sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" src/App.js
+          sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" src/components/MyListing.js
+          sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" src/components/MyListings.js
+          sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" src/components/NavBar.js
           npm install
           yarn build
           popd
