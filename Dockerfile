@@ -3,22 +3,9 @@ FROM golang:1.23.1-alpine3.20
 # Need git for dep
 RUN apk add --no-cache git
 
-# Need npm for react
-# RUN apk add --update npm
-
-# Copy current dir (outside docker) to the proper directory (inside docker)
-COPY . src/github.com/etzelm/blog-in-golang/
-
-# Change current directory
-WORKDIR src/github.com/etzelm/blog-in-golang/
-
-# Build react app except it doesn't produce the same results as local build
-# Probably has something to do with npm version, for now I'll build locally
-# RUN npm i
-# RUN npm run build
-
-# Change current directory
-# WORKDIR ../
+# Copy current dir (outside docker) to inside docker
+COPY . /go/src/github.com/etzelm/blog-in-golang/
+WORKDIR /go/src/github.com/etzelm/blog-in-golang/
 
 # Build go server
 RUN go mod download
@@ -28,8 +15,9 @@ FROM alpine:3.20
 RUN apk --no-cache add ca-certificates
 WORKDIR /
 COPY --from=0 /go/src/github.com/etzelm/blog-in-golang/blog-in-golang .
-COPY --from=0 /go/src/github.com/etzelm/blog-in-golang/realtor/build/* /realtor/build/
-COPY . .
+COPY --from=0 /go/src/github.com/etzelm/blog-in-golang/public/ /public/
+COPY --from=0 /go/src/github.com/etzelm/blog-in-golang/realtor/build/ /realtor/build/
+COPY --from=0 /go/src/github.com/etzelm/blog-in-golang/templates/ /templates/
 CMD ["./blog-in-golang"]
 
 EXPOSE 80
