@@ -112,7 +112,6 @@ func GetArticlePanels() []Article {
 		if err != nil {
 			log.Error("Got error unmarshalling:")
 			log.Error(err.Error())
-			os.Exit(1)
 		}
 
 		categories := []Category{}
@@ -187,7 +186,6 @@ func GetCategoryPageArticlePanels(category string) []Article {
 		if err != nil {
 			log.Error("Got error unmarshalling:")
 			log.Error(err.Error())
-			os.Exit(1)
 		}
 
 		categories := []Category{}

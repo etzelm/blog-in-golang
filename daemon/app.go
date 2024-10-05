@@ -85,7 +85,6 @@ func createTable() {
 	if err != nil {
 		log.Error("Got error calling CreateTable:")
 		log.Error(err.Error())
-		os.Exit(1)
 	}
 
 	result, err := dbSvc.ListTables(&dynamodb.ListTablesInput{})
@@ -123,7 +122,6 @@ func dropTable() {
 	if err != nil {
 		log.Error("Got error calling DeleteTable:")
 		log.Error(err.Error())
-		os.Exit(1)
 	}
 
 	result, err := dbSvc.ListTables(&dynamodb.ListTablesInput{})

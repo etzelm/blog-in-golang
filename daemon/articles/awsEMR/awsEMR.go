@@ -70,6 +70,5 @@ func AmazonEMR() {
 	if err != nil {
 		log.Error("Got error calling PutItem:")
 		log.Error(err.Error())
-		os.Exit(1)
 	}
 }
