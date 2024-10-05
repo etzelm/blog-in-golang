@@ -52,7 +52,7 @@ func ReactRealtor() {
 		HTMLHold:     hh,
 		ModifiedDate: "May 20th, 2020",
 		PanelPicture: pp,
-		PostID:       2,
+		PostID:       3,
 		PostTitle:    "Go & React: A 1, 2 Punch Combo",
 		ShortTitle:   "Go & React",
 		PostType:     "standard",

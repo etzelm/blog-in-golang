@@ -53,7 +53,7 @@ func GoogleSRE() {
 		HTMLHold:     hh,
 		ModifiedDate: "March 18th, 2022",
 		PanelPicture: pp,
-		PostID:       1,
+		PostID:       2,
 		PostTitle:    "How To Internalize Site Reliability Engineering's Top 5 Golden Lessons",
 		ShortTitle:   "SRE Internalization",
 		PostType:     "standard",

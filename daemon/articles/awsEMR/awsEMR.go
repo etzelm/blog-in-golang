@@ -52,7 +52,7 @@ func AmazonEMR() {
 		HTMLHold:     hh,
 		ModifiedDate: "November 26th, 2020",
 		PanelPicture: pp,
-		PostID:       3,
+		PostID:       4,
 		PostTitle:    "AWS's Elastic Map Reduce Offering",
 		ShortTitle:   "Intro to AWS EMR",
 		PostType:     "standard",
