@@ -1,8 +1,6 @@
 package googleSRE
 
 import (
-	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -18,7 +16,6 @@ import (
 func GoogleSRE() {
 	id := os.Getenv("AWS_ACCESS_KEY_ID")
 	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
-
 	var myCredentials = credentials.NewStaticCredentials(id, key, "")
 
 	sess, err := session.NewSession(&aws.Config{
@@ -32,13 +29,13 @@ func GoogleSRE() {
 	}
 	dbSvc := dynamodb.New(sess)
 
-	data, _ := ioutil.ReadFile("articles/googleSRE/articlePicture.html")
+	data, _ := os.ReadFile("articles/googleSRE/articlePicture.html")
 	ap := string(data)
 
-	data, _ = ioutil.ReadFile("articles/googleSRE/panelPicture.html")
+	data, _ = os.ReadFile("articles/googleSRE/panelPicture.html")
 	pp := string(data)
 
-	data, _ = ioutil.ReadFile("articles/googleSRE/googleSRE.html")
+	data, _ = os.ReadFile("articles/googleSRE/googleSRE.html")
 	hh := string(data)
 
 	item := models.Item{
@@ -53,7 +50,7 @@ func GoogleSRE() {
 		HTMLHold:     hh,
 		ModifiedDate: "March 18th, 2022",
 		PanelPicture: pp,
-		PostID:       1,
+		PostID:       2,
 		PostTitle:    "How To Internalize Site Reliability Engineering's Top 5 Golden Lessons",
 		ShortTitle:   "SRE Internalization",
 		PostType:     "standard",
@@ -67,11 +64,11 @@ func GoogleSRE() {
 		TableName: aws.String(table),
 	}
 
+	log.Info("Putting googleSRE into DDB")
 	_, err = dbSvc.PutItem(input)
 
 	if err != nil {
-		fmt.Println("Got error calling PutItem:")
-		fmt.Println(err.Error())
-		os.Exit(1)
+		log.Error("Got error calling PutItem:")
+		log.Error(err.Error())
 	}
 }

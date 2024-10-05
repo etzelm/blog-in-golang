@@ -1,8 +1,6 @@
 package reactRealtor
 
 import (
-	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -18,7 +16,6 @@ import (
 func ReactRealtor() {
 	id := os.Getenv("AWS_ACCESS_KEY_ID")
 	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
-
 	var myCredentials = credentials.NewStaticCredentials(id, key, "")
 
 	sess, err := session.NewSession(&aws.Config{
@@ -32,13 +29,13 @@ func ReactRealtor() {
 	}
 	dbSvc := dynamodb.New(sess)
 
-	data, _ := ioutil.ReadFile("articles/reactRealtor/articlePicture.html")
+	data, _ := os.ReadFile("articles/reactRealtor/articlePicture.html")
 	ap := string(data)
 
-	data, _ = ioutil.ReadFile("articles/reactRealtor/panelPicture.html")
+	data, _ = os.ReadFile("articles/reactRealtor/panelPicture.html")
 	pp := string(data)
 
-	data, _ = ioutil.ReadFile("articles/reactRealtor/reactRealtor.html")
+	data, _ = os.ReadFile("articles/reactRealtor/reactRealtor.html")
 	hh := string(data)
 
 	item := models.Item{
@@ -52,7 +49,7 @@ func ReactRealtor() {
 		HTMLHold:     hh,
 		ModifiedDate: "May 20th, 2020",
 		PanelPicture: pp,
-		PostID:       2,
+		PostID:       3,
 		PostTitle:    "Go & React: A 1, 2 Punch Combo",
 		ShortTitle:   "Go & React",
 		PostType:     "standard",
@@ -66,11 +63,11 @@ func ReactRealtor() {
 		TableName: aws.String(table),
 	}
 
+	log.Info("Putting reactRealtor into DDB")
 	_, err = dbSvc.PutItem(input)
 
 	if err != nil {
-		fmt.Println("Got error calling PutItem:")
-		fmt.Println(err.Error())
-		os.Exit(1)
+		log.Error("Got error calling PutItem:")
+		log.Error(err.Error())
 	}
 }

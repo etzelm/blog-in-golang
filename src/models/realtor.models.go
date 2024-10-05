@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"os"
 	"sort"
 
@@ -86,9 +85,9 @@ func GetRealtorListings() []Listing {
 		err = dynamodbattribute.UnmarshalMap(i, &listing)
 
 		if err != nil {
-			fmt.Println("Got error unmarshalling:")
-			fmt.Println(err.Error())
-			os.Exit(1)
+			log.Error("Got error unmarshalling:")
+			log.Error(err.Error())
+			return nil
 		}
 
 		listings = append(listings, listing)
@@ -149,9 +148,9 @@ func GetRealtorListing(listing string) []Listing {
 		err = dynamodbattribute.UnmarshalMap(i, &listing)
 
 		if err != nil {
-			fmt.Println("Got error unmarshalling:")
-			fmt.Println(err.Error())
-			os.Exit(1)
+			log.Error("Got error unmarshalling:")
+			log.Error(err.Error())
+			return nil
 		}
 
 		listings = append(listings, listing)

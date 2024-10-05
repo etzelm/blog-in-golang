@@ -1,8 +1,6 @@
 package graphStore
 
 import (
-	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -18,10 +16,9 @@ import (
 func GraphStore() {
 	id := os.Getenv("AWS_ACCESS_KEY_ID")
 	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
-
 	var myCredentials = credentials.NewStaticCredentials(id, key, "")
 
-	sess, err := session.NewSession(&aws.Config{
+	session, err := session.NewSession(&aws.Config{
 		Credentials: myCredentials,
 		Region:      aws.String("us-west-1"),
 		//Endpoint:    aws.String("http://localhost:8000"),
@@ -30,15 +27,15 @@ func GraphStore() {
 		log.Println(err)
 		return
 	}
-	dbSvc := dynamodb.New(sess)
+	dbSvc := dynamodb.New(session)
 
-	data, _ := ioutil.ReadFile("articles/graphStore/articlePicture.html")
+	data, _ := os.ReadFile("articles/graphStore/articlePicture.html")
 	ap := string(data)
 
-	data, _ = ioutil.ReadFile("articles/graphStore/panelPicture.html")
+	data, _ = os.ReadFile("articles/graphStore/panelPicture.html")
 	pp := string(data)
 
-	data, _ = ioutil.ReadFile("articles/graphStore/graphStore.html")
+	data, _ = os.ReadFile("articles/graphStore/graphStore.html")
 	hh := string(data)
 
 	item := models.Item{
@@ -66,11 +63,11 @@ func GraphStore() {
 		TableName: aws.String(table),
 	}
 
+	log.Info("Putting graphStore into DDB")
 	_, err = dbSvc.PutItem(input)
 
 	if err != nil {
-		fmt.Println("Got error calling PutItem:")
-		fmt.Println(err.Error())
-		os.Exit(1)
+		log.Error("Got error calling PutItem:")
+		log.Error(err.Error())
 	}
 }
