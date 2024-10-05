@@ -71,11 +71,9 @@ jobs:
           echo "Articles: ${ARTICLES}"
           echo PUSHING ARTICLES CHANGES
           pushd daemon
-          go run app.go 0
-          go run app.go 1
-          go run app.go 2
-          go run app.go 3
-          go run app.go 4
+          for i in {0..4}
+            go run app.go $i
+          done
           popd
           echo BUILDING REACT APP
           pushd realtor
