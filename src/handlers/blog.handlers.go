@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"html/template"
 	"net/http"
 	"os"
@@ -270,8 +269,8 @@ func ContactResponse(numOne *int, numTwo *int) gin.HandlerFunc {
 		_, err = dbSvc.PutItem(input)
 
 		if err != nil {
-			fmt.Println("Got error calling PutItem:")
-			fmt.Println(err.Error())
+			log.Error("Got error calling PutItem:")
+			log.Error(err.Error())
 			c.HTML(
 				// Set the HTTP status to 500 (Internal Server Error)
 				http.StatusInternalServerError,

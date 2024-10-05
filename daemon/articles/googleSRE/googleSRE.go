@@ -1,7 +1,6 @@
 package googleSRE
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 
@@ -18,7 +17,6 @@ import (
 func GoogleSRE() {
 	id := os.Getenv("AWS_ACCESS_KEY_ID")
 	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
-
 	var myCredentials = credentials.NewStaticCredentials(id, key, "")
 
 	sess, err := session.NewSession(&aws.Config{
@@ -71,8 +69,8 @@ func GoogleSRE() {
 	_, err = dbSvc.PutItem(input)
 
 	if err != nil {
-		fmt.Println("Got error calling PutItem:")
-		fmt.Println(err.Error())
+		log.Error("Got error calling PutItem:")
+		log.Error(err.Error())
 		os.Exit(1)
 	}
 }

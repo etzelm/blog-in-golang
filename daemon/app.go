@@ -83,8 +83,8 @@ func createTable() {
 	_, err = dbSvc.CreateTable(input)
 
 	if err != nil {
-		fmt.Println("Got error calling CreateTable:")
-		fmt.Println(err.Error())
+		log.Error("Got error calling CreateTable:")
+		log.Error(err.Error())
 		os.Exit(1)
 	}
 
@@ -121,8 +121,8 @@ func dropTable() {
 	_, err = dbSvc.DeleteTable(input)
 
 	if err != nil {
-		fmt.Println("Got error calling DeleteTable:")
-		fmt.Println(err.Error())
+		log.Error("Got error calling DeleteTable:")
+		log.Error(err.Error())
 		os.Exit(1)
 	}
 

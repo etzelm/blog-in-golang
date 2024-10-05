@@ -110,8 +110,8 @@ func GetArticlePanels() []Article {
 		err = dynamodbattribute.UnmarshalMap(i, &item)
 
 		if err != nil {
-			fmt.Println("Got error unmarshalling:")
-			fmt.Println(err.Error())
+			log.Error("Got error unmarshalling:")
+			log.Error(err.Error())
 			os.Exit(1)
 		}
 
@@ -185,8 +185,8 @@ func GetCategoryPageArticlePanels(category string) []Article {
 		err = dynamodbattribute.UnmarshalMap(i, &item)
 
 		if err != nil {
-			fmt.Println("Got error unmarshalling:")
-			fmt.Println(err.Error())
+			log.Error("Got error unmarshalling:")
+			log.Error(err.Error())
 			os.Exit(1)
 		}
 
@@ -241,7 +241,7 @@ func GetArticleByID(id int) (*Article, error) {
 	})
 
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Error(err.Error())
 		return nil, err
 	}
 

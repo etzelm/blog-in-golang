@@ -1,7 +1,6 @@
 package reactRealtor
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 
@@ -18,7 +17,6 @@ import (
 func ReactRealtor() {
 	id := os.Getenv("AWS_ACCESS_KEY_ID")
 	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
-
 	var myCredentials = credentials.NewStaticCredentials(id, key, "")
 
 	sess, err := session.NewSession(&aws.Config{
@@ -66,11 +64,12 @@ func ReactRealtor() {
 		TableName: aws.String(table),
 	}
 
+	log.Info("Putting reactRealtor into DDB")
 	_, err = dbSvc.PutItem(input)
 
 	if err != nil {
-		fmt.Println("Got error calling PutItem:")
-		fmt.Println(err.Error())
+		log.Error("Got error calling PutItem:")
+		log.Error(err.Error())
 		os.Exit(1)
 	}
 }
