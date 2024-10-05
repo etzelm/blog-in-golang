@@ -1,7 +1,6 @@
 package graphStore
 
 import (
-	"io/ioutil"
 	"os"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -30,13 +29,13 @@ func GraphStore() {
 	}
 	dbSvc := dynamodb.New(session)
 
-	data, _ := ioutil.ReadFile("articles/graphStore/articlePicture.html")
+	data, _ := os.ReadFile("articles/graphStore/articlePicture.html")
 	ap := string(data)
 
-	data, _ = ioutil.ReadFile("articles/graphStore/panelPicture.html")
+	data, _ = os.ReadFile("articles/graphStore/panelPicture.html")
 	pp := string(data)
 
-	data, _ = ioutil.ReadFile("articles/graphStore/graphStore.html")
+	data, _ = os.ReadFile("articles/graphStore/graphStore.html")
 	hh := string(data)
 
 	item := models.Item{

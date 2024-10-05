@@ -1,7 +1,6 @@
 package infraCode
 
 import (
-	"io/ioutil"
 	"os"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -30,13 +29,13 @@ func InfraCode() {
 	}
 	dbSvc := dynamodb.New(sess)
 
-	data, _ := ioutil.ReadFile("articles/infraCode/articlePicture.html")
+	data, _ := os.ReadFile("articles/infraCode/articlePicture.html")
 	ap := string(data)
 
-	data, _ = ioutil.ReadFile("articles/infraCode/panelPicture.html")
+	data, _ = os.ReadFile("articles/infraCode/panelPicture.html")
 	pp := string(data)
 
-	data, _ = ioutil.ReadFile("articles/infraCode/infraCode.html")
+	data, _ = os.ReadFile("articles/infraCode/infraCode.html")
 	hh := string(data)
 
 	item := models.Item{

@@ -1,7 +1,6 @@
 package awsEMR
 
 import (
-	"io/ioutil"
 	"os"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -30,13 +29,13 @@ func AmazonEMR() {
 	}
 	dbSvc := dynamodb.New(sess)
 
-	data, _ := ioutil.ReadFile("articles/awsEMR/articlePicture.html")
+	data, _ := os.ReadFile("articles/awsEMR/articlePicture.html")
 	ap := string(data)
 
-	data, _ = ioutil.ReadFile("articles/awsEMR/panelPicture.html")
+	data, _ = os.ReadFile("articles/awsEMR/panelPicture.html")
 	pp := string(data)
 
-	data, _ = ioutil.ReadFile("articles/awsEMR/awsEMR.html")
+	data, _ = os.ReadFile("articles/awsEMR/awsEMR.html")
 	hh := string(data)
 
 	item := models.Item{

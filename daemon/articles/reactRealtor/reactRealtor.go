@@ -1,7 +1,6 @@
 package reactRealtor
 
 import (
-	"io/ioutil"
 	"os"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -30,13 +29,13 @@ func ReactRealtor() {
 	}
 	dbSvc := dynamodb.New(sess)
 
-	data, _ := ioutil.ReadFile("articles/reactRealtor/articlePicture.html")
+	data, _ := os.ReadFile("articles/reactRealtor/articlePicture.html")
 	ap := string(data)
 
-	data, _ = ioutil.ReadFile("articles/reactRealtor/panelPicture.html")
+	data, _ = os.ReadFile("articles/reactRealtor/panelPicture.html")
 	pp := string(data)
 
-	data, _ = ioutil.ReadFile("articles/reactRealtor/reactRealtor.html")
+	data, _ = os.ReadFile("articles/reactRealtor/reactRealtor.html")
 	hh := string(data)
 
 	item := models.Item{

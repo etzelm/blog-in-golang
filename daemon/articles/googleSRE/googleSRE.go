@@ -1,7 +1,6 @@
 package googleSRE
 
 import (
-	"io/ioutil"
 	"os"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -30,13 +29,13 @@ func GoogleSRE() {
 	}
 	dbSvc := dynamodb.New(sess)
 
-	data, _ := ioutil.ReadFile("articles/googleSRE/articlePicture.html")
+	data, _ := os.ReadFile("articles/googleSRE/articlePicture.html")
 	ap := string(data)
 
-	data, _ = ioutil.ReadFile("articles/googleSRE/panelPicture.html")
+	data, _ = os.ReadFile("articles/googleSRE/panelPicture.html")
 	pp := string(data)
 
-	data, _ = ioutil.ReadFile("articles/googleSRE/googleSRE.html")
+	data, _ = os.ReadFile("articles/googleSRE/googleSRE.html")
 	hh := string(data)
 
 	item := models.Item{
