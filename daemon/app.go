@@ -85,6 +85,7 @@ func createTable() {
 	if err != nil {
 		log.Error("Got error calling CreateTable:")
 		log.Error(err.Error())
+		return
 	}
 
 	result, err := dbSvc.ListTables(&dynamodb.ListTablesInput{})

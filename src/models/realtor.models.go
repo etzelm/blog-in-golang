@@ -87,6 +87,7 @@ func GetRealtorListings() []Listing {
 		if err != nil {
 			log.Error("Got error unmarshalling:")
 			log.Error(err.Error())
+			return nil
 		}
 
 		listings = append(listings, listing)
@@ -149,6 +150,7 @@ func GetRealtorListing(listing string) []Listing {
 		if err != nil {
 			log.Error("Got error unmarshalling:")
 			log.Error(err.Error())
+			return nil
 		}
 
 		listings = append(listings, listing)
