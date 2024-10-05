@@ -67,6 +67,7 @@ func GoogleSRE() {
 		TableName: aws.String(table),
 	}
 
+	log.Info("Putting googleSRE into DDB")
 	_, err = dbSvc.PutItem(input)
 
 	if err != nil {
