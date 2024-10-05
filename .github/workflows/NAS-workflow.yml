@@ -72,7 +72,7 @@ jobs:
           echo PUSHING ARTICLES CHANGES
           pushd daemon
           for i in {0..4}
-            go run app.go $i
+            do go run app.go $i
           done
           popd
           echo BUILDING REACT APP
