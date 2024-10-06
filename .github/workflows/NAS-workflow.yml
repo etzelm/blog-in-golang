@@ -91,7 +91,7 @@ jobs:
             do go run app.go $i
           done
           popd
-      - name: Build
+      - name: Build & Deploy
         if: steps.changed-build-files.outputs.any_changed == 'true'  
         shell: bash
         run: |
@@ -114,12 +114,13 @@ jobs:
           npm install
           yarn build
           popd
-          echo BUILDING AND REFRESHING NAS DOCKER CONTAINER
+          echo BUILDING DOCKER IMAGE
           docker build -t blog:$TAG .
+          echo DEPLOYING NAS DOCKER CONTAINER
           sshpass -p $NAS_PASS ssh $NAS_USER@$NAS_ADDR $NAS_ARGS -t "cd $NAS_DIR-$BRANCH; $NAS_BIN/docker compose up --force-recreate -d"
           if [[ $BRANCH == "master" ]]
           then 
-            echo REFRESHING GCP DOCKER CONTAINER
+            echo DEPLOYING GCP DOCKER CONTAINER
             docker save blog:latest > blog.tar
             scp -i ~/.ssh/gcp_rsa $GCP_ARGS blog.tar $GCP_USER@$GCP_ADDR:$GCP_DIR.
             ssh -i ~/.ssh/gcp_rsa $GCP_ARGS $GCP_USER@$GCP_ADDR -t "cd $GCP_DIR; $GCP_BIN/docker load --input blog.tar"
