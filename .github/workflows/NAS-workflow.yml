@@ -33,32 +33,65 @@ jobs:
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop'
     runs-on: [self-hosted, Linux, X64, nas]
     env:
-        NAS_ADDR: ${{ secrets.NAS_ADDR }}
-        NAS_USER: ${{ secrets.NAS_USER }}
-        NAS_PASS: ${{ secrets.NAS_PASS }}
-        NAS_ARGS: ${{ secrets.NAS_ARGS }}
-        NAS_DIR: ${{ secrets.NAS_DIR }}
-        NAS_BIN: ${{ secrets.NAS_BIN }}
-        GCP_ADDR: ${{ secrets.GCP_ADDR }}
-        GCP_USER: ${{ secrets.GCP_USER }}
-        GCP_PASS: ${{ secrets.GCP_PASS }}
-        GCP_ARGS: ${{ secrets.GCP_ARGS }}
-        GCP_DIR: ${{ secrets.GCP_DIR }}
-        GCP_BIN: ${{ secrets.GCP_BIN }}
-        GAPI: ${{ secrets.GAPI }}
-        DISTRIBUTION_ID1: ${{ secrets.DISTRIBUTION_ID1 }}
-        DISTRIBUTION_ID2: ${{ secrets.DISTRIBUTION_ID2 }}
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      NAS_ADDR: ${{ secrets.NAS_ADDR }}
+      NAS_USER: ${{ secrets.NAS_USER }}
+      NAS_PASS: ${{ secrets.NAS_PASS }}
+      NAS_ARGS: ${{ secrets.NAS_ARGS }}
+      NAS_DIR: ${{ secrets.NAS_DIR }}
+      NAS_BIN: ${{ secrets.NAS_BIN }}
+      GCP_ADDR: ${{ secrets.GCP_ADDR }}
+      GCP_USER: ${{ secrets.GCP_USER }}
+      GCP_PASS: ${{ secrets.GCP_PASS }}
+      GCP_ARGS: ${{ secrets.GCP_ARGS }}
+      GCP_DIR: ${{ secrets.GCP_DIR }}
+      GCP_BIN: ${{ secrets.GCP_BIN }}
+      GAPI: ${{ secrets.GAPI }}
+      DISTRIBUTION_ID1: ${{ secrets.DISTRIBUTION_ID1 }}
+      DISTRIBUTION_ID2: ${{ secrets.DISTRIBUTION_ID2 }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Get changed files
-        id: changed-files
+      - name: Get changed build files
+        id: changed-build-files
         uses: tj-actions/changed-files@v45
+        with:
+          files: |
+            go.mod
+            go.sum
+            **.go
+            **.html
+            realtor/**
+            public/**
+            docs/**.md
+      - name: Get changed daemon files
+        id: changed-daemon-files
+        uses: tj-actions/changed-files@v45
+        with:
+          files: |
+            daemon/**
+      - name: Push Article Changes
+        if: steps.changed-daemon-files.outputs.test_any_changed == 'true'  
+        shell: bash
+        run: |
+          echo STARTING TO PUSH CHANGES TO ARTICLES
+          BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+          echo "BRANCH: $BRANCH"
+          if [[ $BRANCH == "master" ]]
+          then 
+            export ARTICLES="Live-Articles"
+          else 
+            export ARTICLES="Test-Articles"
+          fi
+          echo "Articles: ${ARTICLES}"
+          pushd daemon
+          for i in {0..4}
+            do go run app.go $i
+          done
+          popd
       - name: Build
-        env:
-          ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+        if: steps.changed-build-files.outputs.test_any_changed == 'true'  
         shell: bash
         run: |
           echo STARTING BUILD
@@ -67,21 +100,10 @@ jobs:
           if [[ $BRANCH == "master" ]]
           then 
             TAG="latest"
-            export ARTICLES="Live-Articles"
           else 
             TAG="$BRANCH"
-            export ARTICLES="Test-Articles"
           fi
           echo "TAG: $TAG"
-          echo "Articles: ${ARTICLES}"
-          if [[ $ALL_CHANGED_FILES == *"daemon"* ]]; then
-            echo PUSHING ARTICLES CHANGES
-            pushd daemon
-            for i in {0..4}
-              do go run app.go $i
-            done
-            popd
-          fi
           echo BUILDING REACT APP
           pushd realtor
           sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" src/App.js
