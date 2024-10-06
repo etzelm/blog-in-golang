@@ -64,7 +64,10 @@ jobs:
             Dockerfile
             src/**
             templates/**
-            realtor/**
+            realtor/package-lock.json
+            realtor/package.json
+            realtor/public/**
+            realtor/src/**
             public/**
       - name: Get changed daemon files
         id: changed-daemon-files
