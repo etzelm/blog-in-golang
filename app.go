@@ -71,10 +71,12 @@ func LoadServerRoutes(server *gin.Engine) *gin.Engine {
 	store := persistence.NewInMemoryStore(365 * 24 * time.Hour)
 	server.GET("/", cache.CachePage(store, 365*24*time.Hour, handlers.AboutPage))
 	server.GET("/posts", cache.CachePage(store, 365*24*time.Hour, handlers.PostPage))
-	server.GET("/contact", handlers.ContactPage(&RandomOne, &RandomTwo))
-	server.POST("/contact", handlers.ContactResponse(&RandomOne, &RandomTwo))
 	server.GET("/article/:article_id", cache.CachePage(store, 365*24*time.Hour, handlers.ArticlePage))
 	server.GET("/category/:category", cache.CachePage(store, 365*24*time.Hour, handlers.CategoryPage))
+
+	server.Use(unauthorizedMiddleware())
+	server.GET("/contact", handlers.ContactPage(&RandomOne, &RandomTwo))
+	server.POST("/contact", handlers.ContactResponse(&RandomOne, &RandomTwo))
 	server.GET("/listing/:listing", handlers.ListingGETAPI)
 	server.GET("/listings", handlers.ListingsGETAPI)
 	server.GET("/auth", handlers.AuthPage)
@@ -103,6 +105,27 @@ func staticCacheMiddleware() gin.HandlerFunc {
 			c.Header("Cache-Control", "public, max-age=31536000")
 		} else if strings.HasPrefix(c.Request.URL.Path, "/realtor/static/") {
 			c.Header("Cache-Control", "public, max-age=31536000")
+		}
+		// Continue to the next middleware or handler
+		c.Next()
+	}
+}
+
+func unauthorizedMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Catch common scan patterns to return 401
+		if strings.Contains(c.Request.URL.Path, "wp-includes") {
+			c.AbortWithStatus(401)
+			return
+		} else if strings.Contains(c.Request.URL.Path, "wp-content") {
+			c.AbortWithStatus(401)
+			return
+		} else if strings.Contains(c.Request.URL.Path, "admin") {
+			c.AbortWithStatus(401)
+			return
+		} else if strings.Contains(c.Request.URL.Path, "php") {
+			c.AbortWithStatus(401)
+			return
 		}
 		// Continue to the next middleware or handler
 		c.Next()
