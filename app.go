@@ -23,7 +23,6 @@ func main() {
 	log.Info("Server is starting...")
 	gin.SetMode(gin.ReleaseMode)
 	httpServer := gin.Default()
-
 	httpServer.LoadHTMLGlob("templates/*")
 	LoadStaticFolderRoutes(httpServer)
 	LoadServerRoutes(httpServer)
