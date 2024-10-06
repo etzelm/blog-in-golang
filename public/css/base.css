@@ -1261,6 +1261,23 @@ textarea {
   margin-bottom: 3.2rem !important;
 }
 
+.display-flex {
+  display: flex;
+}
+
+.margin-checkbox {
+  margin-top: 15px;
+  margin-left: 15px;
+}
+
+.margin-text {
+  margin-top: 19px;
+  margin-left: 10px;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-weight: bold;
+  font-size: medium;
+}
+
 .no-border {
   border: none;
 }
