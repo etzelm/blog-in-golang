@@ -60,11 +60,12 @@ jobs:
           files: |
             go.mod
             go.sum
-            **.go
-            **.html
+            app.go
+            Dockerfile
+            src/**
+            templates/**
             realtor/**
             public/**
-            docs/**.md
       - name: Get changed daemon files
         id: changed-daemon-files
         uses: tj-actions/changed-files@v45
