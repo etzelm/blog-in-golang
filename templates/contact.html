@@ -43,14 +43,15 @@
                                 <textarea name="message" id="cMessage" class="full-width" placeholder="Message (required)" required></textarea>
                             </div>
 
-                            <div class="form-field">
+                            <div class="display-flex">
                                 <input name="number" id="cRobotNum" class="quarter-width" placeholder="{{.RandomOne}} + {{.RandomTwo}} = ? (required)" value="" type="text">
+                                <div class="margin-checkbox">
+                                    <input type="checkbox" name="robot" value="1">
+                                </div>
+                                <div class="margin-text">
+                                    I'm Not A Robot
+                                </div>
                             </div>
-
-                            <label class="add-bottom">
-                                <input type="checkbox" name="robot" value="1">
-                                <span class="label-text">I'm Not A Robot</span>
-                            </label>
     
                             <input name="submit" id="submit" class="btn btn--primary btn-wide btn--large full-width" value="Submit" type="submit">
     
