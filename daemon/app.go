@@ -58,8 +58,8 @@ func createTable() {
 		log.Println(err)
 		return
 	}
-	dbSvc := dynamodb.New(sess)
 
+	dbSvc := dynamodb.New(sess)
 	input := &dynamodb.CreateTableInput{
 		AttributeDefinitions: []*dynamodb.AttributeDefinition{
 			{

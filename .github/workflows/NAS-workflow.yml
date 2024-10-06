@@ -60,11 +60,12 @@ jobs:
           files: |
             go.mod
             go.sum
-            **.go
-            **.html
+            app.go
+            Dockerfile
+            src/**
+            templates/**
             realtor/**
             public/**
-            docs/**.md
       - name: Get changed daemon files
         id: changed-daemon-files
         uses: tj-actions/changed-files@v45
@@ -72,7 +73,7 @@ jobs:
           files: |
             daemon/**
       - name: Push Article Changes
-        if: steps.changed-daemon-files.outputs.test_any_changed == 'true'  
+        if: steps.changed-daemon-files.outputs.any_changed == 'true'  
         shell: bash
         run: |
           echo STARTING TO PUSH CHANGES TO ARTICLES
@@ -91,7 +92,7 @@ jobs:
           done
           popd
       - name: Build
-        if: steps.changed-build-files.outputs.test_any_changed == 'true'  
+        if: steps.changed-build-files.outputs.any_changed == 'true'  
         shell: bash
         run: |
           echo STARTING BUILD
