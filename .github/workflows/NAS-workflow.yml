@@ -1,5 +1,5 @@
 name: blog-in-golang-nas
-# This workflow deploys blog changes to my NAS
+# This workflow deploys blog changes from my NAS
 on:
   push:
     branches:
