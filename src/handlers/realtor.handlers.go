@@ -69,7 +69,7 @@ func ListingPOSTAPI(c *gin.Context) {
 			//Endpoint:    aws.String("http://localhost:8000"),
 		})
 		if err != nil {
-			log.Println(err)
+			log.Error(err)
 			c.HTML(
 				// Set the HTTP status to 500 (Internal Server Error)
 				http.StatusInternalServerError,
@@ -150,7 +150,7 @@ func UploadImagePOSTAPI(c *gin.Context) {
 			f, err := file.Open()
 
 			if err != nil {
-				log.Println(err)
+				log.Error(err)
 			}
 
 			defer f.Close()

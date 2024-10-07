@@ -77,7 +77,7 @@ func GetArticlePanels() []Article {
 		//Endpoint:    aws.String("http://localhost:8000"),
 	})
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		return nil
 	}
 	dbSvc := dynamodb.New(sess)
@@ -150,7 +150,7 @@ func GetCategoryPageArticlePanels(category string) []Article {
 		//Endpoint:    aws.String("http://localhost:8000"),
 	})
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		return nil
 	}
 	dbSvc := dynamodb.New(sess)
@@ -225,7 +225,7 @@ func GetArticleByID(id int) (*Article, error) {
 		//Endpoint:    aws.String("http://localhost:8000"),
 	})
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		return nil, err
 	}
 	dbSvc := dynamodb.New(sess)

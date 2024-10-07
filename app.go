@@ -93,16 +93,13 @@ func randRange(min, max int) int {
 
 func staticCacheMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// Apply the Cache-Control header to the static files
-		if strings.HasPrefix(c.Request.URL.Path, "/public/") {
-			c.Header("Cache-Control", "public, max-age=31536000")
-		} else if strings.HasPrefix(c.Request.URL.Path, "/realtor/js/") {
-			c.Header("Cache-Control", "public, max-age=31536000")
-		} else if strings.HasPrefix(c.Request.URL.Path, "/realtor/css/") {
-			c.Header("Cache-Control", "public, max-age=31536000")
-		} else if strings.HasPrefix(c.Request.URL.Path, "/realtor/images/") {
-			c.Header("Cache-Control", "public, max-age=31536000")
-		} else if strings.HasPrefix(c.Request.URL.Path, "/realtor/static/") {
+		// Determine if request path is for statically served files
+		if strings.HasPrefix(c.Request.URL.Path, "/public/") ||
+			strings.HasPrefix(c.Request.URL.Path, "/realtor/js/") ||
+			strings.HasPrefix(c.Request.URL.Path, "/realtor/css/") ||
+			strings.HasPrefix(c.Request.URL.Path, "/realtor/images/") ||
+			strings.HasPrefix(c.Request.URL.Path, "/realtor/static/") {
+			// Apply the Cache-Control header to the static files
 			c.Header("Cache-Control", "public, max-age=31536000")
 		}
 		// Continue to the next middleware or handler
@@ -112,17 +109,12 @@ func staticCacheMiddleware() gin.HandlerFunc {
 
 func unauthorizedMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// Catch common scan patterns to return 401
-		if strings.Contains(c.Request.URL.Path, "wp-includes") {
-			c.AbortWithStatus(401)
-			return
-		} else if strings.Contains(c.Request.URL.Path, "wp-content") {
-			c.AbortWithStatus(401)
-			return
-		} else if strings.Contains(c.Request.URL.Path, "admin") {
-			c.AbortWithStatus(401)
-			return
-		} else if strings.Contains(c.Request.URL.Path, "php") {
+		// Determine if request path is unused pattern common in scans
+		if strings.Contains(c.Request.URL.Path, "wp-includes") ||
+			strings.Contains(c.Request.URL.Path, "wp-content") ||
+			strings.Contains(c.Request.URL.Path, "admin") ||
+			strings.Contains(c.Request.URL.Path, "php") {
+			// Abort the gin context while returning 401
 			c.AbortWithStatus(401)
 			return
 		}

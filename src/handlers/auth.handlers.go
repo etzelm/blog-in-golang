@@ -42,19 +42,16 @@ func SecurePage(c *gin.Context) {
 	cookie1, _ := c.Cookie("userToken")
 	cookie2, _ := c.Cookie("user")
 	ip := c.ClientIP()
-	log.Info("cookie1: ", cookie1)
-	log.Info("cookie2: ", cookie2)
-	log.Info("ip: ", ip)
 
 	if !CheckPasswordHash(cookie2, cookie1) {
 		c.HTML(
-			// Set the HTTP status to 400 (Bad Request)
-			http.StatusBadRequest,
+			// Set the HTTP status to 401 (Unauthorized)
+			http.StatusUnauthorized,
 			// Use the error.html template
 			"error.html",
 			// Pass the data that the page uses
 			gin.H{
-				"title": "400 Client Error",
+				"title": "401 (Unauthorized)",
 			},
 		)
 		return
@@ -82,18 +79,16 @@ func AuthResponse(c *gin.Context) {
 	var form models.AuthForm
 	c.Bind(&form)
 
-	log.Info("form: ", form)
-
 	email := template.HTMLEscapeString(form.Email)
 	if m, _ := regexp.MatchString("^[ a-zA-Z0-9]+(@[a-zA-Z0-9.]+)*$", email); !m {
 		c.HTML(
-			// Set the HTTP status to 400 (Bad Request)
-			http.StatusBadRequest,
+			// Set the HTTP status to 401 (Unauthorized)
+			http.StatusUnauthorized,
 			// Use the error.html template
 			"error.html",
 			// Pass the data that the page uses
 			gin.H{
-				"title": "400 Server Error",
+				"title": "401 (Unauthorized)",
 				"error": "Email should match a standard format like etzelm@live.com",
 			},
 		)
@@ -110,7 +105,7 @@ func AuthResponse(c *gin.Context) {
 		//Endpoint:    aws.String("http://localhost:8000"),
 	})
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		c.HTML(
 			// Set the HTTP status to 500 (Internal Server Error)
 			http.StatusInternalServerError,

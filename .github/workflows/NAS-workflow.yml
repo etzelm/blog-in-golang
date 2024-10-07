@@ -1,5 +1,5 @@
 name: blog-in-golang-nas
-# This workflow deploys blog changes to my NAS
+# This workflow deploys blog changes from my NAS
 on:
   push:
     branches:
@@ -53,7 +53,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Get changed build files
+      - name: Get Changed Build Files
         id: changed-build-files
         uses: tj-actions/changed-files@v45
         with:
@@ -64,9 +64,12 @@ jobs:
             Dockerfile
             src/**
             templates/**
-            realtor/**
+            realtor/package-lock.json
+            realtor/package.json
+            realtor/public/**
+            realtor/src/**
             public/**
-      - name: Get changed daemon files
+      - name: Get Changed Article Files
         id: changed-daemon-files
         uses: tj-actions/changed-files@v45
         with:
