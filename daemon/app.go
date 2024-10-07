@@ -55,7 +55,7 @@ func createTable() {
 		Endpoint:    aws.String("http://localhost:8000"),
 	})
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		return
 	}
 
@@ -90,13 +90,13 @@ func createTable() {
 
 	result, err := dbSvc.ListTables(&dynamodb.ListTablesInput{})
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		return
 	}
 
-	log.Println("Tables:")
+	log.Info("Tables:")
 	for _, table := range result.TableNames {
-		log.Println(*table)
+		log.Info(*table)
 	}
 }
 
@@ -110,7 +110,7 @@ func dropTable() {
 		Region:      aws.String("us-west-2"),
 		Endpoint:    aws.String("http://localhost:8000")})
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		return
 	}
 	dbSvc := dynamodb.New(sess)
@@ -127,12 +127,12 @@ func dropTable() {
 
 	result, err := dbSvc.ListTables(&dynamodb.ListTablesInput{})
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		return
 	}
 
-	log.Println("Current Tables:")
+	log.Info("Current Tables:")
 	for _, table := range result.TableNames {
-		log.Println(*table)
+		log.Info(*table)
 	}
 }

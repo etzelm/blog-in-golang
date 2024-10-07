@@ -49,7 +49,7 @@ func GetRealtorListings() []Listing {
 		//Endpoint:    aws.String("http://localhost:8000"),
 	})
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		return nil
 	}
 	dbSvc := dynamodb.New(sess)
@@ -112,7 +112,7 @@ func GetRealtorListing(listing string) []Listing {
 		//Endpoint:    aws.String("http://localhost:8000"),
 	})
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		return nil
 	}
 	dbSvc := dynamodb.New(sess)

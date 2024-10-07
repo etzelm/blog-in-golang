@@ -219,13 +219,13 @@ func ContactResponse(numOne *int, numTwo *int) gin.HandlerFunc {
 		name := template.HTMLEscapeString(form.Name)
 		if m, _ := regexp.MatchString("^[ a-zA-Z0-9]+( +[a-zA-Z0-9]+)*$", name); !m {
 			c.HTML(
-				// Set the HTTP status to 400 (Bad Request)
-				http.StatusBadRequest,
+				// Set the HTTP status to 401 (Unauthorized)
+				http.StatusUnauthorized,
 				// Use the error.html template
 				"error.html",
 				// Pass the data that the page uses
 				gin.H{
-					"title": "400 Client Error",
+					"title": "401 (Unauthorized)",
 					"error": "Name should contain only alphanumeric characters and spaces!",
 				},
 			)
@@ -242,7 +242,7 @@ func ContactResponse(numOne *int, numTwo *int) gin.HandlerFunc {
 			//Endpoint:    aws.String("http://localhost:8000"),
 		})
 		if err != nil {
-			log.Println(err)
+			log.Error(err)
 			c.HTML(
 				// Set the HTTP status to 500 (Internal Server Error)
 				http.StatusInternalServerError,

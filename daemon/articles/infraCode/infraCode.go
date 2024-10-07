@@ -24,7 +24,7 @@ func InfraCode() {
 		//Endpoint:    aws.String("http://localhost:8000"),
 	})
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		return
 	}
 	dbSvc := dynamodb.New(sess)
