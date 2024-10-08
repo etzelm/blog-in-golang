@@ -12,7 +12,7 @@ cd /home/docker/actions-runner
 
 timestamp=$(date +%s)
 echo $timestamp
-./config.sh --url https://github.com/${REPOSITORY} --unattended --ephemeral --labels "nas" --name $timestamp --token ${REG_TOKEN}
+./config.sh --url https://github.com/${REPOSITORY} --disableupdate --unattended --ephemeral --labels "nas" --name $timestamp --token ${REG_TOKEN}
 
 cleanup() {
     echo "Removing runner..."

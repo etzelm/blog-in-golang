@@ -112,6 +112,8 @@ func unauthorizedMiddleware() gin.HandlerFunc {
 		// Determine if request path is unused pattern common in scans
 		if strings.Contains(c.Request.URL.Path, "wp-includes") ||
 			strings.Contains(c.Request.URL.Path, "wp-content") ||
+			strings.Contains(c.Request.URL.Path, "wp-login") ||
+			strings.Contains(c.Request.URL.Path, ".git") ||
 			strings.Contains(c.Request.URL.Path, "admin") ||
 			strings.Contains(c.Request.URL.Path, "php") {
 			// Abort the gin context while returning 401
