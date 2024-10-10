@@ -74,7 +74,8 @@ jobs:
         uses: tj-actions/changed-files@v45
         with:
           files: |
-            daemon/**
+            daemon/articles/**
+            daemon/app.go
       - name: Push Article Changes
         if: steps.changed-daemon-files.outputs.any_changed == 'true'  
         shell: bash
@@ -141,12 +142,13 @@ jobs:
         if: steps.deploy.outcome == 'success' || steps.deploy.outcome == 'skipped'
         shell: bash
         run: |
-          echo RUNNING TESTS TO CACHE CLOUDFRONT CONTENT
           BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
           if [[ $BRANCH == "master" ]]
           then 
+            echo RUNNING TESTS TO CACHE CLOUDFRONT CONTENT
             TEST=.github/workflows/public-urls.txt
           else 
+            echo RUNNING TESTS
             TEST=.github/workflows/local-urls.txt
           fi
           while IFS= read -r line
@@ -155,4 +157,3 @@ jobs:
             command="curl --fail "$line" > /dev/null"
             eval "$command"
           done < $TEST
-          
