@@ -152,7 +152,6 @@ jobs:
           while IFS= read -r line
           do
             echo $line
-            echo eval $line
-            curl --fail "$line" > /dev/null
+            curl --fail $line > /dev/null
           done < $TEST
           
