@@ -155,4 +155,3 @@ jobs:
             command="curl --fail "$line" > /dev/null"
             eval "$command"
           done < $TEST
-          
