@@ -6,9 +6,9 @@ https://mitchelletzel.com/public/css/base.css
 https://mitchelletzel.com/public/css/fonts.css
 https://mitchelletzel.com/public/css/vendor.css
 https://mitchelletzel.com/public/css/main.css
-https://mitchelletzel.com/public/woff2/zYX9KVElMYYaJe8bpLHnCwDKjWr7AIFsdP3pBms.woff2
 https://mitchelletzel.com/public/woff2/NGS6v5_NC0k9P9H2TbFhsqMA.woff2
-https://mitchelletzel.com/public/woff2/zzYXgKVElMYYaJe8bpLHnCwDKhdHeFaxOedc.woff2
+https://mitchelletzel.com/public/woff2/zYXgKVElMYYaJe8bpLHnCwDKhdHeFaxOedc.woff2
+https://mitchelletzel.com/public/woff2/zYX9KVElMYYaJe8bpLHnCwDKjWr7AIFsdP3pBms.woff2
 https://mitchelletzel.com/public/js/modernizr.js
 https://mitchelletzel.com/public/js/jquery-3.7.1.min.js
 https://mitchelletzel.com/public/js/plugins.js
