@@ -95,6 +95,7 @@ jobs:
           done
           popd
       - name: Build & Deploy
+        id: deploy
         if: steps.changed-build-files.outputs.any_changed == 'true'  
         shell: bash
         run: |
@@ -137,6 +138,7 @@ jobs:
           fi
           docker system prune -f
       - name: Test
+        if: steps.deploy.outcome == 'success' || steps.deploy.outcome == 'skipped'
         shell: bash
         run: |
           echo RUNNING TESTS TO CACHE CLOUDFRONT CONTENT
