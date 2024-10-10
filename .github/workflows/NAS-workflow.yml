@@ -151,7 +151,7 @@ jobs:
           fi
           while IFS= read -r line
           do
-            echo $line
-            curl --fail $line > /dev/null
+            echo "${line}"
+            curl --fail "${line}" > /dev/null
           done < $TEST
           
