@@ -74,7 +74,8 @@ jobs:
         uses: tj-actions/changed-files@v45
         with:
           files: |
-            daemon/**
+            daemon/articles/**
+            daemon/app.go
       - name: Push Article Changes
         if: steps.changed-daemon-files.outputs.any_changed == 'true'  
         shell: bash
