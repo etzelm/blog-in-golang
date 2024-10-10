@@ -96,6 +96,7 @@ func staticCacheMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Determine if request path is for statically served files
 		if strings.HasPrefix(c.Request.URL.Path, "/public/") ||
+			strings.HasPrefix(c.Request.URL.Path, "/favicon.ico") ||
 			strings.HasPrefix(c.Request.URL.Path, "/realtor/js/") ||
 			strings.HasPrefix(c.Request.URL.Path, "/realtor/css/") ||
 			strings.HasPrefix(c.Request.URL.Path, "/realtor/images/") ||
