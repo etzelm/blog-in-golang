@@ -26,6 +26,7 @@ https://mitchelletzel.com/public/images/icons/icon-two.svg
 https://mitchelletzel.com/public/images/icons/icon-three.svg
 https://mitchelletzel.com/public/images/icons/icon-four.svg
 https://mitchelletzel.com/public/images/icons/icon-five.svg
+https://mitchelletzel.com/favicon.ico
 https://mitchelletzel.com/posts
 https://mitchelletzel.com/article/0
 https://mitchelletzel.com/article/2
