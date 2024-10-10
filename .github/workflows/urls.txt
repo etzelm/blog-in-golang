@@ -95,6 +95,6 @@ https://files.mitchelletzel.com/media/etzelm@live.com/log-house.jpg
 https://files.mitchelletzel.com/media/etzelm@live.com/big-house.jpg
 https://files.mitchelletzel.com/media/etzelm@live.com/that-house.jpg
 https://files.mitchelletzel.com/media/etzelm@live.com/inside-one.jpeg
-https://files.mitchelletzel.com/media/etzelm@live.com/inside-two.jpeg
-https://files.mitchelletzel.com/media/etzelm@live.com/inside-three.jpeg
-https://files.mitchelletzel.com/media/etzelm@live.com/inside-four.jpeg
+https://files.mitchelletzel.com/media/etzelm@live.com/inside-two.jpg
+https://files.mitchelletzel.com/media/etzelm@live.com/inside-three.jpg
+https://files.mitchelletzel.com/media/etzelm@live.com/inside-four.jpg
