@@ -95,6 +95,7 @@ jobs:
           done
           popd
       - name: Build & Deploy
+        id: deploy
         if: steps.changed-build-files.outputs.any_changed == 'true'  
         shell: bash
         run: |
@@ -133,12 +134,25 @@ jobs:
             aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID1 --paths '/*'
             aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID2 --paths '/*'
             echo WAITING FOR INVALIDATIONS TO FINISH
-            sleep 40
-            echo RUNNING TESTS TO CACHE CLOUDFRONT CONTENT
-            while IFS= read -r line
-            do
-              echo $line
-              curl --fail "$line" > /dev/null
-            done < .github/workflows/urls.txt
+            sleep 45
           fi
           docker system prune -f
+      - name: Test
+        if: steps.deploy.outcome == 'success' || steps.deploy.outcome == 'skipped'
+        shell: bash
+        run: |
+          echo RUNNING TESTS TO CACHE CLOUDFRONT CONTENT
+          BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+          if [[ $BRANCH == "master" ]]
+          then 
+            TEST=.github/workflows/public-urls.txt
+          else 
+            TEST=.github/workflows/local-urls.txt
+          fi
+          while IFS= read -r line
+          do
+            echo $line
+            command="curl --fail "$line" > /dev/null"
+            eval "$command"
+          done < $TEST
+          

@@ -52,11 +52,11 @@ func main() {
 // LoadStaticFolderRoutes loads all api routes that serve a static server folder.
 func LoadStaticFolderRoutes(server *gin.Engine) *gin.Engine {
 
+	server.StaticFile("/robots.txt", "./public/robots.txt")
+	server.StaticFile("/sitemap.xml", "./public/sitemap.xml")
+	server.StaticFile("/favicon.ico", "./public/images/favicon.ico")
 	server.Use(staticCacheMiddleware())
 	server.Use(static.Serve("/public", static.LocalFile("./public", true)))
-	server.Use(static.Serve("/favicon.ico", static.LocalFile("./public/images/favicon.ico", false)))
-	server.Use(static.Serve("/robots.txt", static.LocalFile("./public/robots.txt", false)))
-	server.Use(static.Serve("/sitemap.xml", static.LocalFile("./public/sitemap.xml", false)))
 	server.Use(static.Serve("/realtor", static.LocalFile("./realtor/build", true)))
 	server.Use(static.Serve("/realtor/new", static.LocalFile("./realtor/build", true)))
 	server.Use(static.Serve("/realtor/search", static.LocalFile("./realtor/build", true)))
