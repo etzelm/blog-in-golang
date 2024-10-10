@@ -138,7 +138,7 @@ jobs:
             while IFS= read -r line
             do
               echo $line
-              curl "$line" > /dev/null
+              curl --fail "$line" > /dev/null
             done < .github/workflows/urls.txt
           fi
           docker system prune -f

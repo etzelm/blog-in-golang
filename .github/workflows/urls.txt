@@ -1,4 +1,7 @@
 https://mitchelletzel.com
+https://mitchelletzel.com/favicon.ico
+https://mitchelletzel.com/robots.txt
+https://mitchelletzel.com/sitemap.xml
 https://mitchelletzel.com/public/css/base.css
 https://mitchelletzel.com/public/css/vendor.css
 https://mitchelletzel.com/public/css/main.css
@@ -28,9 +31,9 @@ https://mitchelletzel.com/public/images/icons/icon-four.svg
 https://mitchelletzel.com/public/images/icons/icon-five.svg
 https://mitchelletzel.com/posts
 https://mitchelletzel.com/article/0
-https://mitchelletzel.com/article/1
 https://mitchelletzel.com/article/2
 https://mitchelletzel.com/article/3
+https://mitchelletzel.com/article/4
 https://mitchelletzel.com/article/5
 https://mitchelletzel.com/auth
 https://mitchelletzel.com/contact
@@ -50,8 +53,6 @@ https://mitchelletzel.com/realtor/js/api.js
 https://mitchelletzel.com/realtor/js/platform.js
 https://mitchelletzel.com/realtor/css/bootstrap.min.css
 https://mitchelletzel.com/realtor/css/notifications.css
-https://mitchelletzel.com/realtor/static/js/main.468f7c72.js
-https://mitchelletzel.com/realtor/static/css/main.6ccddee8.css
 https://files.mitchelletzel.com/about/about-2000.png
 https://files.mitchelletzel.com/about/about-1000.png
 https://files.mitchelletzel.com/about/about-500.png
@@ -95,6 +96,6 @@ https://files.mitchelletzel.com/media/etzelm@live.com/log-house.jpg
 https://files.mitchelletzel.com/media/etzelm@live.com/big-house.jpg
 https://files.mitchelletzel.com/media/etzelm@live.com/that-house.jpg
 https://files.mitchelletzel.com/media/etzelm@live.com/inside-one.jpeg
-https://files.mitchelletzel.com/media/etzelm@live.com/inside-two.jpeg
-https://files.mitchelletzel.com/media/etzelm@live.com/inside-three.jpeg
-https://files.mitchelletzel.com/media/etzelm@live.com/inside-four.jpeg
+https://files.mitchelletzel.com/media/etzelm@live.com/inside-two.jpg
+https://files.mitchelletzel.com/media/etzelm@live.com/inside-three.jpg
+https://files.mitchelletzel.com/media/etzelm@live.com/inside-four.jpg

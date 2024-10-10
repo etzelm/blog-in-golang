@@ -54,6 +54,9 @@ func LoadStaticFolderRoutes(server *gin.Engine) *gin.Engine {
 
 	server.Use(staticCacheMiddleware())
 	server.Use(static.Serve("/public", static.LocalFile("./public", true)))
+	server.Use(static.Serve("/favicon.ico", static.LocalFile("./public/images/favicon.ico", false)))
+	server.Use(static.Serve("/robots.txt", static.LocalFile("./public/robots.txt", false)))
+	server.Use(static.Serve("/sitemap.xml", static.LocalFile("./public/sitemap.xml", false)))
 	server.Use(static.Serve("/realtor", static.LocalFile("./realtor/build", true)))
 	server.Use(static.Serve("/realtor/new", static.LocalFile("./realtor/build", true)))
 	server.Use(static.Serve("/realtor/search", static.LocalFile("./realtor/build", true)))
@@ -95,6 +98,9 @@ func staticCacheMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Determine if request path is for statically served files
 		if strings.HasPrefix(c.Request.URL.Path, "/public/") ||
+			strings.HasPrefix(c.Request.URL.Path, "/favicon.ico") ||
+			strings.HasPrefix(c.Request.URL.Path, "/robots.txt") ||
+			strings.HasPrefix(c.Request.URL.Path, "/sitemap.xml") ||
 			strings.HasPrefix(c.Request.URL.Path, "/realtor/js/") ||
 			strings.HasPrefix(c.Request.URL.Path, "/realtor/css/") ||
 			strings.HasPrefix(c.Request.URL.Path, "/realtor/images/") ||
