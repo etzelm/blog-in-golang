@@ -28,9 +28,9 @@ https://mitchelletzel.com/public/images/icons/icon-four.svg
 https://mitchelletzel.com/public/images/icons/icon-five.svg
 https://mitchelletzel.com/posts
 https://mitchelletzel.com/article/0
-https://mitchelletzel.com/article/1
 https://mitchelletzel.com/article/2
 https://mitchelletzel.com/article/3
+https://mitchelletzel.com/article/4
 https://mitchelletzel.com/article/5
 https://mitchelletzel.com/auth
 https://mitchelletzel.com/contact
@@ -50,8 +50,6 @@ https://mitchelletzel.com/realtor/js/api.js
 https://mitchelletzel.com/realtor/js/platform.js
 https://mitchelletzel.com/realtor/css/bootstrap.min.css
 https://mitchelletzel.com/realtor/css/notifications.css
-https://mitchelletzel.com/realtor/static/js/main.468f7c72.js
-https://mitchelletzel.com/realtor/static/css/main.6ccddee8.css
 https://files.mitchelletzel.com/about/about-2000.png
 https://files.mitchelletzel.com/about/about-1000.png
 https://files.mitchelletzel.com/about/about-500.png
