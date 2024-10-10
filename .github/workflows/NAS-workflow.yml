@@ -117,6 +117,7 @@ jobs:
           sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" src/components/MyListings.js
           sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" src/components/NavBar.js
           npm install
+          npm audit fix
           yarn build
           popd
           echo BUILDING DOCKER IMAGE
