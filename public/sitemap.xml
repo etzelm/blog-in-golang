@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<url>
+  <loc>https://mitchelletzel.com/</loc>
+  <lastmod>2024-10-10T17:30:07+00:00</lastmod>
+  <priority>1.00</priority>
+</url>
+<url>
+  <loc>https://mitchelletzel.com/posts</loc>
+  <lastmod>2024-10-10T17:30:07+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://mitchelletzel.com/category/Disciplines</loc>
+  <lastmod>2024-10-10T17:30:07+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://mitchelletzel.com/category/Distributed%20Systems</loc>
+  <lastmod>2024-10-10T17:30:07+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://mitchelletzel.com/category/My%20Projects</loc>
+  <lastmod>2024-10-10T17:30:07+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://mitchelletzel.com/contact</loc>
+  <lastmod>2024-10-10T17:30:07+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://mitchelletzel.com/article/5</loc>
+  <lastmod>2024-10-10T17:30:07+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://mitchelletzel.com/article/4</loc>
+  <lastmod>2024-10-10T17:30:07+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://mitchelletzel.com/category/Cloud%20Services</loc>
+  <lastmod>2024-10-10T17:30:07+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://mitchelletzel.com/article/3</loc>
+  <lastmod>2024-10-10T17:30:07+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://mitchelletzel.com/category/Frontend%20Development</loc>
+  <lastmod>2024-10-10T17:30:07+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://mitchelletzel.com/article/2</loc>
+  <lastmod>2024-10-10T17:30:07+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://mitchelletzel.com/article/0</loc>
+  <lastmod>2024-10-10T17:30:07+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://mitchelletzel.com/realtor</loc>
+  <lastmod>2024-10-08T23:29:10+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+</urlset>

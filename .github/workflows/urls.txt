@@ -1,4 +1,7 @@
 https://mitchelletzel.com
+https://mitchelletzel.com/favicon.ico
+https://mitchelletzel.com/robots.txt
+https://mitchelletzel.com/sitemap.xml
 https://mitchelletzel.com/public/css/base.css
 https://mitchelletzel.com/public/css/vendor.css
 https://mitchelletzel.com/public/css/main.css
@@ -26,7 +29,6 @@ https://mitchelletzel.com/public/images/icons/icon-two.svg
 https://mitchelletzel.com/public/images/icons/icon-three.svg
 https://mitchelletzel.com/public/images/icons/icon-four.svg
 https://mitchelletzel.com/public/images/icons/icon-five.svg
-https://mitchelletzel.com/favicon.ico
 https://mitchelletzel.com/posts
 https://mitchelletzel.com/article/0
 https://mitchelletzel.com/article/2
