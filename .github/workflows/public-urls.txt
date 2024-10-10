@@ -56,9 +56,9 @@ https://mitchelletzel.com/realtor/css/notifications.css
 https://files.mitchelletzel.com/about/about-2000.png
 https://files.mitchelletzel.com/about/about-1000.png
 https://files.mitchelletzel.com/about/about-500.png
-https://files.mitchelletzel.com/about/contact-2000.png
-https://files.mitchelletzel.com/about/contact-1000.png
-https://files.mitchelletzel.com/about/contact-500.png
+https://files.mitchelletzel.com/about/contact-2000.jpg
+https://files.mitchelletzel.com/about/contact-1000.jpg
+https://files.mitchelletzel.com/about/contact-500.jpg
 https://files.mitchelletzel.com/posts/IAC/IAC-cover-1200.png
 https://files.mitchelletzel.com/posts/IAC/IAC-cover-600.png
 https://files.mitchelletzel.com/posts/IAC/IAC-article-2000.png
