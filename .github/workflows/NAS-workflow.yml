@@ -142,12 +142,13 @@ jobs:
         if: steps.deploy.outcome == 'success' || steps.deploy.outcome == 'skipped'
         shell: bash
         run: |
-          echo RUNNING TESTS TO CACHE CLOUDFRONT CONTENT
           BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
           if [[ $BRANCH == "master" ]]
           then 
+            echo RUNNING TESTS TO CACHE CLOUDFRONT CONTENT
             TEST=.github/workflows/public-urls.txt
           else 
+            echo RUNNING TESTS
             TEST=.github/workflows/local-urls.txt
           fi
           while IFS= read -r line
