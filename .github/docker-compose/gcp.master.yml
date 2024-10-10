@@ -8,6 +8,8 @@ services:
     ports:
       - "443:443/tcp"
       - "80:80/tcp"
+    volumes:
+      - '/home/metzel/containers/blog-in-golang/certmagic:/root/.local/share/certmagic'
     environment:
       AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
       AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
