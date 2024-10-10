@@ -149,12 +149,11 @@ jobs:
           else 
             TEST=.github/workflows/local-urls.txt
           fi
-          f() {
-            curl --fail "$1" > /dev/null
-          }
           while IFS= read -r line
           do
-            echo $line
-            f $line
+            echo "Test URL $line"
+            command="curl --fail "$line" > /dev/null"
+            echo "Test Command $command"
+            eval "$command"
           done < $TEST
           
