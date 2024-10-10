@@ -54,6 +54,7 @@ func LoadStaticFolderRoutes(server *gin.Engine) *gin.Engine {
 
 	server.Use(staticCacheMiddleware())
 	server.Use(static.Serve("/public", static.LocalFile("./public", true)))
+	server.Use(static.Serve("/favicon.ico", static.LocalFile("./public/images/favicon.ico", false)))
 	server.Use(static.Serve("/realtor", static.LocalFile("./realtor/build", true)))
 	server.Use(static.Serve("/realtor/new", static.LocalFile("./realtor/build", true)))
 	server.Use(static.Serve("/realtor/search", static.LocalFile("./realtor/build", true)))
