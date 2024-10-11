@@ -1148,7 +1148,7 @@ input::-moz-focus-inner {
   background-repeat: no-repeat;
   background: center center;
   background-size: contain;
-  background-image: url(../images/icons/icon-quote.svg);
+  background-image: url(https://files.mitchelletzel.com/public/images/icons/icon-quote.svg);
   position: absolute;
   top: 4rem;
   left: 4rem;
@@ -1514,12 +1514,12 @@ input::-moz-focus-inner {
 }
 
 .pgn__prev {
-  background-image: url("../images/icons/icon-arrow-left.svg");
+  background-image: url("https://files.mitchelletzel.com/public/images/icons/icon-arrow-left.svg");
   left: 0;
 }
 
 .pgn__next {
-  background-image: url("../images/icons/icon-arrow-right.svg");
+  background-image: url("https://files.mitchelletzel.com/public/images/icons/icon-arrow-right.svg");
   right: 0;
 }
 
@@ -1986,11 +1986,11 @@ input::-moz-focus-inner {
 }
 
 .format-quote .entry__thumb::before {
-  background-image: url(../images/icons/icon-quote.svg);
+  background-image: url(https://files.mitchelletzel.com/public/images/icons/icon-quote.svg);
 }
 
 .format-link .entry__thumb::before {
-  background-image: url(../images/icons/icon-link.svg);
+  background-image: url(https://files.mitchelletzel.com/public/images/icons/icon-link.svg);
 }
 
 .format-link .link-wrap cite:before {
@@ -2036,7 +2036,7 @@ input::-moz-focus-inner {
 
 .format-video .entry__thumb::after {
   cursor: zoom-in;
-  background-image: url(../images/icons/icon-video.svg);
+  background-image: url(https://files.mitchelletzel.com/public/images/icons/icon-video.svg);
   background-size: 3.2rem 3.2rem;
 }
 
@@ -2045,7 +2045,7 @@ input::-moz-focus-inner {
 }
 
 .format-audio .entry__thumb::after {
-  background-image: url(../images/icons/icon-audio.svg);
+  background-image: url(https://files.mitchelletzel.com/public/images/icons/icon-audio.svg);
   background-size: 2.2rem 2.2rem;
 }
 
@@ -2540,43 +2540,43 @@ input::-moz-focus-inner {
 }
 
 .header__social .ss-facebook a::after {
-  background-image: url(../images/icons/social/icon-facebook.svg);
+  background-image: url(https://files.mitchelletzel.com/public/images/icons/social/icon-facebook.svg);
 }
 
 .header__social .ss-twitter a::after {
-  background-image: url(../images/icons/social/icon-twitter.svg);
+  background-image: url(https://files.mitchelletzel.com/public/images/icons/social/icon-twitter.svg);
 }
 
 .header__social .ss-dribbble a::after {
-  background-image: url(../images/icons/social/icon-dribbble.svg);
+  background-image: url(https://files.mitchelletzel.com/public/images/icons/social/icon-dribbble.svg);
 }
 
 .header__social .ss-behance a::after {
-  background-image: url(../images/icons/social/icon-behance.svg);
+  background-image: url(https://files.mitchelletzel.com/public/images/icons/social/icon-behance.svg);
 }
 
 .header__social .ss-instagram a::after {
-  background-image: url(../images/icons/social/icon-instagram.svg);
+  background-image: url(https://files.mitchelletzel.com/public/images/icons/social/icon-instagram.svg);
 }
 
 .header__social .ss-pinterest a::after {
-  background-image: url(../images/icons/social/icon-pinterest.svg);
+  background-image: url(https://files.mitchelletzel.com/public/images/icons/social/icon-pinterest.svg);
 }
 
 .header__social .ss-rss a::after {
-  background-image: url(../images/icons/social/icon-rss.svg);
+  background-image: url(https://files.mitchelletzel.com/public/images/icons/social/icon-rss.svg);
 }
 
 .header__social .ss-github a::after {
-  background-image: url(../images/icons/social/icon-github.png);
+  background-image: url(https://files.mitchelletzel.com/public/images/icons/social/icon-github.png);
 }
 
 .header__social .ss-linkedin a::after {
-  background-image: url(../images/icons/social/icon-linkedin.svg);
+  background-image: url(https://files.mitchelletzel.com/public/images/icons/social/icon-linkedin.svg);
 }
 
 .header__social .ss-email a::after {
-  background-image: url(../images/icons/icon-mail.svg);
+  background-image: url(https://files.mitchelletzel.com/public/images/icons/icon-mail.svg);
 }
 
 /* -------------------------------------------------------------------
@@ -2591,7 +2591,7 @@ input::-moz-focus-inner {
   background-repeat: no-repeat;
   background-position: center center;
   background-size: contain;
-  background-image: url(../images/icons/icon-search.svg);
+  background-image: url(https://files.mitchelletzel.com/public/images/icons/icon-search.svg);
   position: fixed;
   right: 40px;
   top: 6.4rem;
@@ -2903,7 +2903,7 @@ body.search-is-visible {
   }
 
   .header__search-trigger {
-    background-image: url(../images/icons/icon-search-w.svg);
+    background-image: url(https://files.mitchelletzel.com/public/images/icons/icon-search-w.svg);
     height: 20px;
     width: 20px;
     top: 29px;
@@ -3091,7 +3091,7 @@ body.search-is-visible {
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.5);
   transition: all 0.3s;
-  background-image: url(../images/icons/icon-arrow-up.svg);
+  background-image: url(https://files.mitchelletzel.com/public/images/icons/icon-arrow-up.svg);
   background-color: #000000;
   background-repeat: no-repeat;
   background-position: center center;
