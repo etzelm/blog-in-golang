@@ -6,9 +6,12 @@ http://$NAS_ADDR:85/public/css/base.css
 http://$NAS_ADDR:85/public/css/fonts.css
 http://$NAS_ADDR:85/public/css/vendor.css
 http://$NAS_ADDR:85/public/css/main.css
+http://$NAS_ADDR:85/public/woff2/0QIvMX1D_JOuMwr7I_FMl_E.woff2
 http://$NAS_ADDR:85/public/woff2/NGS6v5_NC0k9P9H2TbFhsqMA.woff2
 http://$NAS_ADDR:85/public/woff2/zYXgKVElMYYaJe8bpLHnCwDKhdHeFaxOedc.woff2
+http://$NAS_ADDR:85/public/woff2/zYX-KVElMYYaJe8bpLHnCwDKhdTuF6ZJW9XjDg.woff2
 http://$NAS_ADDR:85/public/woff2/zYX9KVElMYYaJe8bpLHnCwDKjWr7AIFsdP3pBms.woff2
+http://$NAS_ADDR:85/public/woff2/zYX9KVElMYYaJe8bpLHnCwDKjXr8AIFsdP3pBms.woff2
 http://$NAS_ADDR:85/public/js/modernizr.js
 http://$NAS_ADDR:85/public/js/jquery-3.7.1.min.js
 http://$NAS_ADDR:85/public/js/plugins.js
