@@ -10,6 +10,7 @@ import (
 	"github.com/etzelm/blog-in-golang/src/handlers"
 	"github.com/gin-contrib/cache"
 	"github.com/gin-contrib/cache/persistence"
+	"github.com/gin-contrib/gzip"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -56,6 +57,7 @@ func LoadStaticFolderRoutes(server *gin.Engine) *gin.Engine {
 	server.StaticFile("/sitemap.xml", "./public/sitemap.xml")
 	server.StaticFile("/favicon.ico", "./public/images/favicon.ico")
 	server.Use(staticCacheMiddleware())
+	server.Use(gzip.Gzip(gzip.DefaultCompression))
 	server.Use(static.Serve("/public", static.LocalFile("./public", true)))
 	server.Use(static.Serve("/realtor", static.LocalFile("./realtor/build", true)))
 	server.Use(static.Serve("/realtor/new", static.LocalFile("./realtor/build", true)))
