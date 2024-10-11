@@ -83,6 +83,9 @@ https://files.mitchelletzel.com/public/images/icons/icon-two.svg
 https://files.mitchelletzel.com/public/images/icons/icon-three.svg
 https://files.mitchelletzel.com/public/images/icons/icon-four.svg
 https://files.mitchelletzel.com/public/images/icons/icon-five.svg
+https://files.mitchelletzel.com/about/about-2000.webp
+https://files.mitchelletzel.com/about/about-1000.webp
+https://files.mitchelletzel.com/about/about-500.webp
 https://files.mitchelletzel.com/about/about-2000.png
 https://files.mitchelletzel.com/about/about-1000.png
 https://files.mitchelletzel.com/about/about-500.png
