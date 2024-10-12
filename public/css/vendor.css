@@ -235,6 +235,7 @@
   right: 20px;
   top: 20px;
   -webkit-appearance: none;
+  appearance: none;
   cursor: pointer;
   text-decoration: none;
   text-align: center;
