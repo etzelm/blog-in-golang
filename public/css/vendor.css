@@ -1,20 +1,3 @@
-/* =================================================================== 
- *
- *  ------------------------------------------------------------------
- *
- *  TOC:
- *  # Slick Slider
- *  # lity
- *  # PrettyPrint GitHub Theme 
- *
- * =================================================================== */
-
-
-/* ===================================================================
- * # Slick Slider
- * http://kenwheeler.github.io/slick/
- * ------------------------------------------------------------------- */
-
 /* Slider */
 .slick-slider {
   position: relative;
@@ -252,6 +235,7 @@
   right: 20px;
   top: 20px;
   -webkit-appearance: none;
+  appearance: none;
   cursor: pointer;
   text-decoration: none;
   text-align: center;
