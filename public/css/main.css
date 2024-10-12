@@ -1,62 +1,3 @@
-/* =================================================================== 
- *
- *  ------------------------------------------------------------------
- *
- *  TOC:
- *  # base style overrides
- *      ## links    
- *  # typography & general theme styles
- *      ## typography
- *      ## Lists    
- *      ## responsive video container
- *      ## floated image
- *      ## tables
- *      ## Spacing
- *  # preloader
- *  # forms
- *      ## Style Placeholder Text
- *      ## Change Autocomplete styles in Chrome
- *  # buttons
- *  # additional components
- *      ## additional typo styles
- *      ## skillbars
- *      ## alert box 
- *      ## pagination 
- *  # Common and Reusable Styles
- *      ## animation stuff 
- *      ## entry media
- *      ## listing header
- *      ## slick slider 
- *      ## masonry entries 
- *      ## post formats - masonry view
- *  # site header
- *      ## header logo
- *      ## header main navigation
- *      ## menu toggle
- *      ## header social
- *      ## header search trigger
- *      ## header-search
- *      ## close button for search 
- *  # site content & footer 
- *      ## content
- *      ## footer
- *      ## copyright
- *      ## go to top
- *  # blog styles and blog components
- *      ## entry header meta
- *      ## post tags
- *      ## blog single page navigation
- *      ## related articles
- *      ## comments
- *      ## format gallery
- *
- * =================================================================== */
-
-
-/* ===================================================================
- * # base style overrides
- *
- * ------------------------------------------------------------------- */
 html {
   font-size: 10px;
 }
@@ -93,9 +34,6 @@ body.ss-bg-white {
   background: #ffffff;
 }
 
-/* ------------------------------------------------------------------- 
- * ## links
- * ------------------------------------------------------------------- */
 a {
   color: #33998a;
   transition: all 0.3s ease-in-out;
@@ -112,15 +50,6 @@ a:active {
   outline: 0;
 }
 
-
-/* ===================================================================
- * # typography & general theme styles
- * 
- * ------------------------------------------------------------------- */
-
-/* ------------------------------------------------------------------- 
- * ## typography
- * ------------------------------------------------------------------- */
 h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
   font-family: "Heebo", sans-serif;
   font-weight: 500;
