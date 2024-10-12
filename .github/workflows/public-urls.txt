@@ -3,9 +3,13 @@ https://mitchelletzel.com/favicon.ico
 https://mitchelletzel.com/robots.txt
 https://mitchelletzel.com/sitemap.xml
 https://mitchelletzel.com/public/css/base.css
+https://mitchelletzel.com/public/css/base.css.map
 https://mitchelletzel.com/public/css/fonts.css
+https://mitchelletzel.com/public/css/fonts.css.map
 https://mitchelletzel.com/public/css/vendor.css
+https://mitchelletzel.com/public/css/vendor.css.map
 https://mitchelletzel.com/public/css/main.css
+https://mitchelletzel.com/public/css/main.css.map
 https://mitchelletzel.com/public/woff2/0QIvMX1D_JOuMwr7I_FMl_E.woff2
 https://mitchelletzel.com/public/woff2/NGS6v5_NC0k9P9H2TbFhsqMA.woff2
 https://mitchelletzel.com/public/woff2/zYXgKVElMYYaJe8bpLHnCwDKhdHeFaxOedc.woff2
