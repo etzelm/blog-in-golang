@@ -30,6 +30,7 @@ func main() {
 	LoadMiddlewares(httpServer)
 	log.WithField("server", httpServer).Info("Default Gin server created.")
 
+	// Separate process from the server for rotating the numbers for Contact validation.
 	go func() {
 		for range time.Tick(time.Hour * 3) {
 			go func() {
@@ -51,7 +52,7 @@ func main() {
 
 }
 
-// LoadStaticFileRoutes loads all api routes that serve static paths to server folders.
+// LoadStaticFileRoutes loads all api routes that serve static paths to server files.
 func LoadStaticFileRoutes(server *gin.Engine) *gin.Engine {
 
 	server.StaticFile("/robots.txt", "./public/robots.txt")
@@ -68,7 +69,7 @@ func LoadStaticFileRoutes(server *gin.Engine) *gin.Engine {
 
 }
 
-// LoadServerRoutes does exactly that... loads all api routes for the server.
+// LoadServerRoutes loads all the custom api calls I've written for the server.
 func LoadServerRoutes(server *gin.Engine) *gin.Engine {
 
 	store := persistence.NewInMemoryStore(365 * 24 * time.Hour)
@@ -89,7 +90,7 @@ func LoadServerRoutes(server *gin.Engine) *gin.Engine {
 
 }
 
-// LoadMiddlewares loads third party and custom gin middlewares
+// LoadMiddlewares loads third party and custom gin middlewares the server uses.
 func LoadMiddlewares(server *gin.Engine) *gin.Engine {
 
 	server.Use(staticCacheMiddleware())
