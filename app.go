@@ -25,8 +25,9 @@ func main() {
 	gin.SetMode(gin.ReleaseMode)
 	httpServer := gin.Default()
 	httpServer.LoadHTMLGlob("templates/*")
-	LoadStaticFolderRoutes(httpServer)
+	LoadStaticFileRoutes(httpServer)
 	LoadServerRoutes(httpServer)
+	LoadMiddlewares(httpServer)
 	log.WithField("server", httpServer).Info("Default Gin server created.")
 
 	go func() {
@@ -50,14 +51,12 @@ func main() {
 
 }
 
-// LoadStaticFolderRoutes loads all api routes that serve a static server folder.
-func LoadStaticFolderRoutes(server *gin.Engine) *gin.Engine {
+// LoadStaticFileRoutes loads all api routes that serve static paths to server folders.
+func LoadStaticFileRoutes(server *gin.Engine) *gin.Engine {
 
 	server.StaticFile("/robots.txt", "./public/robots.txt")
 	server.StaticFile("/sitemap.xml", "./public/sitemap.xml")
 	server.StaticFile("/favicon.ico", "./public/images/favicon.ico")
-	server.Use(staticCacheMiddleware())
-	server.Use(gzip.Gzip(gzip.DefaultCompression))
 	server.Use(static.Serve("/public", static.LocalFile("./public", true)))
 	server.Use(static.Serve("/realtor", static.LocalFile("./realtor/build", true)))
 	server.Use(static.Serve("/realtor/new", static.LocalFile("./realtor/build", true)))
@@ -77,8 +76,6 @@ func LoadServerRoutes(server *gin.Engine) *gin.Engine {
 	server.GET("/posts", cache.CachePage(store, 365*24*time.Hour, handlers.PostPage))
 	server.GET("/article/:article_id", cache.CachePage(store, 365*24*time.Hour, handlers.ArticlePage))
 	server.GET("/category/:category", cache.CachePage(store, 365*24*time.Hour, handlers.CategoryPage))
-
-	server.Use(unauthorizedMiddleware())
 	server.GET("/contact", handlers.ContactPage(&RandomOne, &RandomTwo))
 	server.POST("/contact", handlers.ContactResponse(&RandomOne, &RandomTwo))
 	server.GET("/listing/:listing", handlers.ListingGETAPI)
@@ -92,8 +89,14 @@ func LoadServerRoutes(server *gin.Engine) *gin.Engine {
 
 }
 
-func randRange(min, max int) int {
-	return rand.IntN(max-min) + min
+// LoadMiddlewares loads third party and custom gin middlewares
+func LoadMiddlewares(server *gin.Engine) *gin.Engine {
+
+	server.Use(staticCacheMiddleware())
+	server.Use(unauthorizedMiddleware())
+	server.Use(gzip.Gzip(gzip.DefaultCompression))
+	return server
+
 }
 
 func staticCacheMiddleware() gin.HandlerFunc {
@@ -131,4 +134,8 @@ func unauthorizedMiddleware() gin.HandlerFunc {
 		// Continue to the next middleware or handler
 		c.Next()
 	}
+}
+
+func randRange(min, max int) int {
+	return rand.IntN(max-min) + min
 }
