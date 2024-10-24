@@ -53,6 +53,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Get Changed Article Files
+        id: changed-daemon-files
+        uses: tj-actions/changed-files@v45
+        with:
+          files: |
+            daemon/articles/**
+            daemon/app.go
       - name: Get Changed Build Files
         id: changed-build-files
         uses: tj-actions/changed-files@v45
@@ -69,13 +76,6 @@ jobs:
             realtor/public/**
             realtor/src/**
             public/**
-      - name: Get Changed Article Files
-        id: changed-daemon-files
-        uses: tj-actions/changed-files@v45
-        with:
-          files: |
-            daemon/articles/**
-            daemon/app.go
       - name: Push Article Changes
         if: steps.changed-daemon-files.outputs.any_changed == 'true'  
         shell: bash
