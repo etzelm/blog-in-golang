@@ -142,7 +142,7 @@ jobs:
             INVALIDATION_ID2=$(aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID2 --paths '/*' --query 'Invalidation.Id' --output text)
             STATUS1="InProgress"
             STATUS2="InProgress"
-            while [ "$STATUS1" == "InProgress" || "$STATUS2" == "InProgress" ]; do
+            while [[ "$STATUS1" == "InProgress" || "$STATUS2" == "InProgress" ]]; do
               sleep 5
               STATUS1=$(aws cloudfront get-invalidation --distribution-id $DISTRIBUTION_ID1 --id $INVALIDATION_ID1 --query 'Invalidation.Status' --output text)
               STATUS2=$(aws cloudfront get-invalidation --distribution-id $DISTRIBUTION_ID2 --id $INVALIDATION_ID2 --query 'Invalidation.Status' --output text)
