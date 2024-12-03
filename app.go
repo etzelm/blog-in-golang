@@ -53,7 +53,7 @@ func main() {
 }
 
 // LoadStaticFileRoutes loads all api routes that serve static paths to server files.
-func LoadStaticFileRoutes(server *gin.Engine) *gin.Engine {
+func LoadStaticFileRoutes(server *gin.Engine) {
 
 	server.StaticFile("/robots.txt", "./public/robots.txt")
 	server.StaticFile("/sitemap.xml", "./public/sitemap.xml")
@@ -65,12 +65,11 @@ func LoadStaticFileRoutes(server *gin.Engine) *gin.Engine {
 	server.Use(static.Serve("/realtor/listing", static.LocalFile("./realtor/build", true)))
 	server.Use(static.Serve("/realtor/my-listing", static.LocalFile("./realtor/build", true)))
 	server.Use(static.Serve("/realtor/my-listings", static.LocalFile("./realtor/build", true)))
-	return server
 
 }
 
 // LoadServerRoutes loads all the custom api calls I've written for the server.
-func LoadServerRoutes(server *gin.Engine) *gin.Engine {
+func LoadServerRoutes(server *gin.Engine) {
 
 	store := persistence.NewInMemoryStore(365 * 24 * time.Hour)
 	server.GET("/", cache.CachePage(store, 365*24*time.Hour, handlers.AboutPage))
@@ -86,17 +85,15 @@ func LoadServerRoutes(server *gin.Engine) *gin.Engine {
 	server.GET("/secure", handlers.SecurePage)
 	server.POST("/listings/add/:key", handlers.ListingPOSTAPI)
 	server.POST("/upload/image/:user", handlers.UploadImagePOSTAPI)
-	return server
 
 }
 
 // LoadMiddlewares loads third party and custom gin middlewares the server uses.
-func LoadMiddlewares(server *gin.Engine) *gin.Engine {
+func LoadMiddlewares(server *gin.Engine) {
 
 	server.Use(staticCacheMiddleware())
 	server.Use(unauthorizedMiddleware())
 	server.Use(gzip.Gzip(gzip.DefaultCompression))
-	return server
 
 }
 
@@ -138,5 +135,5 @@ func unauthorizedMiddleware() gin.HandlerFunc {
 }
 
 func randRange(min, max int) int {
-	return rand.IntN(max-min) + min
+	return rand.IntN(max-min+1) + min
 }
