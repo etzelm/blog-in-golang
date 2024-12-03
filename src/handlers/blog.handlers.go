@@ -45,18 +45,7 @@ func CategoryPage(c *gin.Context) {
 
 		if len(panels) <= 0 {
 			// If an invalid category is specified in the URL, abort with an error
-			c.HTML(
-				// Set the HTTP status to 404 (Not Found)
-				http.StatusNotFound,
-				// Use the error.html template
-				"error.html",
-				// Pass the data that the page uses
-				gin.H{
-					"title": "404 Server Error",
-					"error": "Please provide a valid category",
-				},
-			)
-
+			renderErrorPage(c, 404, "404 (Not Found)", "Please provide a valid category")
 			return
 		}
 
@@ -77,17 +66,7 @@ func CategoryPage(c *gin.Context) {
 
 	} else {
 		// If an invalid category is specified in the URL, abort with an error
-		c.HTML(
-			// Set the HTTP status to 404 (Not Found)
-			http.StatusNotFound,
-			// Use the error.html template
-			"error.html",
-			// Pass the data that the page uses
-			gin.H{
-				"title": "404 Server Error",
-				"error": "Please provide a valid category",
-			},
-		)
+		renderErrorPage(c, 404, "404 (Not Found)", "Please provide a valid category")
 	}
 
 }
@@ -115,45 +94,15 @@ func ArticlePage(c *gin.Context) {
 				)
 			} else {
 				// If the article is not appropriate, abort with an error
-				c.HTML(
-					// Set the HTTP status to 401 (Unauthorized)
-					http.StatusUnauthorized,
-					// Use the error.html template
-					"error.html",
-					// Pass the data that the page uses
-					gin.H{
-						"title": "401 (Unauthorized)",
-						"error": "Please provide a valid Article ID.",
-					},
-				)
+				renderErrorPage(c, 401, "401 (Unauthorized)", "Please provide a valid Article ID.")
 			}
 		} else {
 			// If the article is not found, abort with an error
-			c.HTML(
-				// Set the HTTP status to 404 (Not Found)
-				http.StatusNotFound,
-				// Use the error.html template
-				"error.html",
-				// Pass the data that the page uses
-				gin.H{
-					"title": "404 Server Error",
-					"error": "Please provide a valid Article ID.",
-				},
-			)
+			renderErrorPage(c, 404, "404 (Not Found)", "Please provide a valid Article ID.")
 		}
 	} else {
 		// If an invalid article ID is specified in the URL, abort with an error
-		c.HTML(
-			// Set the HTTP status to 404 (Not Found)
-			http.StatusNotFound,
-			// Use the error.html template
-			"error.html",
-			// Pass the data that the page uses
-			gin.H{
-				"title": "404 Server Error",
-				"error": "Please provide a valid Article ID.",
-			},
-		)
+		renderErrorPage(c, 404, "404 (Not Found)", "Please provide a valid Article ID.")
 	}
 }
 
@@ -199,36 +148,20 @@ func ContactResponse(numOne *int, numTwo *int) gin.HandlerFunc {
 	fn := func(c *gin.Context) {
 		c.Header("Cache-Control", "no-cache")
 		var form models.ContactForm
-		c.Bind(&form)
+		if err := c.Bind(&form); err != nil {
+			renderErrorPage(c, 400, "400 (Bad Request)", "Invalid form data.")
+			return
+		}
 
 		if form.RobotCheck != 1 || form.RobotNum != *numOne+*numTwo {
-			c.HTML(
-				// Set the HTTP status to 401 (Unauthorized)
-				http.StatusUnauthorized,
-				// Use the error.html template
-				"error.html",
-				// Pass the data that the page uses
-				gin.H{
-					"title": "401 (Unauthorized)",
-					"error": "Don't be a robot please!",
-				},
-			)
+			renderErrorPage(c, 401, "401 (Unauthorized)", "Don't be a robot please!")
 			return
 		}
 
 		name := template.HTMLEscapeString(form.Name)
-		if m, _ := regexp.MatchString("^[ a-zA-Z0-9]+( +[a-zA-Z0-9]+)*$", name); !m {
-			c.HTML(
-				// Set the HTTP status to 401 (Unauthorized)
-				http.StatusUnauthorized,
-				// Use the error.html template
-				"error.html",
-				// Pass the data that the page uses
-				gin.H{
-					"title": "401 (Unauthorized)",
-					"error": "Name should contain only alphanumeric characters and spaces!",
-				},
-			)
+		m, err := regexp.MatchString("^[ a-zA-Z0-9]+( +[a-zA-Z0-9]+)*$", name)
+		if err != nil || !m {
+			renderErrorPage(c, 401, "401 (Unauthorized)", "Name should contain only alphanumeric characters & spaces!")
 			return
 		}
 
@@ -243,17 +176,7 @@ func ContactResponse(numOne *int, numTwo *int) gin.HandlerFunc {
 		})
 		if err != nil {
 			log.Error(err)
-			c.HTML(
-				// Set the HTTP status to 500 (Internal Server Error)
-				http.StatusInternalServerError,
-				// Use the error.html template
-				"error.html",
-				// Pass the data that the page uses
-				gin.H{
-					"title": "500 Internal Server Error",
-					"error": err.Error(),
-				},
-			)
+			renderErrorPage(c, 500, "500 Internal Server Error", err.Error())
 			return
 		}
 
@@ -271,17 +194,7 @@ func ContactResponse(numOne *int, numTwo *int) gin.HandlerFunc {
 		if err != nil {
 			log.Error("Got error calling PutItem:")
 			log.Error(err.Error())
-			c.HTML(
-				// Set the HTTP status to 500 (Internal Server Error)
-				http.StatusInternalServerError,
-				// Use the error.html template
-				"error.html",
-				// Pass the data that the page uses
-				gin.H{
-					"title": "500 Internal Server Error",
-					"error": err.Error(),
-				},
-			)
+			renderErrorPage(c, 500, "500 Internal Server Error", err.Error())
 			return
 		}
 
@@ -298,4 +211,15 @@ func ContactResponse(numOne *int, numTwo *int) gin.HandlerFunc {
 		)
 	}
 	return gin.HandlerFunc(fn)
+}
+
+func renderErrorPage(c *gin.Context, statusCode int, title, message string) {
+	c.HTML(
+		statusCode,
+		"error.html",
+		gin.H{
+			"title": title,
+			"error": message,
+		},
+	)
 }

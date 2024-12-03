@@ -19,6 +19,8 @@ jobs:
       - name: Build
         shell: bash
         run: |
+          set -e
+          set -o pipefail
           echo STARTING BUILD
           BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
           echo "BRANCH: $BRANCH"
@@ -80,6 +82,8 @@ jobs:
         if: steps.changed-daemon-files.outputs.any_changed == 'true'  
         shell: bash
         run: |
+          set -e
+          set -o pipefail
           echo STARTING TO PUSH CHANGES TO ARTICLES
           BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
           echo "BRANCH: $BRANCH"
@@ -100,6 +104,8 @@ jobs:
         if: steps.changed-build-files.outputs.any_changed == 'true'  
         shell: bash
         run: |
+          set -e
+          set -o pipefail
           echo STARTING BUILD
           BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
           echo "BRANCH: $BRANCH"
@@ -132,16 +138,25 @@ jobs:
             ssh -i ~/.ssh/gcp_rsa $GCP_ARGS $GCP_USER@$GCP_ADDR -t "cd $GCP_DIR; $GCP_BIN/docker compose up --force-recreate -d"
             ssh -i ~/.ssh/gcp_rsa $GCP_ARGS $GCP_USER@$GCP_ADDR -t "cd $GCP_DIR; $GCP_BIN/docker system prune -f"
             ssh -i ~/.ssh/gcp_rsa $GCP_ARGS $GCP_USER@$GCP_ADDR -t "cd $GCP_DIR; rm -rf blog.tar"
-            aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID1 --paths '/*'
-            aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID2 --paths '/*'
-            echo WAITING FOR INVALIDATIONS TO FINISH
-            sleep 45
+            INVALIDATION_ID1=$(aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID1 --paths '/*' --query 'Invalidation.Id' --output text)
+            INVALIDATION_ID2=$(aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID2 --paths '/*' --query 'Invalidation.Id' --output text)
+            STATUS1="InProgress"
+            STATUS2="InProgress"
+            while [ "$STATUS1" == "InProgress" || "$STATUS2" == "InProgress" ]; do
+              sleep 5
+              STATUS1=$(aws cloudfront get-invalidation --distribution-id $DISTRIBUTION_ID1 --id $INVALIDATION_ID1 --query 'Invalidation.Status' --output text)
+              STATUS2=$(aws cloudfront get-invalidation --distribution-id $DISTRIBUTION_ID2 --id $INVALIDATION_ID2 --query 'Invalidation.Status' --output text)
+              echo "Invalidation status 1: $STATUS1"
+              echo "Invalidation status 2: $STATUS2"
+            done
           fi
           docker system prune -f
       - name: Test
         if: steps.deploy.outcome == 'success' || steps.deploy.outcome == 'skipped'
         shell: bash
         run: |
+          set -e
+          set -o pipefail
           BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
           if [[ $BRANCH == "master" ]]
           then 
