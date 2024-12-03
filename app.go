@@ -53,7 +53,7 @@ func main() {
 }
 
 // LoadStaticFileRoutes loads all api routes that serve static paths to server files.
-func LoadStaticFileRoutes(server *gin.Engine) *gin.Engine {
+func LoadStaticFileRoutes(server *gin.Engine) {
 
 	server.StaticFile("/robots.txt", "./public/robots.txt")
 	server.StaticFile("/sitemap.xml", "./public/sitemap.xml")
@@ -65,12 +65,11 @@ func LoadStaticFileRoutes(server *gin.Engine) *gin.Engine {
 	server.Use(static.Serve("/realtor/listing", static.LocalFile("./realtor/build", true)))
 	server.Use(static.Serve("/realtor/my-listing", static.LocalFile("./realtor/build", true)))
 	server.Use(static.Serve("/realtor/my-listings", static.LocalFile("./realtor/build", true)))
-	return server
 
 }
 
 // LoadServerRoutes loads all the custom api calls I've written for the server.
-func LoadServerRoutes(server *gin.Engine) *gin.Engine {
+func LoadServerRoutes(server *gin.Engine) {
 
 	store := persistence.NewInMemoryStore(365 * 24 * time.Hour)
 	server.GET("/", cache.CachePage(store, 365*24*time.Hour, handlers.AboutPage))
@@ -86,57 +85,58 @@ func LoadServerRoutes(server *gin.Engine) *gin.Engine {
 	server.GET("/secure", handlers.SecurePage)
 	server.POST("/listings/add/:key", handlers.ListingPOSTAPI)
 	server.POST("/upload/image/:user", handlers.UploadImagePOSTAPI)
-	return server
 
 }
 
 // LoadMiddlewares loads third party and custom gin middlewares the server uses.
-func LoadMiddlewares(server *gin.Engine) *gin.Engine {
+func LoadMiddlewares(server *gin.Engine) {
 
 	server.Use(staticCacheMiddleware())
 	server.Use(unauthorizedMiddleware())
 	server.Use(gzip.Gzip(gzip.DefaultCompression))
-	return server
 
 }
 
+// staticCacheMiddleware adds a caching header to responses for static files
 func staticCacheMiddleware() gin.HandlerFunc {
+	staticPrefixes := []string{
+		"/public/", "/favicon.ico", "/robots.txt", "/sitemap.xml",
+		"/realtor/js/", "/realtor/css/", "/realtor/images/", "/realtor/static/",
+	}
 	return func(c *gin.Context) {
-		// Determine if request path is for statically served files
-		if strings.HasPrefix(c.Request.URL.Path, "/public/") ||
-			strings.HasPrefix(c.Request.URL.Path, "/favicon.ico") ||
-			strings.HasPrefix(c.Request.URL.Path, "/robots.txt") ||
-			strings.HasPrefix(c.Request.URL.Path, "/sitemap.xml") ||
-			strings.HasPrefix(c.Request.URL.Path, "/realtor/js/") ||
-			strings.HasPrefix(c.Request.URL.Path, "/realtor/css/") ||
-			strings.HasPrefix(c.Request.URL.Path, "/realtor/images/") ||
-			strings.HasPrefix(c.Request.URL.Path, "/realtor/static/") {
-			// Apply the Cache-Control header to the static files
-			c.Header("Cache-Control", "public, max-age=31536000")
+		for _, prefix := range staticPrefixes {
+			// Determine if request path is for statically served files
+			if strings.HasPrefix(c.Request.URL.Path, prefix) {
+				// Apply the Cache-Control header to the static files
+				c.Header("Cache-Control", "public, max-age=31536000")
+				break
+			}
 		}
 		// Continue to the next middleware or handler
 		c.Next()
 	}
 }
 
+// unauthorizedMiddleware blocks access to common malicious request paths
 func unauthorizedMiddleware() gin.HandlerFunc {
+	blockedPatterns := []string{
+		"wp-includes", "wp-content", "wp-login", ".git", "admin", ".php",
+	}
 	return func(c *gin.Context) {
-		// Determine if request path is unused pattern common in scans
-		if strings.Contains(c.Request.URL.Path, "wp-includes") ||
-			strings.Contains(c.Request.URL.Path, "wp-content") ||
-			strings.Contains(c.Request.URL.Path, "wp-login") ||
-			strings.Contains(c.Request.URL.Path, ".git") ||
-			strings.Contains(c.Request.URL.Path, "admin") ||
-			strings.Contains(c.Request.URL.Path, "php") {
-			// Abort the gin context while returning 401
-			c.AbortWithStatus(401)
-			return
+		for _, pattern := range blockedPatterns {
+			// Determine if request path is unused pattern common in scans
+			if strings.Contains(c.Request.URL.Path, pattern) {
+				// Abort the gin context while returning 401
+				c.AbortWithStatus(401)
+				return
+			}
 		}
 		// Continue to the next middleware or handler
 		c.Next()
 	}
 }
 
+// randRange generates a random integer between min and max, inclusive.
 func randRange(min, max int) int {
-	return rand.IntN(max-min) + min
+	return rand.IntN(max-min+1) + min
 }
