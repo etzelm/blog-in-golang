@@ -7,7 +7,7 @@ toolchain go1.23.1
 require (
 	github.com/aws/aws-sdk-go v1.55.5
 	github.com/caddyserver/certmagic v0.21.4
-	github.com/gin-contrib/cache v1.3.0
+	github.com/gin-contrib/cache v1.3.1
 	github.com/gin-contrib/static v1.1.3
 	github.com/gin-gonic/gin v1.10.0
 	github.com/sirupsen/logrus v1.9.3
