@@ -6,12 +6,17 @@ toolchain go1.23.1
 
 require (
 	github.com/aws/aws-sdk-go v1.55.5
-	github.com/caddyserver/certmagic v0.21.4
+	github.com/caddyserver/certmagic v0.21.5
 	github.com/gin-contrib/cache v1.3.1
 	github.com/gin-contrib/static v1.1.3
 	github.com/gin-gonic/gin v1.10.0
 	github.com/sirupsen/logrus v1.9.3
 	golang.org/x/crypto v0.31.0
+)
+
+require (
+	github.com/mholt/acmez/v3 v3.0.0 // indirect
+	go.uber.org/zap/exp v0.3.0 // indirect
 )
 
 require (
@@ -36,7 +41,6 @@ require (
 	github.com/libdns/libdns v0.2.2 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/memcachier/mc/v3 v3.0.3 // indirect
-	github.com/mholt/acmez/v2 v2.0.3 // indirect
 	github.com/miekg/dns v1.1.62 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
