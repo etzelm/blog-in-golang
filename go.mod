@@ -15,7 +15,7 @@ require (
 )
 
 require (
-	github.com/mholt/acmez/v3 v3.0.0 // indirect
+	github.com/mholt/acmez/v3 v3.0.1 // indirect
 	go.uber.org/zap/exp v0.3.0 // indirect
 )
 
