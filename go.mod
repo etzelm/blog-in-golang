@@ -5,8 +5,8 @@ go 1.22.0
 toolchain go1.23.1
 
 require (
-	github.com/aws/aws-sdk-go v1.55.5
-	github.com/caddyserver/certmagic v0.21.6
+	github.com/aws/aws-sdk-go v1.55.6
+	github.com/caddyserver/certmagic v0.21.7
 	github.com/gin-contrib/cache v1.3.1
 	github.com/gin-contrib/static v1.1.3
 	github.com/gin-gonic/gin v1.10.0
@@ -22,7 +22,7 @@ require (
 require (
 	github.com/bradfitz/gomemcache v0.0.0-20230905024940-24af94b03874 // indirect
 	github.com/bytedance/sonic v1.12.7 // indirect
-	github.com/bytedance/sonic/loader v0.2.2 // indirect
+	github.com/bytedance/sonic/loader v0.2.3 // indirect
 	github.com/caddyserver/zerossl v0.1.3 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.8 // indirect
@@ -57,7 +57,7 @@ require (
 	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
 	golang.org/x/tools v0.29.0 // indirect
-	google.golang.org/protobuf v1.36.2 // indirect
+	google.golang.org/protobuf v1.36.3 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
