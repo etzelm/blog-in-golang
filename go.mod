@@ -1,7 +1,6 @@
 module github.com/etzelm/blog-in-golang
 
 go 1.22.0
-
 toolchain go1.23.1
 
 require (
@@ -11,7 +10,7 @@ require (
 	github.com/gin-contrib/static v1.1.3
 	github.com/gin-gonic/gin v1.10.0
 	github.com/sirupsen/logrus v1.9.3
-	golang.org/x/crypto v0.33.0
+	golang.org/x/crypto v0.34.0
 )
 
 require (
