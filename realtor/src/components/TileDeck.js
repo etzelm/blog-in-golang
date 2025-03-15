@@ -1,40 +1,23 @@
-import React from "react";
-import CardColumns from 'react-bootstrap/CardColumns'
-import Tile from "./Tile";
+import React from 'react';
+import { Row, Col } from 'react-bootstrap';
+import Tile from './Tile';
 
-export default class TileDeck extends React.Component {
+const TileDeck = ({ cards, user }) => {
+  const sortedCards = [...cards].sort(
+    (a, b) => new Date(b['Last Modified']) - new Date(a['Last Modified'])
+  );
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            cards: []
-        };
-    }
+  return (
+<div style={{ padding: '0 2vw' }}>  
+  <Row className="g-4" xs={1} md={2} lg={3} xxl={4}>  
+    {sortedCards.map((card) => (  
+      <Col key={card.MLS}>  
+        <Tile card={card} user={user} />  
+      </Col>  
+    ))}  
+  </Row>  
+</div>
 
-    render() {
-        const columnStyle = {
-            paddingLeft: '2vw', 
-            paddingRight: '2vw'
-        }
-
-        return (
-            <div>
-
-                <br/>
-                <CardColumns style={columnStyle} className="card-columns">
-                    
-                    {
-
-                        this.props.cards
-                                    .sort((a, b) => a['Last Modified'] < b['Last Modified'] ? 1 : -1)
-                                    .map((card) => (<Tile key={card.MLS} card={card} user={this.props.user}/>))
-
-                    }
-
-                </CardColumns>
-
-            </div>
-        );
-  }
-
-}
+);
+}; 
+export default TileDeck;
