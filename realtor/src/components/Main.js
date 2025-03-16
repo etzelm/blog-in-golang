@@ -1,5 +1,5 @@
 import React from "react";
-import { Route } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom';
 import Home from "./Home";
 import Listing from "./Listing";
 import Search from "./Search";
@@ -9,16 +9,27 @@ import MyListings from "./MyListings";
 export default class Main extends React.Component {
 
     constructor(props) {
+
         super(props);
+
         this.state = {
-            loggedIn: this.props == null ? null : this.props.loggedIn,
-            user: this.props == null ? null : this.props.user
+
+            loggedIn: this.props?.loggedIn ?? null,
+
+            user: this.props?.user ?? null
+
         };
+
     }
 
     render() {
+
         return (
+
             <main>
+
+                <Routes>
+
                 <Route 
                     exact path='/realtor' 
                     render={(props) => <Home {...props} />}
@@ -43,8 +54,13 @@ export default class Main extends React.Component {
                     exact path='/realtor/my-listing' 
                     render={(props) => <MyListing {...props} />}
                 />
+
+                </Routes>
+
             </main>
-        );
-    }
+
+);
+
+ }
 
 }
