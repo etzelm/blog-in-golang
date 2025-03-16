@@ -6,18 +6,19 @@ import NavBar from './components/NavBar';
 const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
+  const [auth2] = useState(null);
   const [loaded, setLoaded] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
   const signOut = () => {
-    if (window.gapi) {
-      window.gapi.auth2.getAuthInstance().signOut().then(() => {
-        window.gapi.auth2.getAuthInstance().disconnect();
+    if (auth2) {
+      auth2.signOut().then(() => {
+        auth2.disconnect();
         localStorage.removeItem('aToken');
         setLoggedIn(false);
         setUser(null);
-
+        
         if (location.pathname === "/realtor/my-listings" || location.pathname === "/realtor/new") {
           navigate("/realtor");
         }
