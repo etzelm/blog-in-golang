@@ -122,6 +122,7 @@ jobs:
           sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" src/components/MyListing.js
           sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" src/components/MyListings.js
           sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" src/components/NavBar.js
+          sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" public/index.html
           npm install
           yarn build
           popd
