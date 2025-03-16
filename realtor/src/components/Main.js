@@ -7,60 +7,66 @@ import MyListing from "./MyListing";
 import MyListings from "./MyListings";
 
 export default class Main extends React.Component {
-
-    constructor(props) {
-
-        super(props);
-
-        this.state = {
-
-            loggedIn: this.props?.loggedIn ?? null,
-
-            user: this.props?.user ?? null
-
-        };
-
-    }
-
-    render() {
-
-        return (
-
-            <main>
-
-                <Routes>
-
-                <Route 
-                    exact path='/realtor' 
-                    render={(props) => <Home {...props} />}
-                />
-                <Route 
-                    exact path='/realtor/search' 
-                    render={(props) => <Search {...props} />}
-                />
-                <Route 
-                    exact path='/realtor/new' 
-                    render={(props) => <MyListing {...props} />}
-                />
-                <Route 
-                    exact path='/realtor/listing' 
-                    render={(props) => <Listing {...props} />}
-                />
-                <Route 
-                    exact path='/realtor/my-listings' 
-                    render={(props) => <MyListings {...props} />}
-                />
-                <Route 
-                    exact path='/realtor/my-listing' 
-                    render={(props) => <MyListing {...props} />}
-                />
-
-                </Routes>
-
-            </main>
-
-);
-
- }
-
+  render() {
+    return (
+      <main>
+        <Routes>
+          <Route 
+            path='/realtor' 
+            element={
+              <Home 
+                loggedIn={this.props.loggedIn} 
+                user={this.props.user}
+              />
+            }
+          />
+          <Route 
+            path='/realtor/search' 
+            element={
+              <Search 
+                loggedIn={this.props.loggedIn} 
+                user={this.props.user}
+              />
+            }
+          />
+          <Route 
+            path='/realtor/new' 
+            element={
+              <MyListing 
+                loggedIn={this.props.loggedIn} 
+                user={this.props.user}
+              />
+            }
+          />
+          <Route 
+            path='/realtor/listing' 
+            element={
+              <Listing 
+                loggedIn={this.props.loggedIn} 
+                user={this.props.user}
+              />
+            }
+          />
+          <Route 
+            path='/realtor/my-listings' 
+            element={
+              <MyListings 
+                loggedIn={this.props.loggedIn} 
+                user={this.props.user}
+              />
+            }
+          />
+          <Route 
+            path='/realtor/my-listing' 
+            element={
+              <MyListing 
+                loggedIn={this.props.loggedIn} 
+                user={this.props.user}
+              />
+            }
+          />
+        </Routes>
+      </main>
+    );
+  }
 }

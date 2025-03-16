@@ -10,7 +10,6 @@ function App() {
   useEffect(() => {
     const initGoogleAuth = async () => {
       try {
-        // Dynamically import gapi script
         if (!window.gapi) {
           const response = await fetch('https://apis.google.com/js/platform.js');
           if (!response.ok) throw new Error('Failed to load gapi');
@@ -61,7 +60,10 @@ function App() {
           window.gapi.auth2.getAuthInstance().signOut();
         }}
       />
-      <Main loggedIn={loggedIn} user={user} />
+      <Main 
+        loggedIn={loggedIn} 
+        user={user}
+      />
     </div>
   );
 }
