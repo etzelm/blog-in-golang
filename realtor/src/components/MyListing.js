@@ -17,9 +17,17 @@ export default class MyListing extends React.Component {
         this.onListChange = this.onListChange.bind(this);
         this.onArrayChange = this.onArrayChange.bind(this);
         this.onRemove = this.onRemove.bind(this);
+
+        const token = localStorage.getItem('aToken');
+        const loggedIn = token !== null;
+        const user = token !== null ? token : null;
+        
         this.state = {
-            loggedIn: this.props == null ? null : this.props.loggedIn,
-            user: this.props == null ? null : this.props.user
+            loggedIn: loggedIn,
+            user: user,
+            loaded: true,
+            reload: true,
+            card: null 
         };
     }
 
@@ -326,23 +334,6 @@ export default class MyListing extends React.Component {
             position: "absolute",
             left: "50%"
         };
-
-        const token = localStorage.getItem('aToken');
-        var loggedIn = false, user = null;
-        console.log(token);
-        if (!(token == null)) {
-            loggedIn = true
-            user = token
-        }
-
-        this.state = {
-            loggedIn,
-            loggedOut: false,
-            loaded: true,
-            reload: true,
-            user,
-            card: this.state.card
-        }
 
         var photos = this.state.card == null ? 
                         [] : this.state.card['Photo Array'] == null ?

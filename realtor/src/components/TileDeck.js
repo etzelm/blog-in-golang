@@ -8,7 +8,7 @@ const TileDeck = ({ cards, user }) => {
   );
 
   return (
-<div style={{ padding: '0 2vw' }}>  
+<div style={{ padding: '2vw 2vw' }}>  
   <Row className="g-4" xs={1} md={2} lg={3} xxl={4}>  
     {sortedCards.map((card) => (  
       <Col key={card.MLS}>  
