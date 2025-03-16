@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import NavBar from './NavBar';
-import Main from './Main';
+import NavBar from './components/NavBar';
+import Main from './components/Main';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
