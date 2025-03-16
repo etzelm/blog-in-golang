@@ -11,7 +11,7 @@ const TileDeck = ({ cards, user }) => {
 <div style={{ padding: '2vw 2vw' }}>  
   <Row className="g-4" xs={1} md={2} lg={3} xxl={4}>  
     {sortedCards.map((card) => (  
-      <Col key={card.MLS}>  
+      <Col key={card.MLS} className="mb-2">  
         <Tile card={card} user={user} />  
       </Col>  
     ))}  
