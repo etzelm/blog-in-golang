@@ -22,13 +22,22 @@ function App() {
             prompt: 'select_account'
           }).then(() => {
             const auth2 = window.gapi.auth2.getAuthInstance();
-            const signedIn = auth2.isSignedIn.get();
+            
+            const onAuthChange = () => {
+              const signedIn = auth2.isSignedIn.get();
+              if (signedIn) {
+                const email = auth2.currentUser.get().getBasicProfile().getEmail();
+                setUser(email);
+                setLoggedIn(true);
+                window.location.reload(); // Reload the page after successful login
+              } else {
+                setUser(null);
+                setLoggedIn(false);
+              }
+            };
 
-            if (signedIn) {
-              const email = auth2.currentUser.get().getBasicProfile().getEmail();
-              setUser(email);
-              setLoggedIn(true);
-            }
+            onAuthChange();
+            auth2.isSignedIn.listen(onAuthChange);
             setLoaded(true);
           }).catch(error => {
             console.error('Google Auth initialization failed:', error);
@@ -42,6 +51,16 @@ function App() {
     };
 
     initGoogleAuth();
+  }, []);
+
+  useEffect(() => {
+    const auth2 = window.gapi.auth2.getAuthInstance();
+    if (auth2) {
+      const listeners = auth2.isSignedIn.get();
+      if (listeners) {
+        listeners.forEach(listener => auth2.isSignedIn.unlisten(listener));
+      }
+    }
   }, []);
 
   if (!loaded) {
