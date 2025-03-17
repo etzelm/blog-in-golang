@@ -2,6 +2,7 @@ import React from "react";
 import Card from 'react-bootstrap/Card'
 import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
+import Row from 'react-bootstrap/Row'
 import Button from 'react-bootstrap/Button'
 import TileDeck from "./TileDeck";
 
@@ -11,6 +12,8 @@ export default class Search extends React.Component {
         super(props);
         this.onSubmit = this.onSubmit.bind(this);
         this.state = {
+            loggedIn: this.props == null ? null : this.props.loggedIn,
+            user: this.props == null ? null : this.props.user,
             cards: [],
             orgCards: []
         };
@@ -129,7 +132,7 @@ export default class Search extends React.Component {
                 <Card style={cardStyle}>
                     <Form onSubmit={this.onSubmit}>
 
-                        <Form.Row>
+                        <Row>
                             <Form.Group as={Col} controlId="formGridCity">
                             <Form.Label>City</Form.Label>
                             <Form.Control type="text" name="City" ref="City"/>
@@ -144,9 +147,9 @@ export default class Search extends React.Component {
                             <Form.Label>Zip Code</Form.Label>
                             <Form.Control type="text" name="ZipCode" ref="ZipCode"/>
                             </Form.Group>
-                        </Form.Row>
+                        </Row>
 
-                        <Form.Row>
+                        <Row>
                             <Form.Group as={Col} controlId="formGridBedrooms">
                             <Form.Label>Bedrooms</Form.Label>
                             <Form.Control type="text" name="Bedrooms" ref="Bedrooms"/>
@@ -156,9 +159,9 @@ export default class Search extends React.Component {
                             <Form.Label>Bathrooms</Form.Label>
                             <Form.Control type="text" name="Bathrooms" ref="Bathrooms"/>
                             </Form.Group>
-                        </Form.Row>
+                        </Row>
 
-                        <Form.Row>
+                        <Row>
                             <Form.Group as={Col} controlId="formGridMLS">
                             <Form.Label>MLS</Form.Label>
                             <Form.Control type="text" name="MLS" ref="MLS"/>
@@ -168,7 +171,7 @@ export default class Search extends React.Component {
                             <Form.Label>Square Feet</Form.Label>
                             <Form.Control type="text" name="SquareFeet" ref="SquareFeet"/>
                             </Form.Group>
-                        </Form.Row>
+                        </Row>
                         
                         <Button 
                             style={buttonStyle} 

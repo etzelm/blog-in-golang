@@ -3,14 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "react": "^16.13.1",
-    "react-bootstrap": "^1.0.1",
-    "react-dom": "^16.13.1",
+    "@react-oauth/google": "^0.12.1",
+    "react": "^18.2.0",
+    "react-bootstrap": "^2.9.0",
+    "react-dom": "^18.2.0",
     "react-dropzone-uploader": "^2.11.0",
-    "react-google-oauth": "^1.0.0",
     "react-notifications": "^1.6.0",
-    "react-router-dom": "^5.1.2",
-    "react-scripts": "5.0.1",
+    "react-router-dom": "^6.22.3",
+    "react-scripts": "^5.0.1",
     "react-uuid": "^2.0.0"
   },
   "devDependencies": {

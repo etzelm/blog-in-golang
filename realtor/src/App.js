@@ -1,167 +1,71 @@
-import React from 'react';
-import { withRouter } from 'react-router-dom';
-import Main from './components/Main';
+import React, { useEffect, useState } from 'react';
 import NavBar from './components/NavBar';
+import Main from './components/Main';
 
-class App extends React.Component {
+function App() {
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
+  const [loaded, setLoaded] = useState(false);
 
-  constructor(props) {
-    super(props);
-    this.signOut = this.signOut.bind(this);
+  useEffect(() => {
+    const initGoogleAuth = async () => {
+      try {
+        if (!window.gapi) {
+          const response = await fetch('https://apis.google.com/js/platform.js');
+          if (!response.ok) throw new Error('Failed to load gapi');
+        }
 
-    const token = localStorage.getItem('aToken');
-    var loggedIn = false, user = null;
-    console.log(token);
-    if (!(token == null)) {
-      loggedIn = true
-      user = token
-    }
+        await window.gapi.load('auth2', () => {
+          window.gapi.auth2.init({
+            client_id: 'ThisIsSupposedToBeAnId',
+            scope: 'email',
+            prompt: 'select_account'
+          }).then(() => {
+            const auth2 = window.gapi.auth2.getAuthInstance();
+            const signedIn = auth2.isSignedIn.get();
 
-    this.state = {
-      loggedIn,
-      loggedOut: false,
-      loaded: false,
-      reload: true,
-      user
-    }
-    
-  }
-
-  componentDidMount() {
-
-    this.setState({
-      loaded: false
-    });
-
-    const successCallback = this.onSuccess.bind(this);
-
-    if (!(window.gapi == null) && !this.state.loggedIn) {
-
-      window.gapi.load('auth2', () => {
-        this.auth2 = window.gapi.auth2.init({
-          client_id: 'ThisIsSupposedToBeAnId',
-        })
-  
-        this.auth2.then(() => {
-          console.log('on init');
-  
-          const loggedIn = this.auth2.isSignedIn.get();
-          var email = null;
-          if (loggedIn) {
-            email = this.auth2.currentUser.get().getBasicProfile().getEmail();
-            console.log(email);
-          }
-          
-          this.setState({
-            loggedIn: loggedIn,
-            user: email,
-            loaded: true
+            if (signedIn) {
+              const email = auth2.currentUser.get().getBasicProfile().getEmail();
+              setUser(email);
+              setLoggedIn(true);
+            }
+            setLoaded(true);
+          }).catch(error => {
+            console.error('Google Auth initialization failed:', error);
+            setLoaded(true);
           });
         });
-      });    
+      } catch (error) {
+        console.error('Error loading Google Auth:', error);
+        setLoaded(true);
+      }
+    };
 
-      window.gapi.load('signin2', function() {
-        // Method 3: render a sign in button
-        // using this method will show Signed In if the user is already signed in
-        var opts = {
-          width: 100,
-          height: 25,
-          client_id: 'ThisIsSupposedToBeAnId',
-          onsuccess: successCallback
-        }
-        window.gapi.signin2.render('loginButton', opts)
-      })
+    initGoogleAuth();
+  }, []);
 
-    }
-
-    this.setState({
-      loaded: true,
-      reload: true
-    });
-
+  if (!loaded) {
+    return <div>Loading...</div>;
   }
 
-  onSuccess() {
-    console.log('on success')
-    const path = this.props.location.pathname
-    if (path === "/realtor/my-listings" || path === "/realtor/new") {
-      this.setState({reload: false})
-    }
-    const email = this.auth2.currentUser.get().getBasicProfile().getEmail();
-    localStorage.setItem('aToken', email)
-
-    this.setState({
-      loggedIn: true,
-      user: email,
-      reload: true,
-      err: null
-    })
-
-  }
-
-  onLoginFailed(err) {
-    this.setState({
-      loggedIn: false,
-      user: null,
-      error: err
-    })
-  }
-
-  signOut() {
-    window.gapi.load('auth2', () => {
-      this.auth2 = window.gapi.auth2.init({
-        client_id: 'ThisIsSupposedToBeAnId',
-      })
-
-      this.auth2.signOut().then(this.auth2.disconnect().then(function () {
-        console.log('User signed out.');
-      }));
-    });
-    localStorage.removeItem("aToken");
-    this.setState({
-      loggedIn: false,
-      user: null,
-      loggedOut: true
-    });
-    const path = this.props.location.pathname
-    if (path === "/realtor/my-listings" || path === "/realtor/new") {
-      this.props.history.go("/realtor");
-    }
-  }
-
-  render() {
-    return (
-      <div className="App">
-      
-        {
-
-          this.state.loggedIn && this.state.loaded && 
-          <NavBar 
-            loggedIn={this.state["loggedIn"]} 
-            loggedOut={this.state["loggedOut"]} 
-            user={this.state["user"]} 
-            signOut={this.signOut}
-          />
-
-        }
-
-        {
-
-          !this.state.loggedIn && this.state.loaded && 
-          <NavBar loggedIn={false} user={null} />
-
-        }
-        
-        {
-
-          this.state.reload &&
-          <Main loggedIn={this.state["loggedIn"]} user={this.state["user"]} />
-
-        }
-
-      </div>
-    );
-  }
+  return (
+    <div className="App">
+      <NavBar 
+        loggedIn={loggedIn} 
+        user={user} 
+        onSignIn={() => {
+          window.gapi.auth2.getAuthInstance().signIn();
+        }}
+        onSignOut={() => {
+          window.gapi.auth2.getAuthInstance().signOut();
+        }}
+      />
+      <Main 
+        loggedIn={loggedIn} 
+        user={user}
+      />
+    </div>
+  );
 }
 
-export default withRouter(App);
+export default App;

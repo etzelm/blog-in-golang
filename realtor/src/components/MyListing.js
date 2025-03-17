@@ -17,6 +17,7 @@ export default class MyListing extends React.Component {
         this.onListChange = this.onListChange.bind(this);
         this.onArrayChange = this.onArrayChange.bind(this);
         this.onRemove = this.onRemove.bind(this);
+        
         this.state = {
             loggedIn: this.props == null ? null : this.props.loggedIn,
             user: this.props == null ? null : this.props.user
@@ -335,14 +336,14 @@ export default class MyListing extends React.Component {
             user = token
         }
 
-        this.state = {
+        this.setState({
             loggedIn,
             loggedOut: false,
             loaded: true,
             reload: true,
             user,
             card: this.state.card
-        }
+        });
 
         var photos = this.state.card == null ? 
                         [] : this.state.card['Photo Array'] == null ?
