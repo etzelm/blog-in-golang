@@ -46,7 +46,6 @@ https://mitchelletzel.com/article/2
 https://mitchelletzel.com/article/3
 https://mitchelletzel.com/article/4
 https://mitchelletzel.com/article/5
-https://mitchelletzel.com/auth
 https://mitchelletzel.com/contact
 https://mitchelletzel.com/category/Disciplines
 https://mitchelletzel.com/category/Distributed%20Systems
