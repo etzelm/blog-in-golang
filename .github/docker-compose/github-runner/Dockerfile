@@ -1,11 +1,15 @@
-FROM ubuntu:24.04
+FROM ubuntu:22.04
 
 ARG RUNNER_VERSION="2.323.0"
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt update -y && apt upgrade -y && useradd -m docker
+RUN apt install -y --no-install-recommends sudo && \
+    echo "docker ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/docker && \
+    chmod 0440 /etc/sudoers.d/docker && \
+    apt clean
 RUN apt install -y --no-install-recommends \
-    curl unzip jq build-essential libssl-dev libffi-dev python3 python3-venv python3-dev python3-pip openssh-client sshpass golang
+    curl unzip jq build-essential libicu70 libssl-dev libffi-dev python3 python3-venv python3-dev python3-pip openssh-client sshpass golang
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs
 RUN npm install -g yarn
