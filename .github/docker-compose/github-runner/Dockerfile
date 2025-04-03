@@ -9,17 +9,19 @@ RUN apt install -y --no-install-recommends sudo && \
     chmod 0440 /etc/sudoers.d/docker && \
     apt clean
 RUN apt install -y --no-install-recommends \
-    curl unzip jq build-essential libicu70 libssl-dev libffi-dev python3 python3-venv python3-dev python3-pip openssh-client sshpass golang
+    curl unzip jq build-essential libicu70 libssl-dev libffi-dev python3 python3-venv python3-dev python3-pip openssh-client sshpass
+RUN curl -fsSL https://go.dev/dl/go1.24.2.linux-amd64.tar.gz -o go.tar.gz && \
+    tar -C /usr/local -xzf go.tar.gz && \
+    rm go.tar.gz && \
+    ln -s /usr/local/go/bin/go /usr/bin/go
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs
 RUN npm install -g yarn
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 RUN unzip awscliv2.zip
 RUN ./aws/install
-RUN aws --version
 RUN npm install -g yarn
 RUN apt install docker.io -y
-RUN docker --version
 RUN cd /home/docker && mkdir actions-runner && cd actions-runner \
     && curl -O -L https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz \
     && tar xzf ./actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz
