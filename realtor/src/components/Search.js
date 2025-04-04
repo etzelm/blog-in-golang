@@ -1,105 +1,69 @@
 import React from "react";
-import Card from 'react-bootstrap/Card'
-import Col from 'react-bootstrap/Col'
-import Form from 'react-bootstrap/Form'
-import Row from 'react-bootstrap/Row'
-import Button from 'react-bootstrap/Button'
+import Card from 'react-bootstrap/Card';
+import Col from 'react-bootstrap/Col';
+import Form from 'react-bootstrap/Form';
+import Row from 'react-bootstrap/Row';
+import Button from 'react-bootstrap/Button';
 import TileDeck from "./TileDeck";
 
 export default class Search extends React.Component {
-
     constructor(props) {
         super(props);
-        this.onSubmit = this.onSubmit.bind(this);
         this.state = {
-            loggedIn: this.props == null ? null : this.props.loggedIn,
-            user: this.props == null ? null : this.props.user,
+            loggedIn: props ? props.loggedIn : null,
+            user: props ? props.user : null,
             cards: [],
             orgCards: []
         };
+        this.onSubmit = this.onSubmit.bind(this);
+        this.cityRef = React.createRef();
+        this.stateRef = React.createRef();
+        this.zipCodeRef = React.createRef();
+        this.bedroomsRef = React.createRef();
+        this.bathroomsRef = React.createRef();
+        this.mlsRef = React.createRef();
+        this.squareFeetRef = React.createRef();
     }
 
     async componentDidMount() {
-
-        const response = await fetch('/listings');
-        const data = await response.json();
-        console.log(data)
-
-        var listings = [];
-        for (var it=0; it<data.length; it++) {
-            const card = data[it];
-            if (card['deleted'] === "false") {
-                listings.push(card);
-            }
+        try {
+            const response = await fetch('/listings');
+            const data = await response.json();
+            const listings = data.filter(card => card.deleted !== "false");
+            this.setState({ 
+                cards: listings,
+                orgCards: listings
+            });
+        } catch (error) {
+            console.error("Error fetching listings:", error);
         }
-
-        this.setState({ 
-            cards: listings,
-            orgCards: listings
-        })
-
     }
 
-    async onSubmit(event) {
-        console.log("submitted")
-        console.log(event)
-        console.log(event.currentTarget)
-        console.log(event.currentTarget.elements.ZipCode.value)
-        console.log(event.target.elements.ZipCode.value)
-        event.preventDefault()
-
-        var newCards = [], fieldsA = [], fieldsB = [];
-        const elements = event.currentTarget.elements;
-
-        if (!(elements.City.value === "")) {
-            fieldsA.push("City");
-            fieldsB.push("City");
+    onSubmit = async (event) => {
+        event.preventDefault();
+        const fieldsToCheck = [];
+        const { orgCards } = this.state;
+        
+        if (this.cityRef.current.value) {
+            fieldsToCheck.push({field: "City", value: this.cityRef.current.value});
         }
-        if (!(elements.State.value === "")) {
-            fieldsA.push("State");
-            fieldsB.push("State");
+        if (this.stateRef.current.value) {
+            fieldsToCheck.push({field: "State", value: this.stateRef.current.value});
         }
-        if (!(elements.ZipCode.value === "")) {
-            fieldsA.push("ZipCode");
-            fieldsB.push("Zip Code");
+        if (this.zipCodeRef.current.value) {
+            fieldsToCheck.push({field: "ZipCode", value: this.zipCodeRef.current.value});
         }
-        if (!(elements.Bedrooms.value === "")) {
-            fieldsA.push("Bedrooms");
-            fieldsB.push("Bedrooms");
+        if (this.bedroomsRef.current.value) {
+            fieldsToCheck.push({field: "Bedrooms", value: this.bedroomsRef.current.value});
         }
-        if (!(elements.Bathrooms.value === "")) {
-            fieldsA.push("Bathrooms");
-            fieldsB.push("Bathrooms");
-        }
-        if (!(elements.MLS.value === "")) {
-            fieldsA.push("MLS");
-            fieldsB.push("MLS");
-        }
-        if (!(elements.SquareFeet.value === "")) {
-            fieldsA.push("SquareFeet");
-            fieldsB.push("Square Feet");
+        if (this.squareFeetRef.current.value) {
+            fieldsToCheck.push({field: "SquareFeet", value: this.squareFeetRef.current.value});
         }
 
-        console.log(fieldsA)
-        for (var it=0; it < this.state.orgCards.length; it++) {
-
-            var match = true;
-            for (var innerIt=0; innerIt < fieldsA.length; innerIt++) {
-
-                if (this.state.orgCards[it][fieldsB[innerIt]] !== elements[fieldsA[innerIt]].value) {
-                    match = false;
-                }
-
-            }
-
-            if (match) {
-                newCards.push(this.state.orgCards[it]);
-            }
-
-        }
-
-        this.setState({ cards: newCards })
-
+        const filteredCards = orgCards.filter(card => 
+            fieldsToCheck.every(filter => card[filter.field] === filter.value)
+        );
+        this.setState({ cards: filteredCards });
     }
 
     render() {
@@ -131,47 +95,46 @@ export default class Search extends React.Component {
                 <br/><br/><br/>
                 <Card style={cardStyle}>
                     <Form onSubmit={this.onSubmit}>
-
                         <Row>
                             <Form.Group as={Col} controlId="formGridCity">
                             <Form.Label>City</Form.Label>
-                            <Form.Control type="text" name="City" ref="City"/>
+                            <Form.Control type="text" ref={this.cityRef}/>
                             </Form.Group>
 
                             <Form.Group as={Col} controlId="formGridState">
                             <Form.Label>State</Form.Label>
-                            <Form.Control type="text" name="State" ref="State"/>
+                            <Form.Control type="text" ref={this.stateRef}/>
                             </Form.Group>
 
-                            <Form.Group as={Col} controlId="formGridZipCode">
+                            <Form.Group as={Col} controlId="formGridZip">
                             <Form.Label>Zip Code</Form.Label>
-                            <Form.Control type="text" name="ZipCode" ref="ZipCode"/>
+                            <Form.Control type="text" ref={this.zipCodeRef}/>
                             </Form.Group>
                         </Row>
 
                         <Row>
                             <Form.Group as={Col} controlId="formGridBedrooms">
                             <Form.Label>Bedrooms</Form.Label>
-                            <Form.Control type="text" name="Bedrooms" ref="Bedrooms"/>
+                            <Form.Control type="text" ref={this.bedroomsRef}/>
                             </Form.Group>
 
                             <Form.Group as={Col} controlId="formGridBathrooms">
                             <Form.Label>Bathrooms</Form.Label>
-                            <Form.Control type="text" name="Bathrooms" ref="Bathrooms"/>
+                            <Form.Control type="text" ref={this.bathroomsRef}/>
                             </Form.Group>
                         </Row>
 
                         <Row>
                             <Form.Group as={Col} controlId="formGridMLS">
                             <Form.Label>MLS</Form.Label>
-                            <Form.Control type="text" name="MLS" ref="MLS"/>
+                            <Form.Control type="text" ref={this.mlsRef}/>
                             </Form.Group>
 
                             <Form.Group as={Col} controlId="formGridSquareFeet">
                             <Form.Label>Square Feet</Form.Label>
-                            <Form.Control type="text" name="SquareFeet" ref="SquareFeet"/>
+                            <Form.Control type="text" ref={this.squareFeetRef}/>
                             </Form.Group>
-                        </Row>
+                        </Row><br/>
                         
                         <Button 
                             style={buttonStyle} 
@@ -185,6 +148,7 @@ export default class Search extends React.Component {
                 <TileDeck cards={this.state.cards}/>
             </div>
         );
+   
     }
 
 }

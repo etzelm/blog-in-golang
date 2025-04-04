@@ -1,4 +1,4 @@
-FROM golang:1.23.1-alpine3.20 AS builder
+FROM golang:1.24.2-alpine3.21 AS builder
 
 # Need git for dep
 RUN apk add --no-cache git
@@ -12,7 +12,7 @@ RUN go mod download
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o blog-in-golang .
 
-FROM alpine:3.20 AS runtime
+FROM alpine:3.21 AS runtime
 RUN apk --no-cache add ca-certificates
 WORKDIR /
 COPY --from=0 /app/blog-in-golang .

@@ -1,13 +1,11 @@
 module github.com/etzelm/blog-in-golang
 
-go 1.23.0
-
-toolchain go1.23.1
+go 1.24
 
 require (
 	github.com/aws/aws-sdk-go v1.55.6
 	github.com/caddyserver/certmagic v0.22.2
-	github.com/gin-contrib/cache v1.3.1
+	github.com/gin-contrib/cache v1.3.2
 	github.com/gin-contrib/static v1.1.3
 	github.com/gin-gonic/gin v1.10.0
 	github.com/sirupsen/logrus v1.9.3
