@@ -53,36 +53,7 @@ class MyListing extends React.Component {
         this.setState({ loaded: true });
         return;
       }
-  
-      if (window.gapi) {
-        window.gapi.load("auth2", () => {
-          this.auth2 = window.gapi.auth2.init({
-            client_id: "ThisIsSupposedToBeAnId",
-          });
-          this.auth2.then(
-            () => {
-              const loggedIn = this.auth2.isSignedIn.get();
-              let email = null;
-              if (loggedIn) {
-                email = this.auth2.currentUser.get().getBasicProfile().getEmail();
-              }
-              this.setState({
-                loggedIn,
-                user: email,
-                loaded: true,
-              });
-            },
-            (error) => {
-              console.error("Google Auth initialization failed:", error);
-              this.setState({ loggedIn: false, loaded: true });
-            }
-          );
-        });
-      } else {
-        console.warn("Google API (gapi) not loaded.");
-        this.setState({ loggedIn: false, loaded: true }); // Default to logged out
-      }
-  
+      
       // Fetch listing logic
       const search = this.props.location.search;
       const params = new URLSearchParams(search);
