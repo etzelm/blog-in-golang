@@ -31,7 +31,7 @@ export default class Search extends React.Component {
             const response = await fetch('/listings');
             const data = await response.json();
             // Fix: The filter condition was inverted (checking !== "false" instead of === true)
-            const listings = data.filter(card => card.deleted !== true);
+            const listings = data.filter(card => card.deleted === "false");
             this.setState({ 
                 cards: listings,
                 orgCards: listings
@@ -103,10 +103,10 @@ export default class Search extends React.Component {
 
         return (
             <div style={homeStyle}>
-                <div style={{ height: '3rem' }} /> {/* Replaced multiple <br/> with proper spacing */}
+                <br/><br/><br/>
                 <Card style={cardStyle}>
                     <Form onSubmit={this.onSubmit}>
-                        <Row className="mb-3">
+                        <Row>
                             <Form.Group as={Col} controlId="formGridCity">
                                 <Form.Label>City</Form.Label>
                                 <Form.Control type="text" ref={this.cityRef} />
@@ -145,8 +145,8 @@ export default class Search extends React.Component {
                                 <Form.Label>Square Feet</Form.Label>
                                 <Form.Control type="number" ref={this.squareFeetRef} />
                             </Form.Group>
-                        </Row>
-                        
+                        </Row><br/>
+                
                         <Button 
                             style={buttonStyle} 
                             variant="primary" 
