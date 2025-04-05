@@ -47,56 +47,57 @@ class MyListing extends React.Component {
   }
 
   async componentDidMount() {
-    if (!this.props.location) {
-      console.warn("location prop not found; check your router setup.");
-      return;
-    }
-
-    // Google auth check
-    if (window.gapi) {
-      window.gapi.load("auth2", () => {
-        this.auth2 = window.gapi.auth2.init({
-          client_id: "ThisIsSupposedToBeAnId", // Replace with actual client ID
-        });
-        this.auth2.then(
-          () => {
-            const loggedIn = this.auth2.isSignedIn.get();
-            let email = null;
-            if (loggedIn) {
-              email = this.auth2.currentUser.get().getBasicProfile().getEmail();
+    try {
+      if (!this.props.location) {
+        console.warn("location prop not found; check your router setup.");
+        this.setState({ loaded: true });
+        return;
+      }
+  
+      if (window.gapi) {
+        window.gapi.load("auth2", () => {
+          this.auth2 = window.gapi.auth2.init({
+            client_id: "ThisIsSupposedToBeAnId",
+          });
+          this.auth2.then(
+            () => {
+              const loggedIn = this.auth2.isSignedIn.get();
+              let email = null;
+              if (loggedIn) {
+                email = this.auth2.currentUser.get().getBasicProfile().getEmail();
+              }
+              this.setState({
+                loggedIn,
+                user: email,
+                loaded: true,
+              });
+            },
+            (error) => {
+              console.error("Google Auth initialization failed:", error);
+              this.setState({ loggedIn: false, loaded: true });
             }
-            this.setState({
-              loggedIn,
-              user: email,
-              loaded: true,
-            });
-          },
-          (error) => {
-            console.error("Google Auth initialization failed:", error);
-            this.setState({ loaded: true }); // Still mark as loaded to avoid infinite loading
-          }
-        );
-      });
-    } else {
-      console.warn("Google API (gapi) not loaded.");
-      this.setState({ loaded: true }); // Ensure component loads even if gapi is missing
-    }
-
-    // Extract listing info from query param
-    const search = this.props.location.search;
-    const params = new URLSearchParams(search);
-    const listingId = params.get("id"); // Assuming 'id' is the query param name
-    if (listingId) {
-      try {
+          );
+        });
+      } else {
+        console.warn("Google API (gapi) not loaded.");
+        this.setState({ loggedIn: false, loaded: true }); // Default to logged out
+      }
+  
+      // Fetch listing logic
+      const search = this.props.location.search;
+      const params = new URLSearchParams(search);
+      const listingId = params.get("id");
+      if (listingId) {
         const response = await fetch(`/listing/${listingId}`);
         if (!response.ok) throw new Error("Failed to fetch listing");
         const data = await response.json();
         if (data.length > 0) {
           this.setState({ card: data[0] });
         }
-      } catch (error) {
-        console.error("Error fetching listing:", error);
       }
+    } catch (error) {
+      console.error("Error in componentDidMount:", error);
+      this.setState({ loaded: true }); // Ensure loaded is true even on error
     }
   }
 
