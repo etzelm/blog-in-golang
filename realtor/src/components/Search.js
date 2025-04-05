@@ -31,7 +31,7 @@ export default class Search extends React.Component {
             const response = await fetch('/listings');
             const data = await response.json();
             // Fix: The filter condition was inverted (checking !== "false" instead of === true)
-            const listings = data.filter(card => card.deleted !== true);
+            const listings = data.filter(card => card.deleted === "false");
             this.setState({ 
                 cards: listings,
                 orgCards: listings
