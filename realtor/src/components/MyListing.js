@@ -1,5 +1,5 @@
 import React from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom"; // <-- For React Router v6
+import { useLocation, useNavigate, useParams } from "react-router-dom"; // React Router v6
 import Card from "react-bootstrap/Card";
 import Carousel from "react-bootstrap/Carousel";
 import Col from "react-bootstrap/Col";
@@ -8,10 +8,10 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import "react-dropzone-uploader/dist/styles.css";
 import Dropzone from "react-dropzone-uploader";
-import uuid from "react-uuid";
+import { v4 as uuid } from "uuid"; // Correct import for uuid
 import { NotificationContainer, NotificationManager } from "react-notifications";
 
-// A simple custom HOC to inject location, navigate, params into a class component:
+// HOC to inject router props into class component
 function withRouter(Component) {
   return function Wrapper(props) {
     const location = useLocation();
@@ -36,65 +36,79 @@ class MyListing extends React.Component {
     this.onArrayChange = this.onArrayChange.bind(this);
     this.onRemove = this.onRemove.bind(this);
 
+    this.formRef = React.createRef();
+
     this.state = {
-      loggedIn: this.props == null ? null : this.props.loggedIn,
-      user: this.props == null ? null : this.props.user,
-      card: null
+      loggedIn: props.loggedIn ?? false, // Default to false instead of null
+      user: props.user ?? null,
+      card: null,
+      loaded: false,
     };
   }
 
   async componentDidMount() {
-    // Ensure location is available
-    if (!this.props.location) {
-      console.warn("location prop not found; check your router setup.");
-      return;
-    }
-
-    // Google auth check
-    if (window.gapi) {
-      window.gapi.load("auth2", () => {
-        this.auth2 = window.gapi.auth2.init({
-          client_id: "ThisIsSupposedToBeAnId"
-        });
-        this.auth2.then(() => {
-          const loggedIn = this.auth2.isSignedIn.get();
-          let email = null;
-          if (loggedIn) {
-            email = this.auth2.currentUser.get().getBasicProfile().getEmail();
-          }
-          this.setState({
-            loggedIn,
-            user: email,
-            loaded: true
-          });
-        });
-      });
-    }
-
-    // Extract listing info from query param
-    const search = this.props.location.search;
-    const regex = /(?:\x3d)([^\x26]*)/i;
-    const found = search.match(regex);
-    if (found && found.length > 0) {
-      const response = await fetch("/listing/" + found[1]);
-      const data = await response.json();
-      if (data.length > 0) {
-        this.setState({ card: data[0] });
+    try {
+      if (!this.props.location) {
+        console.warn("location prop not found; check your router setup.");
+        this.setState({ loaded: true });
+        return;
       }
+  
+      if (window.gapi) {
+        window.gapi.load("auth2", () => {
+          this.auth2 = window.gapi.auth2.init({
+            client_id: "ThisIsSupposedToBeAnId",
+          });
+          this.auth2.then(
+            () => {
+              const loggedIn = this.auth2.isSignedIn.get();
+              let email = null;
+              if (loggedIn) {
+                email = this.auth2.currentUser.get().getBasicProfile().getEmail();
+              }
+              this.setState({
+                loggedIn,
+                user: email,
+                loaded: true,
+              });
+            },
+            (error) => {
+              console.error("Google Auth initialization failed:", error);
+              this.setState({ loggedIn: false, loaded: true });
+            }
+          );
+        });
+      } else {
+        console.warn("Google API (gapi) not loaded.");
+        this.setState({ loggedIn: false, loaded: true }); // Default to logged out
+      }
+  
+      // Fetch listing logic
+      const search = this.props.location.search;
+      const params = new URLSearchParams(search);
+      const listingId = params.get("id");
+      if (listingId) {
+        const response = await fetch(`/listing/${listingId}`);
+        if (!response.ok) throw new Error("Failed to fetch listing");
+        const data = await response.json();
+        if (data.length > 0) {
+          this.setState({ card: data[0] });
+        }
+      }
+    } catch (error) {
+      console.error("Error in componentDidMount:", error);
+      this.setState({ loaded: true }); // Ensure loaded is true even on error
     }
   }
 
   async onSubmit(event) {
     event.preventDefault();
     const { card } = this.state;
-    const elements = event.currentTarget.elements;
+    const elements = this.formRef.current.elements;
     const time = new Date().getTime();
-    const firstTime =
-      !card || !card["Date Listed"] ? time : `${card["Date Listed"]}`;
-    const newUuid = !card || !card["MLS"] ? uuid() : `${card["MLS"]}`;
-    const status = !card || !card["deleted"] ? "true" : `${card["deleted"]}`;
-    const list = !card || !card["List Photo"] ? "" : `${card["List Photo"]}`;
-    const array = !card || !card["Photo Array"] ? [] : card["Photo Array"];
+    const firstTime = card?.["Date Listed"] ?? time;
+    const newUuid = card?.["MLS"] ?? uuid(); // Use imported uuid function
+    const status = card?.["deleted"] ?? "false"; // Default to "false" instead of "true"
 
     const json = {
       Bathrooms: elements.Bathrooms.value,
@@ -105,32 +119,37 @@ class MyListing extends React.Component {
       Description: elements.Description.value,
       "Garage Size": elements.GarageSize.value,
       "Last Modified": `${time}`,
-      "List Photo": list,
+      "List Photo": card?.["List Photo"] ?? "",
       "Lot Size": elements.LotSize.value,
-      MLS: `${newUuid}`,
+      MLS: newUuid, // No need to stringify
       Neighborhood: elements.Neighborhood.value,
-      "Photo Array": array,
+      "Photo Array": card?.["Photo Array"] ?? [],
       "Sales Price": elements.Price.value,
       "Square Feet": elements.SquareFeet.value,
       State: elements.State.value,
       Street1: elements.Address.value,
       Street2: elements.Address2.value === "" ? "*" : elements.Address2.value,
       User: this.state.user,
-      "Zip Code": elements.ZipCode.value
+      "Zip Code": elements.ZipCode.value,
     };
 
-    const rawResponse = await fetch("/listings/add/HowMuchDoesSecurityCost", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(json)
-    });
+    try {
+      const rawResponse = await fetch("/listings/add/HowMuchDoesSecurityCost", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(json),
+      });
 
-    if (rawResponse.status === 200) {
-      NotificationManager.success("Success", "Success", 3000);
-    } else {
+      if (rawResponse.ok  === 200) {
+        NotificationManager.success("Success", "Success", 3000);
+      } else {
+        throw new Error("Failed to submit listing");
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
       NotificationManager.warning("Failure", "Failure", 3000);
     }
   }
@@ -138,12 +157,11 @@ class MyListing extends React.Component {
   onListChange({ meta }, status) {
     const sml = "https://files.mitchelletzel.com/media/";
     const path = `${sml}${this.state.user}/${meta.name}`;
-    let newCard = this.state.card || {};
+    let newCard = { ...this.state.card } || {};
 
     if (status === "done") {
       newCard["List Photo"] = path;
-    }
-    if (status === "removed" && newCard["List Photo"] === path) {
+    } else if (status === "removed" && newCard["List Photo"] === path) {
       newCard["List Photo"] = "";
     }
     this.setState({ card: newCard });
@@ -152,25 +170,23 @@ class MyListing extends React.Component {
   onArrayChange({ meta }, status) {
     const sml = "https://files.mitchelletzel.com/media/";
     const path = `${sml}${this.state.user}/${meta.name}`;
-    let newCard = this.state.card || { "Photo Array": [] };
-    let photoArr = newCard["Photo Array"] || [];
+    let newCard = { ...this.state.card } || { "Photo Array": [] };
+    let photoArr = [...(newCard["Photo Array"] || [])];
 
     if (status === "done") {
       photoArr.push(path);
-      newCard["Photo Array"] = photoArr;
-      this.setState({ card: newCard });
+    } else if (status === "removed") {
+      photoArr = photoArr.filter((p) => p !== path);
     }
-    if (status === "removed") {
-      let filtered = photoArr.filter((p) => p !== path);
-      newCard["Photo Array"] = filtered;
-      this.setState({ card: newCard });
-    }
+    newCard["Photo Array"] = photoArr;
+    this.setState({ card: newCard });
   }
 
   onRemove(photo) {
-    let newCard = this.state.card || { "Photo Array": [] };
-    let filtered = (newCard["Photo Array"] || []).filter((p) => p !== photo);
-    newCard["Photo Array"] = filtered;
+    let newCard = { ...this.state.card } || { "Photo Array": [] };
+    newCard["Photo Array"] = (newCard["Photo Array"] || []).filter(
+      (p) => p !== photo
+    );
     this.setState({ card: newCard });
   }
 
@@ -180,7 +196,7 @@ class MyListing extends React.Component {
       backgroundColor: "Gray",
       margin: "0px",
       padding: "0px",
-      height: "400vh"
+      height: "400vh",
     };
     const cardStyle = {
       width: "90vw",
@@ -189,7 +205,7 @@ class MyListing extends React.Component {
       paddingRight: "2vw",
       paddingBottom: "3vw",
       margin: "auto",
-      backgroundColor: "LightGray"
+      backgroundColor: "LightGray",
     };
     const card2Style = {
       width: "82vw",
@@ -198,7 +214,7 @@ class MyListing extends React.Component {
       paddingRight: "2vw",
       paddingBottom: "3vw",
       margin: "auto",
-      backgroundColor: "White"
+      backgroundColor: "White",
     };
     const carouselStyle = {
       width: "70vw",
@@ -206,7 +222,7 @@ class MyListing extends React.Component {
       margin: "auto",
       paddingBottom: "7vw",
       borderStyle: "solid",
-      borderWidth: "8px"
+      borderWidth: "8px",
     };
     const itemStyle = {
       backgroundSize: "auto",
@@ -214,18 +230,15 @@ class MyListing extends React.Component {
       width: "100%",
       height: "24vw",
       overflow: "hidden",
-      alignItems: "center"
+      alignItems: "center",
     };
-    const buttonStyle = { margin: "0", position: "absolute", left: "50%" };
+    const buttonStyle = { margin: "0", position: "absolute", left: "50%", transform: "translateX(-50%)" };
 
-    let photos = [];
-    if (this.state.card && this.state.card["Photo Array"]) {
-      photos = this.state.card["Photo Array"];
-    }
+    const photos = this.state.card?.["Photo Array"] ?? [];
 
     return (
       <div>
-        {!this.state.loggedIn && (
+        {!this.state.loggedIn && this.state.loaded && (
           <div>
             <br />
             <br />
@@ -238,15 +251,14 @@ class MyListing extends React.Component {
             <h3 style={h3Style}>Thank you.</h3>
           </div>
         )}
-        {this.state.loggedIn && (
+        {this.state.loggedIn && this.state.loaded && (
           <div style={listingStyle}>
             <br />
             <br />
             <br />
             <Card style={cardStyle}>
               <h3 style={h3Style}>
-                {!this.state.card && <div>List your property with us.</div>}
-                {this.state.card && <div>Edit your listing</div>}
+                {!this.state.card ? "List your property with us." : "Edit your listing"}
               </h3>
               <br />
               <br />
@@ -254,30 +266,29 @@ class MyListing extends React.Component {
                 <Carousel style={carouselStyle}>
                   {photos.map((photo) => (
                     <Carousel.Item style={itemStyle} key={photo}>
-                      <img className="d-block w-100" src={photo} alt="" />
+                      <img className="d-block w-100" src={photo} alt="Property" />
                       <Carousel.Caption>
-                        <Button variant="primary" onClick={() => this.onRemove(photo)}>
+                        <Button
+                          variant="primary"
+                          onClick={() => this.onRemove(photo)}
+                        >
                           Remove
                         </Button>
                       </Carousel.Caption>
                     </Carousel.Item>
                   ))}
                 </Carousel>
-                {"\u00A0"}
-                {"\u000A"}
               </p>
               <br />
               <Card style={card2Style}>
-                <Form onSubmit={this.onSubmit}>
+                <Form ref={this.formRef} onSubmit={this.onSubmit}>
                   <Form.Group controlId="formGridAddress1">
                     <Form.Label>Address</Form.Label>
                     <Form.Control
                       type="text"
                       name="Address"
                       required
-                      defaultValue={
-                        this.state.card ? this.state.card["Street1"] : ""
-                      }
+                      defaultValue={this.state.card?.["Street1"] ?? ""}
                     />
                   </Form.Group>
 
@@ -287,11 +298,9 @@ class MyListing extends React.Component {
                       type="text"
                       name="Address2"
                       defaultValue={
-                        this.state.card
-                          ? this.state.card["Street2"] === "*"
-                            ? ""
-                            : this.state.card["Street2"]
-                          : ""
+                        this.state.card?.["Street2"] === "*"
+                          ? ""
+                          : this.state.card?.["Street2"] ?? ""
                       }
                     />
                   </Form.Group>
@@ -303,9 +312,7 @@ class MyListing extends React.Component {
                         type="text"
                         name="City"
                         required
-                        defaultValue={
-                          this.state.card ? this.state.card["City"] : ""
-                        }
+                        defaultValue={this.state.card?.["City"] ?? ""}
                       />
                     </Form.Group>
 
@@ -315,9 +322,7 @@ class MyListing extends React.Component {
                         type="text"
                         name="State"
                         required
-                        defaultValue={
-                          this.state.card ? this.state.card["State"] : ""
-                        }
+                        defaultValue={this.state.card?.["State"] ?? ""}
                       />
                     </Form.Group>
 
@@ -327,9 +332,7 @@ class MyListing extends React.Component {
                         type="text"
                         name="ZipCode"
                         required
-                        defaultValue={
-                          this.state.card ? this.state.card["Zip Code"] : ""
-                        }
+                        defaultValue={this.state.card?.["Zip Code"] ?? ""}
                       />
                     </Form.Group>
                   </Row>
@@ -341,9 +344,7 @@ class MyListing extends React.Component {
                         type="text"
                         name="Price"
                         required
-                        defaultValue={
-                          this.state.card ? this.state.card["Sales Price"] : ""
-                        }
+                        defaultValue={this.state.card?.["Sales Price"] ?? ""}
                       />
                     </Form.Group>
 
@@ -353,11 +354,7 @@ class MyListing extends React.Component {
                         type="text"
                         name="Neighborhood"
                         required
-                        defaultValue={
-                          this.state.card
-                            ? this.state.card["Neighborhood"]
-                            : ""
-                        }
+                        defaultValue={this.state.card?.["Neighborhood"] ?? ""}
                       />
                     </Form.Group>
                   </Row>
@@ -369,9 +366,7 @@ class MyListing extends React.Component {
                         type="text"
                         name="Bedrooms"
                         required
-                        defaultValue={
-                          this.state.card ? this.state.card["Bedrooms"] : ""
-                        }
+                        defaultValue={this.state.card?.["Bedrooms"] ?? ""}
                       />
                     </Form.Group>
 
@@ -381,9 +376,7 @@ class MyListing extends React.Component {
                         type="text"
                         name="Bathrooms"
                         required
-                        defaultValue={
-                          this.state.card ? this.state.card["Bathrooms"] : ""
-                        }
+                        defaultValue={this.state.card?.["Bathrooms"] ?? ""}
                       />
                     </Form.Group>
                   </Row>
@@ -395,9 +388,7 @@ class MyListing extends React.Component {
                         type="text"
                         name="SquareFeet"
                         required
-                        defaultValue={
-                          this.state.card ? this.state.card["Square Feet"] : ""
-                        }
+                        defaultValue={this.state.card?.["Square Feet"] ?? ""}
                       />
                     </Form.Group>
 
@@ -407,9 +398,7 @@ class MyListing extends React.Component {
                         type="text"
                         name="LotSize"
                         required
-                        defaultValue={
-                          this.state.card ? this.state.card["Lot Size"] : ""
-                        }
+                        defaultValue={this.state.card?.["Lot Size"] ?? ""}
                       />
                     </Form.Group>
 
@@ -419,11 +408,7 @@ class MyListing extends React.Component {
                         type="text"
                         name="GarageSize"
                         required
-                        defaultValue={
-                          this.state.card
-                            ? this.state.card["Garage Size"]
-                            : ""
-                        }
+                        defaultValue={this.state.card?.["Garage Size"] ?? ""}
                       />
                     </Form.Group>
                   </Row>
@@ -432,12 +417,10 @@ class MyListing extends React.Component {
                     <Form.Label>Description</Form.Label>
                     <Form.Control
                       as="textarea"
-                      rows="3"
+                      rows={3}
                       name="Description"
                       required
-                      defaultValue={
-                        this.state.card ? this.state.card["Description"] : ""
-                      }
+                      defaultValue={this.state.card?.["Description"] ?? ""}
                     />
                   </Form.Group>
 
@@ -445,19 +428,19 @@ class MyListing extends React.Component {
                   <br />
                   <Dropzone
                     getUploadParams={() => ({
-                      url: `/upload/image/${this.state.user}`
+                      url: `/upload/image/${this.state.user}`,
                     })}
                     onChangeStatus={this.onListChange}
                     accept="image/*"
+                    maxFiles={1} // Enforce single file upload
                   />
 
                   <br />
-                  Photo Array
-                  <br />
+                  <div>Photo Array</div>
                   <br />
                   <Dropzone
                     getUploadParams={() => ({
-                      url: `/upload/image/${this.state.user}`
+                      url: `/upload/image/${this.state.user}`,
                     })}
                     onChangeStatus={this.onArrayChange}
                     accept="image/*"
@@ -465,11 +448,7 @@ class MyListing extends React.Component {
 
                   <br />
                   <br />
-                  <Button
-                    style={buttonStyle}
-                    variant="primary"
-                    type="submit"
-                  >
+                  <Button style={buttonStyle} variant="primary" type="submit">
                     Submit
                   </Button>
                   <br />
@@ -485,6 +464,7 @@ class MyListing extends React.Component {
             <br />
           </div>
         )}
+        {!this.state.loaded && <div>Loading...</div>}
       </div>
     );
   }
