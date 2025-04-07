@@ -6,7 +6,7 @@ require (
 	github.com/aws/aws-sdk-go v1.55.6
 	github.com/caddyserver/certmagic v0.22.2
 	github.com/gin-contrib/cache v1.3.2
-	github.com/gin-contrib/static v1.1.3
+	github.com/gin-contrib/static v1.1.5
 	github.com/gin-gonic/gin v1.10.0
 	github.com/sirupsen/logrus v1.9.3
 	golang.org/x/crypto v0.37.0
@@ -48,7 +48,7 @@ require (
 	github.com/zeebo/blake3 v0.2.4 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
-	golang.org/x/arch v0.15.0 // indirect
+	golang.org/x/arch v0.16.0 // indirect
 	golang.org/x/mod v0.24.0 // indirect
 	golang.org/x/net v0.38.0 // indirect
 	golang.org/x/sync v0.13.0 // indirect
