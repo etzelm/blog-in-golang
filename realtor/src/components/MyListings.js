@@ -38,7 +38,7 @@ const MyListings = (props) => {
       )}
 
       {props.loggedIn && cards.length > 0 && (
-        <div style={{ backgroundColor: 'LightGray', margin: "0px", padding: "0px", height: "240vh" }}>
+        <div style={{ backgroundColor: 'LightGray', margin: "0px", marginTop: "100px", padding: "0px", height: "240vh" }}>
           <TileDeck cards={cards} user={props.user} />
         </div>
       )}
