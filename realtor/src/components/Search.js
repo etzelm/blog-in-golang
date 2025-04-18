@@ -30,7 +30,6 @@ export default class Search extends React.Component {
         try {
             const response = await fetch('/listings');
             const data = await response.json();
-            // Fix: The filter condition was inverted (checking !== "false" instead of === true)
             const listings = data.filter(card => card.deleted === "false");
             this.setState({ 
                 cards: listings,
@@ -41,38 +40,40 @@ export default class Search extends React.Component {
         }
     }
 
-    // Remove redundant onSubmit binding in constructor since it's defined as arrow function
     onSubmit = async (event) => {
         event.preventDefault();
         const { orgCards } = this.state;
-        const fieldsToCheck = [];
-        
-        // Add filters only if values exist
-        if (this.cityRef.current?.value) {
-            fieldsToCheck.push({ field: "City", value: this.cityRef.current.value });
-        }
-        if (this.stateRef.current?.value) {
-            fieldsToCheck.push({ field: "State", value: this.stateRef.current.value });
-        }
-        if (this.zipCodeRef.current?.value) {
-            fieldsToCheck.push({ field: "ZipCode", value: this.zipCodeRef.current.value });
-        }
-        if (this.bedroomsRef.current?.value) {
-            fieldsToCheck.push({ field: "Bedrooms", value: Number(this.bedroomsRef.current.value) });
-        }
-        if (this.bathroomsRef.current?.value) {
-            fieldsToCheck.push({ field: "Bathrooms", value: Number(this.bathroomsRef.current.value) });
-        }
-        if (this.mlsRef.current?.value) {
-            fieldsToCheck.push({ field: "MLS", value: this.mlsRef.current.value });
-        }
-        if (this.squareFeetRef.current?.value) {
-            fieldsToCheck.push({ field: "SquareFeet", value: Number(this.squareFeetRef.current.value) });
-        }
 
-        const filteredCards = orgCards.filter(card => 
-            fieldsToCheck.every(filter => card[filter.field] === filter.value)
-        );
+        // Get filter values and normalize them
+        const filters = {
+            City: this.cityRef.current?.value?.trim().toLowerCase(),
+            State: this.stateRef.current?.value?.trim().toLowerCase(),
+            ZipCode: this.zipCodeRef.current?.value?.trim(),
+            Bedrooms: this.bedroomsRef.current?.value ? Number(this.bedroomsRef.current.value) : null,
+            Bathrooms: this.bathroomsRef.current?.value ? Number(this.bathroomsRef.current.value) : null,
+            MLS: this.mlsRef.current?.value?.trim(),
+            SquareFeet: this.squareFeetRef.current?.value ? Number(this.squareFeetRef.current.value) : null,
+        };
+
+        // Filter cards based on provided values
+        const filteredCards = orgCards.filter((card) => {
+            return Object.keys(filters).every((field) => {
+                // Skip if filter value is empty or null
+                if (!filters[field]) return true;
+
+                // Normalize card data for comparison
+                const cardValue = typeof card[field] === 'string' ? card[field].toLowerCase() : card[field];
+                const filterValue = typeof filters[field] === 'string' ? filters[field] : filters[field];
+
+                // Special handling for ZipCode to ensure string comparison
+                if (field === 'ZipCode') {
+                    return String(card[field]) === String(filterValue);
+                }
+
+                return cardValue === filterValue;
+            });
+        });
+
         this.setState({ cards: filteredCards });
     }
 
@@ -81,7 +82,7 @@ export default class Search extends React.Component {
             backgroundColor: 'LightGray',
             margin: "0px",
             padding: "0px",
-            minHeight: "100vh" // Changed from fixed height to minimum height
+            minHeight: "100vh"
         };
 
         const cardStyle = {
@@ -96,9 +97,9 @@ export default class Search extends React.Component {
 
         const buttonStyle = {
             margin: "0",
-            position: "relative", // Changed from absolute to relative for better form layout
+            position: "relative",
             left: "50%",
-            transform: "translateX(-50%)" // Added to center the button
+            transform: "translateX(-50%)"
         };
 
         return (
