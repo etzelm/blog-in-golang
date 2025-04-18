@@ -20,8 +20,10 @@ export default class Listing extends React.Component {
         const regex = /(?:\x3d)([^\x26]*)/i;
         const found = search.match(regex);
 
-        const rootDomain = `${window.location.protocol}//${window.location.host}`;
-        const response = await fetch(`${rootDomain}/listing/${found[1]}`);
+        const rootDomain = `${window.location.protocol}//${window.location.host}`.replace('/realtor', '');
+        const fullPath = `${rootDomain}/listing/${found[1]}`;
+        console.log("Full Listing Domain: ", fullPath);
+        const response = await fetch(fullPath);
         const data = await response.json();
 
         if (data.length > 0 ) {
