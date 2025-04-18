@@ -10,23 +10,40 @@ export default class Listing extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            MLS: ""
+            MLS: "",
+            card: null // Initialize card to null for clarity
         };
     }
 
     async componentDidMount() {
+        try {
+            const search = window.location.search; // Use window.location instead of this.props.location
+            const regex = /(?:\x3d)([^\x26]*)/i;
+            const found = search.match(regex);
 
-        const search = this.props.location.search;
-        const regex = /(?:\x3d)([^\x26]*)/i;
-        const found = search.match(regex);
+            if (!found || !found[1]) {
+                console.error("No MLS ID found in URL");
+                return;
+            }
 
-        const response = await fetch('/listing/'+found[1]);
-        const data = await response.json();
+            const response = await fetch(`/listing/${found[1]}`);
 
-        if (data.length > 0 ) {
-            this.setState({ card: data[0] })
+            if (!response.ok) {
+                console.error(`Fetch failed: ${response.status} ${response.statusText}`);
+                return;
+            }
+
+            const data = await response.json();
+            console.log("API response:", data);
+
+            if (data && data.length > 0) {
+                this.setState({ card: data[0] });
+            } else {
+                console.error("No data returned from API");
+            }
+        } catch (error) {
+            console.error("Error fetching listing:", error);
         }
-
     }
 
     render() {
@@ -139,6 +156,6 @@ export default class Listing extends React.Component {
 
             </div>
         );
-  }
+    }
 
 }
