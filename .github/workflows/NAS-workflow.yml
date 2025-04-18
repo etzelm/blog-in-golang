@@ -25,7 +25,7 @@ jobs:
           BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
           echo "BRANCH: $BRANCH"
           pushd realtor
-          npm install
+          yarn install
           yarn build
           popd
           go mod download
@@ -123,7 +123,7 @@ jobs:
           sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" src/components/MyListings.js
           sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" src/components/NavBar.js
           sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" public/index.html
-          npm install
+          yarn install
           yarn build
           popd
           echo BUILDING DOCKER IMAGE
