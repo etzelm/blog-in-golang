@@ -20,7 +20,8 @@ export default class Listing extends React.Component {
         const regex = /(?:\x3d)([^\x26]*)/i;
         const found = search.match(regex);
 
-        const response = await fetch('/listing/'+found[1]);
+        const rootDomain = `${window.location.protocol}//${window.location.host}`;
+        const response = await fetch(`${rootDomain}/listing/${found[1]}`);
         const data = await response.json();
 
         if (data.length > 0 ) {
