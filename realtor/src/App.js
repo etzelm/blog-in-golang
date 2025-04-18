@@ -6,7 +6,6 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [loaded, setLoaded] = useState(false);
-
   useEffect(() => {
     const initGoogleAuth = async () => {
       try {

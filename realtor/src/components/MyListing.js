@@ -39,34 +39,92 @@ class MyListing extends React.Component {
     };
 
     // Debug initial props
-    console.log("Initial props:", props);
+    console.log("constructor: Initial props", {
+      loggedIn: this.state.loggedIn,
+      user: this.state.user,
+      location: props.location ? props.location.pathname + props.location.search : "undefined",
+      params: props.params,
+    });
   }
 
   async componentDidMount() {
-    console.log("componentDidMount: Starting fetch, loggedIn:", this.state.loggedIn);
+    console.log("componentDidMount: Mounting MyListing", {
+      isClient: typeof window !== "undefined",
+      loggedIn: this.state.loggedIn,
+      user: this.state.user,
+      location: this.props.location ? this.props.location.pathname + this.props.location.search : "undefined",
+    });
+    let isMounted = true;
     try {
       if (!this.props.location) {
-        console.warn("location prop not found; check router setup.");
-        this.setState({ loaded: true });
+        console.warn("componentDidMount: location prop missing", { props: this.props });
+        if (isMounted) this.setState({ loaded: true });
         return;
       }
 
       const search = this.props.location.search;
       const params = new URLSearchParams(search);
       const listingId = params.get("id");
+      console.log("componentDidMount: Fetching listing", { listingId });
       if (listingId) {
         const response = await fetch(`/listing/${listingId}`);
+        console.log("componentDidMount: Fetch response", {
+          listingId,
+          status: response.status,
+          ok: response.ok,
+        });
         if (!response.ok) throw new Error(`Failed to fetch listing: ${response.status}`);
         const data = await response.json();
-        if (data.length > 0) {
+        console.log("componentDidMount: Fetch data", {
+          listingId,
+          dataLength: data.length,
+          firstItem: data[0] ? { ...data[0], "Photo Array": data[0]["Photo Array"]?.length || 0 } : null,
+        });
+        if (data.length > 0 && isMounted) {
           this.setState({ card: data[0] });
         }
       }
     } catch (error) {
-      console.error("Error in componentDidMount:", error);
+      console.error("componentDidMount: Error fetching listing", { error: error.message });
     } finally {
-      console.log("componentDidMount: Setting loaded to true");
-      this.setState({ loaded: true });
+      if (isMounted) {
+        console.log("componentDidMount: Setting loaded", { loaded: true });
+        this.setState({ loaded: true });
+      }
+    }
+  }
+
+  componentWillUnmount() {
+    console.log("componentWillUnmount: Unmounting MyListing", {
+      loggedIn: this.state.loggedIn,
+      user: this.state.user,
+      cardExists: !!this.state.card,
+      loaded: this.state.loaded,
+    });
+    this.isMounted = false;
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      prevState.loggedIn !== this.state.loggedIn ||
+      prevState.user !== this.state.user ||
+      prevState.card !== this.state.card ||
+      prevState.loaded !== this.state.loaded
+    ) {
+      console.log("componentDidUpdate: State changed", {
+        prevState: {
+          loggedIn: prevState.loggedIn,
+          user: prevState.user,
+          cardExists: !!prevState.card,
+          loaded: prevState.loaded,
+        },
+        currentState: {
+          loggedIn: this.state.loggedIn,
+          user: this.state.user,
+          cardExists: !!this.state.card,
+          loaded: this.state.loaded,
+        },
+      });
     }
   }
 
@@ -103,6 +161,7 @@ class MyListing extends React.Component {
     };
 
     try {
+      console.log("onSubmit: Submitting listing", { mls: newUuid, user: this.state.user });
       const rawResponse = await fetch("/listings/add/HowMuchDoesSecurityCost", {
         method: "POST",
         headers: {
@@ -112,13 +171,14 @@ class MyListing extends React.Component {
         body: JSON.stringify(json),
       });
 
+      console.log("onSubmit: Submission response", { status: rawResponse.status, ok: rawResponse.ok });
       if (rawResponse.ok) {
         NotificationManager.success("Success", "Success", 3000);
       } else {
         throw new Error(`Failed to submit listing: ${rawResponse.status}`);
       }
     } catch (error) {
-      console.error("Submission error:", error);
+      console.error("onSubmit: Submission error", { error: error.message });
       NotificationManager.warning("Failure", "Failure", 3000);
     }
   }
@@ -133,6 +193,11 @@ class MyListing extends React.Component {
     } else if (status === "removed" && newCard["List Photo"] === path) {
       newCard["List Photo"] = "";
     }
+    console.log("onListChange: Updating card", {
+      status,
+      metaName: meta.name,
+      newListPhoto: newCard["List Photo"],
+    });
     this.setState({ card: newCard });
   }
 
@@ -148,16 +213,35 @@ class MyListing extends React.Component {
       photoArr = photoArr.filter((p) => p !== path);
     }
     newCard["Photo Array"] = photoArr;
+    console.log("onArrayChange: Updating photo array", {
+      status,
+      metaName: meta.name,
+      newPhotoArray: newCard["Photo Array"],
+    });
     this.setState({ card: newCard });
   }
 
   onRemove(photo) {
     let newCard = { ...this.state.card } || { "Photo Array": [] };
     newCard["Photo Array"] = (newCard["Photo Array"] || []).filter((p) => p !== photo);
+    console.log("onRemove: Removing photo", {
+      removedPhoto: photo,
+      newPhotoArray: newCard["Photo Array"],
+    });
     this.setState({ card: newCard });
   }
 
   render() {
+    console.log("render: Rendering MyListing", {
+      isClient: typeof window !== "undefined",
+      loggedIn: this.state.loggedIn,
+      loaded: this.state.loaded,
+      cardExists: !!this.state.card,
+      photoArrayLength: this.state.card?.["Photo Array"]?.length || 0,
+      location: this.props.location ? this.props.location.pathname + this.props.location.search : "undefined",
+      params: this.props.params,
+    });
+
     const h3Style = { textAlign: "center" };
     const listingStyle = {
       backgroundColor: "Gray",
@@ -201,9 +285,11 @@ class MyListing extends React.Component {
     };
     const buttonStyle = { margin: "0", position: "absolute", left: "50%", transform: "translateX(-50%)" };
 
-    const photos = this.state.card?.["Photo Array"] ?? [];
-
-    console.log("Render: loggedIn:", this.state.loggedIn, "loaded:", this.state.loaded);
+    const photos = Array.isArray(this.state.card?.["Photo Array"]) ? this.state.card["Photo Array"] : [];
+    console.log("render: Carousel data", {
+      photoCount: photos.length,
+      photos: photos,
+    });
 
     if (!this.state.loaded) {
       return <div>Loading...</div>;

@@ -19,9 +19,7 @@ http://$NAS_ADDR:85/public/woff2/zYX9KVElMYYaJe8bpLHnCwDKjXr8AIFsdP3pBms.woff2
 http://$NAS_ADDR:85/public/js/modernizr.js
 http://$NAS_ADDR:85/public/js/jquery-3.7.1.min.js
 http://$NAS_ADDR:85/public/js/plugins.js
-http://$NAS_ADDR:85/public/js/api.js
 http://$NAS_ADDR:85/public/js/main.js
-http://$NAS_ADDR:85/public/js/platform.js
 http://$NAS_ADDR:85/public/site.webmanifest
 http://$NAS_ADDR:85/public/images/logo.svg
 http://$NAS_ADDR:85/public/images/awesome.png
@@ -60,7 +58,5 @@ http://$NAS_ADDR:85/realtor/listing?MLS=1234567891
 http://$NAS_ADDR:85/realtor/listing?MLS=1234567892
 http://$NAS_ADDR:85/realtor/listing?MLS=1234567893
 http://$NAS_ADDR:85/realtor/listing?MLS=1234567894
-http://$NAS_ADDR:85/realtor/js/api.js
-http://$NAS_ADDR:85/realtor/js/platform.js
 http://$NAS_ADDR:85/realtor/css/bootstrap.min.css
 http://$NAS_ADDR:85/realtor/css/notifications.css
