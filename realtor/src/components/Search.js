@@ -13,7 +13,8 @@ export default class Search extends React.Component {
             loggedIn: props.loggedIn || null,
             user: props.user || null,
             cards: [],
-            orgCards: []
+            orgCards: [],
+            noResults: false // Track if no results are found
         };
         
         // Create refs
@@ -30,7 +31,9 @@ export default class Search extends React.Component {
         try {
             const response = await fetch('/listings');
             const data = await response.json();
-            const listings = data.filter(card => card.deleted === "false");
+            console.log('Raw API response:', data); // Log raw API data
+            const listings = data.filter(card => card.deleted === "false" || card.deleted === false);
+            console.log('Filtered listings (deleted=false):', listings); // Log filtered listings
             this.setState({ 
                 cards: listings,
                 orgCards: listings
@@ -46,35 +49,77 @@ export default class Search extends React.Component {
 
         // Get filter values and normalize them
         const filters = {
-            City: this.cityRef.current?.value?.trim().toLowerCase(),
-            State: this.stateRef.current?.value?.trim().toLowerCase(),
-            ZipCode: this.zipCodeRef.current?.value?.trim(),
+            City: this.cityRef.current?.value?.trim().toLowerCase() || null,
+            State: this.stateRef.current?.value?.trim().toLowerCase() || null,
+            ZipCode: this.zipCodeRef.current?.value?.trim() || null,
             Bedrooms: this.bedroomsRef.current?.value ? Number(this.bedroomsRef.current.value) : null,
             Bathrooms: this.bathroomsRef.current?.value ? Number(this.bathroomsRef.current.value) : null,
-            MLS: this.mlsRef.current?.value?.trim(),
+            MLS: this.mlsRef.current?.value?.trim() || null,
             SquareFeet: this.squareFeetRef.current?.value ? Number(this.squareFeetRef.current.value) : null,
         };
 
+        console.log('Filter values:', filters); // Log filter values
+
         // Filter cards based on provided values
-        const filteredCards = orgCards.filter((card) => {
-            return Object.keys(filters).every((field) => {
+        const filteredCards = orgCards.filter((card, index) => {
+            const result = Object.keys(filters).every((field) => {
                 // Skip if filter value is empty or null
                 if (!filters[field]) return true;
 
                 // Normalize card data for comparison
-                const cardValue = typeof card[field] === 'string' ? card[field].toLowerCase() : card[field];
-                const filterValue = typeof filters[field] === 'string' ? filters[field] : filters[field];
+                let cardValue = card[field];
+                let filterValue = filters[field];
 
-                // Special handling for ZipCode to ensure string comparison
-                if (field === 'ZipCode') {
-                    return String(card[field]) === String(filterValue);
+                // Handle string fields (City, State, MLS)
+                if (['City', 'State', 'MLS'].includes(field)) {
+                    cardValue = cardValue ? String(cardValue).toLowerCase() : '';
+                    filterValue = String(filterValue).toLowerCase();
                 }
 
-                return cardValue === filterValue;
+                // Handle ZipCode (strip extra characters like - for ZIP+4)
+                if (field === 'ZipCode') {
+                    cardValue = cardValue ? String(cardValue).replace(/[^0-9]/g, '') : '';
+                    filterValue = String(filterValue).replace(/[^0-9]/g, '');
+                }
+
+                // Handle numeric fields (Bedrooms, Bathrooms, SquareFeet)
+                if (['Bedrooms', 'Bathrooms', 'SquareFeet'].includes(field)) {
+                    cardValue = cardValue ? Number(cardValue) : null;
+                    filterValue = Number(filterValue);
+                }
+
+                const match = cardValue === filterValue;
+                if (!match) {
+                    console.log(`Card ${index} failed filter: ${field} (card: ${cardValue}, filter: ${filterValue})`);
+                }
+                return match;
             });
+
+            return result;
         });
 
-        this.setState({ cards: filteredCards });
+        console.log('Filtered cards:', filteredCards); // Log filtered results
+        this.setState({ 
+            cards: filteredCards,
+            noResults: filteredCards.length === 0
+        });
+    }
+
+    resetForm = () => {
+        // Clear form inputs
+        this.cityRef.current.value = '';
+        this.stateRef.current.value = '';
+        this.zipCodeRef.current.value = '';
+        this.bedroomsRef.current.value = '';
+        this.bathroomsRef.current.value = '';
+        this.mlsRef.current.value = '';
+        this.squareFeetRef.current.value = '';
+        // Restore original cards
+        this.setState({ 
+            cards: this.state.orgCards,
+            noResults: false
+        });
+        console.log('Form reset, restored original cards');
     }
 
     render() {
@@ -96,10 +141,14 @@ export default class Search extends React.Component {
         };
 
         const buttonStyle = {
-            margin: "0",
+            margin: "0 10px",
             position: "relative",
-            left: "50%",
-            transform: "translateX(-50%)"
+            display: "inline-block"
+        };
+
+        const buttonContainerStyle = {
+            textAlign: "center",
+            marginTop: "20px"
         };
 
         return (
@@ -146,17 +195,31 @@ export default class Search extends React.Component {
                                 <Form.Label>Square Feet</Form.Label>
                                 <Form.Control type="number" ref={this.squareFeetRef} />
                             </Form.Group>
-                        </Row><br/>
-                
-                        <Button 
-                            style={buttonStyle} 
-                            variant="primary" 
-                            type="submit"
-                        >
-                            Submit
-                        </Button>
+                        </Row>
+
+                        <div style={buttonContainerStyle}>
+                            <Button 
+                                style={buttonStyle} 
+                                variant="primary" 
+                                type="submit"
+                            >
+                                Submit
+                            </Button>
+                            <Button 
+                                style={buttonStyle} 
+                                variant="secondary" 
+                                onClick={this.resetForm}
+                            >
+                                Reset
+                            </Button>
+                        </div>
                     </Form>
                 </Card>
+                {this.state.noResults && (
+                    <div style={{ textAlign: 'center', marginTop: '20px', color: 'red' }}>
+                        No listings match your criteria.
+                    </div>
+                )}
                 <TileDeck cards={this.state.cards} />
             </div>
         );
