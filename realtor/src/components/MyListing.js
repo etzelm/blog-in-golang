@@ -44,10 +44,11 @@ class MyListing extends React.Component {
 
   async componentDidMount() {
     console.log("componentDidMount: Starting fetch, loggedIn:", this.state.loggedIn);
+    let isMounted = true; // Track mount status
     try {
       if (!this.props.location) {
         console.warn("location prop not found; check router setup.");
-        this.setState({ loaded: true });
+        if (isMounted) this.setState({ loaded: true });
         return;
       }
 
@@ -58,16 +59,22 @@ class MyListing extends React.Component {
         const response = await fetch(`/listing/${listingId}`);
         if (!response.ok) throw new Error(`Failed to fetch listing: ${response.status}`);
         const data = await response.json();
-        if (data.length > 0) {
+        if (data.length > 0 && isMounted) {
           this.setState({ card: data[0] });
         }
       }
     } catch (error) {
       console.error("Error in componentDidMount:", error);
     } finally {
-      console.log("componentDidMount: Setting loaded to true");
-      this.setState({ loaded: true });
+      if (isMounted) {
+        console.log("componentDidMount: Setting loaded to true");
+        this.setState({ loaded: true });
+      }
     }
+  }
+
+  componentWillUnmount() {
+    this.isMounted = false;
   }
 
   async onSubmit(event) {
@@ -201,7 +208,7 @@ class MyListing extends React.Component {
     };
     const buttonStyle = { margin: "0", position: "absolute", left: "50%", transform: "translateX(-50%)" };
 
-    const photos = this.state.card?.["Photo Array"] ?? [];
+    const photos = Array.isArray(this.state.card?.["Photo Array"]) ? this.state.card["Photo Array"] : [];
 
     console.log("Render: loggedIn:", this.state.loggedIn, "loaded:", this.state.loaded);
 
