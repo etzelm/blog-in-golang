@@ -30,6 +30,7 @@ class MyListing extends React.Component {
     this.onRemove = this.onRemove.bind(this);
 
     this.formRef = React.createRef();
+    this.isMounted = true; // Initialize isMounted
 
     this.state = {
       loggedIn: props.loggedIn ?? false,
@@ -38,7 +39,6 @@ class MyListing extends React.Component {
       loaded: false,
     };
 
-    // Debug initial props
     console.log("constructor: Initial props", {
       loggedIn: this.state.loggedIn,
       user: this.state.user,
@@ -54,11 +54,10 @@ class MyListing extends React.Component {
       user: this.state.user,
       location: this.props.location ? this.props.location.pathname + this.props.location.search : "undefined",
     });
-    let isMounted = true;
     try {
       if (!this.props.location) {
         console.warn("componentDidMount: location prop missing", { props: this.props });
-        if (isMounted) this.setState({ loaded: true });
+        if (this.isMounted) this.setState({ loaded: true });
         return;
       }
 
@@ -80,14 +79,14 @@ class MyListing extends React.Component {
           dataLength: data.length,
           firstItem: data[0] ? { ...data[0], "Photo Array": data[0]["Photo Array"]?.length || 0 } : null,
         });
-        if (data.length > 0 && isMounted) {
+        if (data.length > 0 && this.isMounted) {
           this.setState({ card: data[0] });
         }
       }
     } catch (error) {
       console.error("componentDidMount: Error fetching listing", { error: error.message });
     } finally {
-      if (isMounted) {
+      if (this.isMounted) {
         console.log("componentDidMount: Setting loaded", { loaded: true });
         this.setState({ loaded: true });
       }
@@ -99,7 +98,7 @@ class MyListing extends React.Component {
       loggedIn: this.state.loggedIn,
       user: this.state.user,
       cardExists: !!this.state.card,
-      loaded: this.state.loaded,
+      loaded: this.state.loaded, // Fixed to reflect actual state
     });
     this.isMounted = false;
   }
@@ -126,6 +125,17 @@ class MyListing extends React.Component {
         },
       });
     }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return (
+      this.state.loggedIn !== nextState.loggedIn ||
+      this.state.user !== nextState.user ||
+      this.state.card !== nextState.card ||
+      this.state.loaded !== nextState.loaded ||
+      this.props.location?.search !== nextProps.location?.search ||
+      JSON.stringify(this.props.params) !== JSON.stringify(nextProps.params)
+    );
   }
 
   async onSubmit(event) {
@@ -184,6 +194,10 @@ class MyListing extends React.Component {
   }
 
   onListChange({ meta }, status) {
+    if (!this.isMounted) {
+      console.warn("onListChange: Called after unmount", { metaName: meta.name, status });
+      return;
+    }
     const sml = "https://files.mitchelletzel.com/media/";
     const path = `${sml}${this.state.user}/${meta.name}`;
     let newCard = { ...this.state.card } || {};
@@ -202,6 +216,10 @@ class MyListing extends React.Component {
   }
 
   onArrayChange({ meta }, status) {
+    if (!this.isMounted) {
+      console.warn("onArrayChange: Called after unmount", { metaName: meta.name, status });
+      return;
+    }
     const sml = "https://files.mitchelletzel.com/media/";
     const path = `${sml}${this.state.user}/${meta.name}`;
     let newCard = { ...this.state.card } || { "Photo Array": [] };
@@ -222,6 +240,10 @@ class MyListing extends React.Component {
   }
 
   onRemove(photo) {
+    if (!this.isMounted) {
+      console.warn("onRemove: Called after unmount", { removedPhoto: photo });
+      return;
+    }
     let newCard = { ...this.state.card } || { "Photo Array": [] };
     newCard["Photo Array"] = (newCard["Photo Array"] || []).filter((p) => p !== photo);
     console.log("onRemove: Removing photo", {
@@ -311,6 +333,27 @@ class MyListing extends React.Component {
       );
     }
 
+    let carouselContent;
+    try {
+      carouselContent = (
+        <Carousel style={carouselStyle}>
+          {photos.map((photo) => (
+            <Carousel.Item style={itemStyle} key={photo}>
+              <img className="d-block w-100" src={photo} alt="Property" />
+              <Carousel.Caption>
+                <Button variant="primary" onClick={() => this.onRemove(photo)}>
+                  Remove
+                </Button>
+              </Carousel.Caption>
+            </Carousel.Item>
+          ))}
+        </Carousel>
+      );
+    } catch (error) {
+      console.error("render: Carousel rendering error", { error: error.message });
+      carouselContent = <div>Error rendering carousel</div>;
+    }
+
     return (
       <div style={listingStyle}>
         <br />
@@ -322,20 +365,7 @@ class MyListing extends React.Component {
           </h3>
           <br />
           <br />
-          <p style={{ whiteSpace: "pre-wrap" }}>
-            <Carousel style={carouselStyle}>
-              {photos.map((photo) => (
-                <Carousel.Item style={itemStyle} key={photo}>
-                  <img className="d-block w-100" src={photo} alt="Property" />
-                  <Carousel.Caption>
-                    <Button variant="primary" onClick={() => this.onRemove(photo)}>
-                      Remove
-                    </Button>
-                  </Carousel.Caption>
-                </Carousel.Item>
-              ))}
-            </Carousel>
-          </p>
+          <p style={{ whiteSpace: "pre-wrap" }}>{carouselContent}</p>
           <br />
           <Card style={card2Style}>
             <Form ref={this.formRef} onSubmit={this.onSubmit}>
