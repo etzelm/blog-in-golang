@@ -14,7 +14,7 @@ export default class Search extends React.Component {
             user: props.user || null,
             cards: [],
             orgCards: [],
-            noResults: false // Track if no results are found
+            noResults: false
         };
         
         // Create refs
@@ -31,9 +31,11 @@ export default class Search extends React.Component {
         try {
             const response = await fetch('/listings');
             const data = await response.json();
-            console.log('Raw API response:', data); // Log raw API data
+            console.log('Raw API response:', data);
             const listings = data.filter(card => card.deleted === "false" || card.deleted === false);
-            console.log('Filtered listings (deleted=false):', listings); // Log filtered listings
+            const excludedListings = data.filter(card => !(card.deleted === "false" || card.deleted === false));
+            console.log('Filtered listings (deleted=false):', listings);
+            console.log('Excluded listings (deleted=true):', excludedListings);
             this.setState({ 
                 cards: listings,
                 orgCards: listings
@@ -51,14 +53,14 @@ export default class Search extends React.Component {
         const filters = {
             City: this.cityRef.current?.value?.trim().toLowerCase() || null,
             State: this.stateRef.current?.value?.trim().toLowerCase() || null,
-            ZipCode: this.zipCodeRef.current?.value?.trim() || null,
+            "Zip Code": this.zipCodeRef.current?.value?.trim() || null,
             Bedrooms: this.bedroomsRef.current?.value ? Number(this.bedroomsRef.current.value) : null,
             Bathrooms: this.bathroomsRef.current?.value ? Number(this.bathroomsRef.current.value) : null,
-            MLS: this.mlsRef.current?.value?.trim() || null,
-            SquareFeet: this.squareFeetRef.current?.value ? Number(this.squareFeetRef.current.value) : null,
+            MLS: this.cityRef.current?.value?.trim() || null,
+            "Square Feet": this.squareFeetRef.current?.value ? Number(this.squareFeetRef.current.value) : null,
         };
 
-        console.log('Filter values:', filters); // Log filter values
+        console.log('Filter values:', filters);
 
         // Filter cards based on provided values
         const filteredCards = orgCards.filter((card, index) => {
@@ -76,14 +78,14 @@ export default class Search extends React.Component {
                     filterValue = String(filterValue).toLowerCase();
                 }
 
-                // Handle ZipCode (strip extra characters like - for ZIP+4)
-                if (field === 'ZipCode') {
+                // Handle Zip Code (strip extra characters like - for ZIP+4)
+                if (field === 'Zip Code') {
                     cardValue = cardValue ? String(cardValue).replace(/[^0-9]/g, '') : '';
                     filterValue = String(filterValue).replace(/[^0-9]/g, '');
                 }
 
-                // Handle numeric fields (Bedrooms, Bathrooms, SquareFeet)
-                if (['Bedrooms', 'Bathrooms', 'SquareFeet'].includes(field)) {
+                // Handle numeric fields (Bedrooms, Bathrooms, Square Feet)
+                if (['Bedrooms', 'Bathrooms', 'Square Feet'].includes(field)) {
                     cardValue = cardValue ? Number(cardValue) : null;
                     filterValue = Number(filterValue);
                 }
@@ -98,7 +100,7 @@ export default class Search extends React.Component {
             return result;
         });
 
-        console.log('Filtered cards:', filteredCards); // Log filtered results
+        console.log('Filtered cards:', filteredCards);
         this.setState({ 
             cards: filteredCards,
             noResults: filteredCards.length === 0
