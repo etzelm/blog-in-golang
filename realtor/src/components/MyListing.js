@@ -1,5 +1,5 @@
 import React from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router";
 import Card from "react-bootstrap/Card";
 import Carousel from "react-bootstrap/Carousel";
 import Col from "react-bootstrap/Col";
@@ -105,10 +105,12 @@ class MyListing extends React.Component {
     });
     this.isMounted = false;
     if (this.listDropzoneRef.current) {
-      this.listDropzoneRef.current.removeEventListener("changeStatus");
+      this.listDropzoneRef.current.disable();
+      console.log(`componentWillUnmount: Disabled listDropzone [${this.instanceId}]`);
     }
     if (this.arrayDropzoneRef.current) {
-      this.arrayDropzoneRef.current.removeEventListener("changeStatus");
+      this.arrayDropzoneRef.current.disable();
+      console.log(`componentWillUnmount: Disabled arrayDropzone [${this.instanceId}]`);
     }
   }
 
@@ -142,7 +144,8 @@ class MyListing extends React.Component {
       this.state.user !== nextState.user ||
       this.state.card !== nextState.card ||
       this.state.loaded !== nextState.loaded ||
-      this.props.location?.search !== nextProps.location?.search ||
+      (this.props.location?.pathname !== nextProps.location?.pathname ||
+        this.props.location?.search !== nextProps.location?.search) ||
       JSON.stringify(this.props.params) !== JSON.stringify(nextProps.params);
     console.log(`shouldComponentUpdate [${this.instanceId}]`, {
       shouldUpdate,
@@ -153,7 +156,8 @@ class MyListing extends React.Component {
         loaded: this.state.loaded !== nextState.loaded,
       },
       propsChanged: {
-        location: this.props.location?.search !== nextProps.location?.search,
+        locationPathname: this.props.location?.pathname !== nextProps.location?.pathname,
+        locationSearch: this.props.location?.search !== nextProps.location?.search,
         params: JSON.stringify(this.props.params) !== JSON.stringify(nextProps.params),
       },
     });
