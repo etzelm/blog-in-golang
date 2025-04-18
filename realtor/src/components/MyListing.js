@@ -30,7 +30,10 @@ class MyListing extends React.Component {
     this.onRemove = this.onRemove.bind(this);
 
     this.formRef = React.createRef();
-    this.isMounted = true; // Initialize isMounted
+    this.listDropzoneRef = React.createRef();
+    this.arrayDropzoneRef = React.createRef();
+    this.isMounted = true;
+    this.instanceId = Math.random().toString(36).substr(2, 9);
 
     this.state = {
       loggedIn: props.loggedIn ?? false,
@@ -39,7 +42,7 @@ class MyListing extends React.Component {
       loaded: false,
     };
 
-    console.log("constructor: Initial props", {
+    console.log(`constructor: Initial props [${this.instanceId}]`, {
       loggedIn: this.state.loggedIn,
       user: this.state.user,
       location: props.location ? props.location.pathname + props.location.search : "undefined",
@@ -48,7 +51,7 @@ class MyListing extends React.Component {
   }
 
   async componentDidMount() {
-    console.log("componentDidMount: Mounting MyListing", {
+    console.log(`componentDidMount: Mounting MyListing [${this.instanceId}]`, {
       isClient: typeof window !== "undefined",
       loggedIn: this.state.loggedIn,
       user: this.state.user,
@@ -56,7 +59,7 @@ class MyListing extends React.Component {
     });
     try {
       if (!this.props.location) {
-        console.warn("componentDidMount: location prop missing", { props: this.props });
+        console.warn(`componentDidMount: location prop missing [${this.instanceId}]`, { props: this.props });
         if (this.isMounted) this.setState({ loaded: true });
         return;
       }
@@ -64,17 +67,17 @@ class MyListing extends React.Component {
       const search = this.props.location.search;
       const params = new URLSearchParams(search);
       const listingId = params.get("id");
-      console.log("componentDidMount: Fetching listing", { listingId });
+      console.log(`componentDidMount: Fetching listing [${this.instanceId}]`, { listingId });
       if (listingId) {
         const response = await fetch(`/listing/${listingId}`);
-        console.log("componentDidMount: Fetch response", {
+        console.log(`componentDidMount: Fetch response [${this.instanceId}]`, {
           listingId,
           status: response.status,
           ok: response.ok,
         });
         if (!response.ok) throw new Error(`Failed to fetch listing: ${response.status}`);
         const data = await response.json();
-        console.log("componentDidMount: Fetch data", {
+        console.log(`componentDidMount: Fetch data [${this.instanceId}]`, {
           listingId,
           dataLength: data.length,
           firstItem: data[0] ? { ...data[0], "Photo Array": data[0]["Photo Array"]?.length || 0 } : null,
@@ -84,23 +87,29 @@ class MyListing extends React.Component {
         }
       }
     } catch (error) {
-      console.error("componentDidMount: Error fetching listing", { error: error.message });
+      console.error(`componentDidMount: Error fetching listing [${this.instanceId}]`, { error: error.message });
     } finally {
       if (this.isMounted) {
-        console.log("componentDidMount: Setting loaded", { loaded: true });
+        console.log(`componentDidMount: Setting loaded [${this.instanceId}]`, { loaded: true });
         this.setState({ loaded: true });
       }
     }
   }
 
   componentWillUnmount() {
-    console.log("componentWillUnmount: Unmounting MyListing", {
+    console.log(`componentWillUnmount: Unmounting MyListing [${this.instanceId}]`, {
       loggedIn: this.state.loggedIn,
       user: this.state.user,
       cardExists: !!this.state.card,
-      loaded: this.state.loaded, // Fixed to reflect actual state
+      loaded: this.state.loaded,
     });
     this.isMounted = false;
+    if (this.listDropzoneRef.current) {
+      this.listDropzoneRef.current.removeEventListener("changeStatus");
+    }
+    if (this.arrayDropzoneRef.current) {
+      this.arrayDropzoneRef.current.removeEventListener("changeStatus");
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -110,7 +119,7 @@ class MyListing extends React.Component {
       prevState.card !== this.state.card ||
       prevState.loaded !== this.state.loaded
     ) {
-      console.log("componentDidUpdate: State changed", {
+      console.log(`componentDidUpdate: State changed [${this.instanceId}]`, {
         prevState: {
           loggedIn: prevState.loggedIn,
           user: prevState.user,
@@ -128,14 +137,27 @@ class MyListing extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return (
+    const shouldUpdate =
       this.state.loggedIn !== nextState.loggedIn ||
       this.state.user !== nextState.user ||
       this.state.card !== nextState.card ||
       this.state.loaded !== nextState.loaded ||
       this.props.location?.search !== nextProps.location?.search ||
-      JSON.stringify(this.props.params) !== JSON.stringify(nextProps.params)
-    );
+      JSON.stringify(this.props.params) !== JSON.stringify(nextProps.params);
+    console.log(`shouldComponentUpdate [${this.instanceId}]`, {
+      shouldUpdate,
+      stateChanged: {
+        loggedIn: this.state.loggedIn !== nextState.loggedIn,
+        user: this.state.user !== nextState.user,
+        card: this.state.card !== nextState.card,
+        loaded: this.state.loaded !== nextState.loaded,
+      },
+      propsChanged: {
+        location: this.props.location?.search !== nextProps.location?.search,
+        params: JSON.stringify(this.props.params) !== JSON.stringify(nextProps.params),
+      },
+    });
+    return shouldUpdate;
   }
 
   async onSubmit(event) {
@@ -171,7 +193,7 @@ class MyListing extends React.Component {
     };
 
     try {
-      console.log("onSubmit: Submitting listing", { mls: newUuid, user: this.state.user });
+      console.log(`onSubmit: Submitting listing [${this.instanceId}]`, { mls: newUuid, user: this.state.user });
       const rawResponse = await fetch("/listings/add/HowMuchDoesSecurityCost", {
         method: "POST",
         headers: {
@@ -181,21 +203,22 @@ class MyListing extends React.Component {
         body: JSON.stringify(json),
       });
 
-      console.log("onSubmit: Submission response", { status: rawResponse.status, ok: rawResponse.ok });
+      console.log(`onSubmit: Submission response [${this.instanceId}]`, { status: rawResponse.status, ok: rawResponse.ok });
       if (rawResponse.ok) {
         NotificationManager.success("Success", "Success", 3000);
+        console.log(`onSubmit: Submission successful, navigating [${this.instanceId}]`, { mls: newUuid });
       } else {
         throw new Error(`Failed to submit listing: ${rawResponse.status}`);
       }
     } catch (error) {
-      console.error("onSubmit: Submission error", { error: error.message });
+      console.error(`onSubmit: Submission error [${this.instanceId}]`, { error: error.message });
       NotificationManager.warning("Failure", "Failure", 3000);
     }
   }
 
   onListChange({ meta }, status) {
     if (!this.isMounted) {
-      console.warn("onListChange: Called after unmount", { metaName: meta.name, status });
+      console.warn(`onListChange: Called after unmount [${this.instanceId}]`, { metaName: meta.name, status });
       return;
     }
     const sml = "https://files.mitchelletzel.com/media/";
@@ -207,7 +230,7 @@ class MyListing extends React.Component {
     } else if (status === "removed" && newCard["List Photo"] === path) {
       newCard["List Photo"] = "";
     }
-    console.log("onListChange: Updating card", {
+    console.log(`onListChange: Updating card [${this.instanceId}]`, {
       status,
       metaName: meta.name,
       newListPhoto: newCard["List Photo"],
@@ -217,7 +240,7 @@ class MyListing extends React.Component {
 
   onArrayChange({ meta }, status) {
     if (!this.isMounted) {
-      console.warn("onArrayChange: Called after unmount", { metaName: meta.name, status });
+      console.warn(`onArrayChange: Called after unmount [${this.instanceId}]`, { metaName: meta.name, status });
       return;
     }
     const sml = "https://files.mitchelletzel.com/media/";
@@ -231,7 +254,7 @@ class MyListing extends React.Component {
       photoArr = photoArr.filter((p) => p !== path);
     }
     newCard["Photo Array"] = photoArr;
-    console.log("onArrayChange: Updating photo array", {
+    console.log(`onArrayChange: Updating photo array [${this.instanceId}]`, {
       status,
       metaName: meta.name,
       newPhotoArray: newCard["Photo Array"],
@@ -241,12 +264,12 @@ class MyListing extends React.Component {
 
   onRemove(photo) {
     if (!this.isMounted) {
-      console.warn("onRemove: Called after unmount", { removedPhoto: photo });
+      console.warn(`onRemove: Called after unmount [${this.instanceId}]`, { removedPhoto: photo });
       return;
     }
     let newCard = { ...this.state.card } || { "Photo Array": [] };
     newCard["Photo Array"] = (newCard["Photo Array"] || []).filter((p) => p !== photo);
-    console.log("onRemove: Removing photo", {
+    console.log(`onRemove: Removing photo [${this.instanceId}]`, {
       removedPhoto: photo,
       newPhotoArray: newCard["Photo Array"],
     });
@@ -254,7 +277,7 @@ class MyListing extends React.Component {
   }
 
   render() {
-    console.log("render: Rendering MyListing", {
+    console.log(`render: Rendering MyListing [${this.instanceId}]`, {
       isClient: typeof window !== "undefined",
       loggedIn: this.state.loggedIn,
       loaded: this.state.loaded,
@@ -308,7 +331,7 @@ class MyListing extends React.Component {
     const buttonStyle = { margin: "0", position: "absolute", left: "50%", transform: "translateX(-50%)" };
 
     const photos = Array.isArray(this.state.card?.["Photo Array"]) ? this.state.card["Photo Array"] : [];
-    console.log("render: Carousel data", {
+    console.log(`render: Carousel data [${this.instanceId}]`, {
       photoCount: photos.length,
       photos: photos,
     });
@@ -350,7 +373,7 @@ class MyListing extends React.Component {
         </Carousel>
       );
     } catch (error) {
-      console.error("render: Carousel rendering error", { error: error.message });
+      console.error(`render: Carousel rendering error [${this.instanceId}]`, { error: error.message });
       carouselContent = <div>Error rendering carousel</div>;
     }
 
@@ -512,6 +535,7 @@ class MyListing extends React.Component {
               <div>List Photo (Only One Image Please)</div>
               <br />
               <Dropzone
+                ref={this.listDropzoneRef}
                 getUploadParams={() => ({
                   url: `/upload/image/${this.state.user}`,
                 })}
@@ -524,6 +548,7 @@ class MyListing extends React.Component {
               <div>Photo Array</div>
               <br />
               <Dropzone
+                ref={this.arrayDropzoneRef}
                 getUploadParams={() => ({
                   url: `/upload/image/${this.state.user}`,
                 })}
