@@ -1,5 +1,5 @@
 import React from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom"; // React Router v6
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Card from "react-bootstrap/Card";
 import Carousel from "react-bootstrap/Carousel";
 import Col from "react-bootstrap/Col";
@@ -8,23 +8,16 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import "react-dropzone-uploader/dist/styles.css";
 import Dropzone from "react-dropzone-uploader";
-import { v4 as uuid } from "uuid"; // Correct import for uuid
+import { v4 as uuid } from "uuid";
 import { NotificationContainer, NotificationManager } from "react-notifications";
 
-// HOC to inject router props into class component
+// HOC to inject router props
 function withRouter(Component) {
   return function Wrapper(props) {
     const location = useLocation();
     const navigate = useNavigate();
     const params = useParams();
-    return (
-      <Component
-        {...props}
-        location={location}
-        navigate={navigate}
-        params={params}
-      />
-    );
+    return <Component {...props} location={location} navigate={navigate} params={params} />;
   };
 }
 
@@ -39,28 +32,31 @@ class MyListing extends React.Component {
     this.formRef = React.createRef();
 
     this.state = {
-      loggedIn: props.loggedIn ?? false, // Default to false instead of null
+      loggedIn: props.loggedIn ?? false,
       user: props.user ?? null,
       card: null,
       loaded: false,
     };
+
+    // Debug initial props
+    console.log("Initial props:", props);
   }
 
   async componentDidMount() {
+    console.log("componentDidMount: Starting fetch, loggedIn:", this.state.loggedIn);
     try {
       if (!this.props.location) {
-        console.warn("location prop not found; check your router setup.");
+        console.warn("location prop not found; check router setup.");
         this.setState({ loaded: true });
         return;
       }
-      
-      // Fetch listing logic
+
       const search = this.props.location.search;
       const params = new URLSearchParams(search);
       const listingId = params.get("id");
       if (listingId) {
         const response = await fetch(`/listing/${listingId}`);
-        if (!response.ok) throw new Error("Failed to fetch listing");
+        if (!response.ok) throw new Error(`Failed to fetch listing: ${response.status}`);
         const data = await response.json();
         if (data.length > 0) {
           this.setState({ card: data[0] });
@@ -68,7 +64,9 @@ class MyListing extends React.Component {
       }
     } catch (error) {
       console.error("Error in componentDidMount:", error);
-      this.setState({ loaded: true }); // Ensure loaded is true even on error
+    } finally {
+      console.log("componentDidMount: Setting loaded to true");
+      this.setState({ loaded: true });
     }
   }
 
@@ -78,8 +76,8 @@ class MyListing extends React.Component {
     const elements = this.formRef.current.elements;
     const time = new Date().getTime();
     const firstTime = card?.["Date Listed"] ?? time;
-    const newUuid = card?.["MLS"] ?? uuid(); // Use imported uuid function
-    const status = card?.["deleted"] ?? "false"; // Default to "false" instead of "true"
+    const newUuid = card?.["MLS"] ?? uuid();
+    const status = card?.["deleted"] ?? "false";
 
     const json = {
       Bathrooms: elements.Bathrooms.value,
@@ -92,7 +90,7 @@ class MyListing extends React.Component {
       "Last Modified": `${time}`,
       "List Photo": card?.["List Photo"] ?? "",
       "Lot Size": elements.LotSize.value,
-      MLS: newUuid, // No need to stringify
+      MLS: newUuid,
       Neighborhood: elements.Neighborhood.value,
       "Photo Array": card?.["Photo Array"] ?? [],
       "Sales Price": elements.Price.value,
@@ -114,10 +112,10 @@ class MyListing extends React.Component {
         body: JSON.stringify(json),
       });
 
-      if (rawResponse.ok  === 200) {
+      if (rawResponse.ok) {
         NotificationManager.success("Success", "Success", 3000);
       } else {
-        throw new Error("Failed to submit listing");
+        throw new Error(`Failed to submit listing: ${rawResponse.status}`);
       }
     } catch (error) {
       console.error("Submission error:", error);
@@ -155,9 +153,7 @@ class MyListing extends React.Component {
 
   onRemove(photo) {
     let newCard = { ...this.state.card } || { "Photo Array": [] };
-    newCard["Photo Array"] = (newCard["Photo Array"] || []).filter(
-      (p) => p !== photo
-    );
+    newCard["Photo Array"] = (newCard["Photo Array"] || []).filter((p) => p !== photo);
     this.setState({ card: newCard });
   }
 
@@ -207,235 +203,234 @@ class MyListing extends React.Component {
 
     const photos = this.state.card?.["Photo Array"] ?? [];
 
+    console.log("Render: loggedIn:", this.state.loggedIn, "loaded:", this.state.loaded);
+
+    if (!this.state.loaded) {
+      return <div>Loading...</div>;
+    }
+
+    if (!this.state.loggedIn) {
+      return (
+        <div>
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <h3 style={h3Style}>Please sign in above to list your property.</h3>
+          <br />
+          <br />
+          <h3 style={h3Style}>Thank you.</h3>
+        </div>
+      );
+    }
+
     return (
-      <div>
-        {!this.state.loggedIn && this.state.loaded && (
-          <div>
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <h3 style={h3Style}>Please sign in above to list your property.</h3>
-            <br />
-            <br />
-            <h3 style={h3Style}>Thank you.</h3>
-          </div>
-        )}
-        {this.state.loggedIn && this.state.loaded && (
-          <div style={listingStyle}>
-            <br />
-            <br />
-            <br />
-            <Card style={cardStyle}>
-              <h3 style={h3Style}>
-                {!this.state.card ? "List your property with us." : "Edit your listing"}
-              </h3>
-              <br />
-              <br />
-              <p style={{ whiteSpace: "pre-wrap" }}>
-                <Carousel style={carouselStyle}>
-                  {photos.map((photo) => (
-                    <Carousel.Item style={itemStyle} key={photo}>
-                      <img className="d-block w-100" src={photo} alt="Property" />
-                      <Carousel.Caption>
-                        <Button
-                          variant="primary"
-                          onClick={() => this.onRemove(photo)}
-                        >
-                          Remove
-                        </Button>
-                      </Carousel.Caption>
-                    </Carousel.Item>
-                  ))}
-                </Carousel>
-              </p>
-              <br />
-              <Card style={card2Style}>
-                <Form ref={this.formRef} onSubmit={this.onSubmit}>
-                  <Form.Group controlId="formGridAddress1">
-                    <Form.Label>Address</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="Address"
-                      required
-                      defaultValue={this.state.card?.["Street1"] ?? ""}
-                    />
-                  </Form.Group>
+      <div style={listingStyle}>
+        <br />
+        <br />
+        <br />
+        <Card style={cardStyle}>
+          <h3 style={h3Style}>
+            {!this.state.card ? "List your property with us." : "Edit your listing"}
+          </h3>
+          <br />
+          <br />
+          <p style={{ whiteSpace: "pre-wrap" }}>
+            <Carousel style={carouselStyle}>
+              {photos.map((photo) => (
+                <Carousel.Item style={itemStyle} key={photo}>
+                  <img className="d-block w-100" src={photo} alt="Property" />
+                  <Carousel.Caption>
+                    <Button variant="primary" onClick={() => this.onRemove(photo)}>
+                      Remove
+                    </Button>
+                  </Carousel.Caption>
+                </Carousel.Item>
+              ))}
+            </Carousel>
+          </p>
+          <br />
+          <Card style={card2Style}>
+            <Form ref={this.formRef} onSubmit={this.onSubmit}>
+              <Form.Group controlId="formGridAddress1">
+                <Form.Label>Address</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="Address"
+                  required
+                  defaultValue={this.state.card?.["Street1"] ?? ""}
+                />
+              </Form.Group>
 
-                  <Form.Group controlId="formGridAddress2">
-                    <Form.Label>Address 2</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="Address2"
-                      defaultValue={
-                        this.state.card?.["Street2"] === "*"
-                          ? ""
-                          : this.state.card?.["Street2"] ?? ""
-                      }
-                    />
-                  </Form.Group>
+              <Form.Group controlId="formGridAddress2">
+                <Form.Label>Address 2</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="Address2"
+                  defaultValue={
+                    this.state.card?.["Street2"] === "*" ? "" : this.state.card?.["Street2"] ?? ""
+                  }
+                />
+              </Form.Group>
 
-                  <Row>
-                    <Form.Group as={Col} controlId="formGridCity">
-                      <Form.Label>City</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="City"
-                        required
-                        defaultValue={this.state.card?.["City"] ?? ""}
-                      />
-                    </Form.Group>
-
-                    <Form.Group as={Col} controlId="formGridState">
-                      <Form.Label>State</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="State"
-                        required
-                        defaultValue={this.state.card?.["State"] ?? ""}
-                      />
-                    </Form.Group>
-
-                    <Form.Group as={Col} controlId="formGridZipCode">
-                      <Form.Label>Zip Code</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="ZipCode"
-                        required
-                        defaultValue={this.state.card?.["Zip Code"] ?? ""}
-                      />
-                    </Form.Group>
-                  </Row>
-
-                  <Row>
-                    <Form.Group as={Col} controlId="formGridPrice">
-                      <Form.Label>Sales Price</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="Price"
-                        required
-                        defaultValue={this.state.card?.["Sales Price"] ?? ""}
-                      />
-                    </Form.Group>
-
-                    <Form.Group as={Col} controlId="formGridNeighborhood">
-                      <Form.Label>Neighborhood</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="Neighborhood"
-                        required
-                        defaultValue={this.state.card?.["Neighborhood"] ?? ""}
-                      />
-                    </Form.Group>
-                  </Row>
-
-                  <Row>
-                    <Form.Group as={Col} controlId="formGridBedrooms">
-                      <Form.Label>Bedrooms</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="Bedrooms"
-                        required
-                        defaultValue={this.state.card?.["Bedrooms"] ?? ""}
-                      />
-                    </Form.Group>
-
-                    <Form.Group as={Col} controlId="formGridBathrooms">
-                      <Form.Label>Bathrooms</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="Bathrooms"
-                        required
-                        defaultValue={this.state.card?.["Bathrooms"] ?? ""}
-                      />
-                    </Form.Group>
-                  </Row>
-
-                  <Row>
-                    <Form.Group as={Col} controlId="formGridSquareFeet">
-                      <Form.Label>Square Feet</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="SquareFeet"
-                        required
-                        defaultValue={this.state.card?.["Square Feet"] ?? ""}
-                      />
-                    </Form.Group>
-
-                    <Form.Group as={Col} controlId="formGridLotSize">
-                      <Form.Label>Lot Size</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="LotSize"
-                        required
-                        defaultValue={this.state.card?.["Lot Size"] ?? ""}
-                      />
-                    </Form.Group>
-
-                    <Form.Group as={Col} controlId="formGridGarageSize">
-                      <Form.Label>Garage Size</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="GarageSize"
-                        required
-                        defaultValue={this.state.card?.["Garage Size"] ?? ""}
-                      />
-                    </Form.Group>
-                  </Row>
-
-                  <Form.Group controlId="formGridDescription">
-                    <Form.Label>Description</Form.Label>
-                    <Form.Control
-                      as="textarea"
-                      rows={3}
-                      name="Description"
-                      required
-                      defaultValue={this.state.card?.["Description"] ?? ""}
-                    />
-                  </Form.Group>
-
-                  <div>List Photo (Only One Image Please)</div>
-                  <br />
-                  <Dropzone
-                    getUploadParams={() => ({
-                      url: `/upload/image/${this.state.user}`,
-                    })}
-                    onChangeStatus={this.onListChange}
-                    accept="image/*"
-                    maxFiles={1} // Enforce single file upload
+              <Row>
+                <Form.Group as={Col} controlId="formGridCity">
+                  <Form.Label>City</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="City"
+                    required
+                    defaultValue={this.state.card?.["City"] ?? ""}
                   />
+                </Form.Group>
 
-                  <br />
-                  <div>Photo Array</div>
-                  <br />
-                  <Dropzone
-                    getUploadParams={() => ({
-                      url: `/upload/image/${this.state.user}`,
-                    })}
-                    onChangeStatus={this.onArrayChange}
-                    accept="image/*"
+                <Form.Group as={Col} controlId="formGridState">
+                  <Form.Label>State</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="State"
+                    required
+                    defaultValue={this.state.card?.["State"] ?? ""}
                   />
+                </Form.Group>
 
-                  <br />
-                  <br />
-                  <Button style={buttonStyle} variant="primary" type="submit">
-                    Submit
-                  </Button>
-                  <br />
-                  <br />
-                  <NotificationContainer />
-                  <br />
-                  <br />
-                </Form>
-              </Card>
-            </Card>
-            <br />
-            <br />
-            <br />
-          </div>
-        )}
-        {!this.state.loaded && <div>Loading...</div>}
+                <Form.Group as={Col} controlId="formGridZipCode">
+                  <Form.Label>Zip Code</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="ZipCode"
+                    required
+                    defaultValue={this.state.card?.["Zip Code"] ?? ""}
+                  />
+                </Form.Group>
+              </Row>
+
+              <Row>
+                <Form.Group as={Col} controlId="formGridPrice">
+                  <Form.Label>Sales Price</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="Price"
+                    required
+                    defaultValue={this.state.card?.["Sales Price"] ?? ""}
+                  />
+                </Form.Group>
+
+                <Form.Group as={Col} controlId="formGridNeighborhood">
+                  <Form.Label>Neighborhood</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="Neighborhood"
+                    required
+                    defaultValue={this.state.card?.["Neighborhood"] ?? ""}
+                  />
+                </Form.Group>
+              </Row>
+
+              <Row>
+                <Form.Group as={Col} controlId="formGridBedrooms">
+                  <Form.Label>Bedrooms</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="Bedrooms"
+                    required
+                    defaultValue={this.state.card?.["Bedrooms"] ?? ""}
+                  />
+                </Form.Group>
+
+                <Form.Group as={Col} controlId="formGridBathrooms">
+                  <Form.Label>Bathrooms</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="Bathrooms"
+                    required
+                    defaultValue={this.state.card?.["Bathrooms"] ?? ""}
+                  />
+                </Form.Group>
+              </Row>
+
+              <Row>
+                <Form.Group as={Col} controlId="formGridSquareFeet">
+                  <Form.Label>Square Feet</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="SquareFeet"
+                    required
+                    defaultValue={this.state.card?.["Square Feet"] ?? ""}
+                  />
+                </Form.Group>
+
+                <Form.Group as={Col} controlId="formGridLotSize">
+                  <Form.Label>Lot Size</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="LotSize"
+                    required
+                    defaultValue={this.state.card?.["Lot Size"] ?? ""}
+                  />
+                </Form.Group>
+
+                <Form.Group as={Col} controlId="formGridGarageSize">
+                  <Form.Label>Garage Size</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="GarageSize"
+                    required
+                    defaultValue={this.state.card?.["Garage Size"] ?? ""}
+                  />
+                </Form.Group>
+              </Row>
+
+              <Form.Group controlId="formGridDescription">
+                <Form.Label>Description</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  name="Description"
+                  required
+                  defaultValue={this.state.card?.["Description"] ?? ""}
+                />
+              </Form.Group>
+
+              <div>List Photo (Only One Image Please)</div>
+              <br />
+              <Dropzone
+                getUploadParams={() => ({
+                  url: `/upload/image/${this.state.user}`,
+                })}
+                onChangeStatus={this.onListChange}
+                accept="image/*"
+                maxFiles={1}
+              />
+
+              <br />
+              <div>Photo Array</div>
+              <br />
+              <Dropzone
+                getUploadParams={() => ({
+                  url: `/upload/image/${this.state.user}`,
+                })}
+                onChangeStatus={this.onArrayChange}
+                accept="image/*"
+              />
+
+              <br />
+              <br />
+              <Button style={buttonStyle} variant="primary" type="submit">
+                Submit
+              </Button>
+              <br />
+              <br />
+              <NotificationContainer />
+              <br />
+              <br />
+            </Form>
+          </Card>
+        </Card>
+        <br />
+        <br />
+        <br />
       </div>
     );
   }
