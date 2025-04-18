@@ -19,9 +19,7 @@ https://mitchelletzel.com/public/woff2/zYX9KVElMYYaJe8bpLHnCwDKjXr8AIFsdP3pBms.w
 https://mitchelletzel.com/public/js/modernizr.js
 https://mitchelletzel.com/public/js/jquery-3.7.1.min.js
 https://mitchelletzel.com/public/js/plugins.js
-https://mitchelletzel.com/public/js/api.js
 https://mitchelletzel.com/public/js/main.js
-https://mitchelletzel.com/public/js/platform.js
 https://mitchelletzel.com/public/site.webmanifest
 https://mitchelletzel.com/public/images/logo.svg
 https://mitchelletzel.com/public/images/awesome.png
@@ -60,16 +58,12 @@ https://mitchelletzel.com/realtor/listing?MLS=1234567891
 https://mitchelletzel.com/realtor/listing?MLS=1234567892
 https://mitchelletzel.com/realtor/listing?MLS=1234567893
 https://mitchelletzel.com/realtor/listing?MLS=1234567894
-https://mitchelletzel.com/realtor/js/api.js
-https://mitchelletzel.com/realtor/js/platform.js
 https://mitchelletzel.com/realtor/css/bootstrap.min.css
 https://mitchelletzel.com/realtor/css/notifications.css
 https://files.mitchelletzel.com/public/js/modernizr.js
 https://files.mitchelletzel.com/public/js/jquery-3.7.1.min.js
 https://files.mitchelletzel.com/public/js/plugins.js
-https://files.mitchelletzel.com/public/js/api.js
 https://files.mitchelletzel.com/public/js/main.js
-https://files.mitchelletzel.com/public/js/platform.js
 https://files.mitchelletzel.com/public/images/logo.svg
 https://files.mitchelletzel.com/public/images/awesome.png
 https://files.mitchelletzel.com/public/images/error.png
