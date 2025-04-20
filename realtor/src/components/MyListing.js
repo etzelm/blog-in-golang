@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { useLocation, useParams } from 'react-router';
 import Card from 'react-bootstrap/Card';
 import Carousel from 'react-bootstrap/Carousel';
@@ -85,7 +85,7 @@ const MyListing = ({ loggedIn, user }) => {
         loaded: state.loaded,
       });
     };
-  }, [location, instanceId, state.card, state.loaded, state.loggedIn, state.user]);
+  }, [location, instanceId, loggedIn, user]); // Removed state.card, state.loaded
 
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -172,53 +172,57 @@ const MyListing = ({ loggedIn, user }) => {
     }
   };
 
-  const onListChange = ({ meta }, status) => {
+  const onListChange = useCallback(({ meta }, status) => {
     const sml = 'https://files.mitchelletzel.com/media/';
     const path = `${sml}${state.user}/${meta.name}`;
-    let newCard = { ...state.card } || {};
-
-    if (status === 'done') {
-      newCard['List Photo'] = path;
-    } else if (status === 'removed' && newCard['List Photo'] === path) {
-      newCard['List Photo'] = '';
-    }
-    console.log(`onListChange: Updating card [${instanceId}]`, {
-      status,
-      metaName: meta.name,
-      newListPhoto: newCard['List Photo'],
+    setState((prev) => {
+      const newCard = { ...prev.card } || {};
+      if (status === 'done') {
+        newCard['List Photo'] = path;
+      } else if (status === 'removed' && newCard['List Photo'] === path) {
+        newCard['List Photo'] = '';
+      }
+      console.log(`onListChange: Updating card [${instanceId}]`, {
+        status,
+        metaName: meta.name,
+        newListPhoto: newCard['List Photo'],
+      });
+      return { ...prev, card: newCard };
     });
-    setState((prev) => ({ ...prev, card: newCard }));
-  };
+  }, [state.user, instanceId]);
 
-  const onArrayChange = ({ meta }, status) => {
+  const onArrayChange = useCallback(({ meta }, status) => {
     const sml = 'https://files.mitchelletzel.com/media/';
     const path = `${sml}${state.user}/${meta.name}`;
-    let newCard = { ...state.card } || { 'Photo Array': [] };
-    let photoArr = [...(newCard['Photo Array'] || [])];
-
-    if (status === 'done') {
-      photoArr.push(path);
-    } else if (status === 'removed') {
-      photoArr = photoArr.filter((p) => p !== path);
-    }
-    newCard['Photo Array'] = photoArr;
-    console.log(`onArrayChange: Updating photo array [${instanceId}]`, {
-      status,
-      metaName: meta.name,
-      newPhotoArray: newCard['Photo Array'],
+    setState((prev) => {
+      const newCard = { ...prev.card } || { 'Photo Array': [] };
+      let photoArr = [...(newCard['Photo Array'] || [])];
+      if (status === 'done') {
+        photoArr.push(path);
+      } else if (status === 'removed') {
+        photoArr = photoArr.filter((p) => p !== path);
+      }
+      newCard['Photo Array'] = photoArr;
+      console.log(`onArrayChange: Updating photo array [${instanceId}]`, {
+        status,
+        metaName: meta.name,
+        newPhotoArray: newCard['Photo Array'],
+      });
+      return { ...prev, card: newCard };
     });
-    setState((prev) => ({ ...prev, card: newCard }));
-  };
+  }, [state.user, instanceId]);
 
-  const onRemove = (photo) => {
-    let newCard = { ...state.card } || { 'Photo Array': [] };
-    newCard['Photo Array'] = (newCard['Photo Array'] || []).filter((p) => p !== photo);
-    console.log(`onRemove: Removing photo [${instanceId}]`, {
-      removedPhoto: photo,
-      newPhotoArray: newCard['Photo Array'],
+  const onRemove = useCallback((photo) => {
+    setState((prev) => {
+      const newCard = { ...prev.card } || { 'Photo Array': [] };
+      newCard['Photo Array'] = (newCard['Photo Array'] || []).filter((p) => p !== photo);
+      console.log(`onRemove: Removing photo [${instanceId}]`, {
+        removedPhoto: photo,
+        newPhotoArray: newCard['Photo Array'],
+      });
+      return { ...prev, card: newCard };
     });
-    setState((prev) => ({ ...prev, card: newCard }));
-  };
+  }, [instanceId]);
 
   console.log(`render: Rendering MyListing [${instanceId}]`, {
     isClient: typeof window !== 'undefined',
@@ -302,25 +306,20 @@ const MyListing = ({ loggedIn, user }) => {
   const isClient = typeof window !== 'undefined';
   let carouselContent = <div>Carousel placeholder</div>;
   if (isClient) {
-    try {
-      carouselContent = (
-        <Carousel style={carouselStyle}>
-          {photos.map((photo) => (
-            <Carousel.Item style={itemStyle} key={photo}>
-              <img className="d-block w-100" src={photo} alt="Property" />
-              <Carousel.Caption>
-                <Button variant="primary" onClick={() => onRemove(photo)}>
-                  Remove
-                </Button>
-              </Carousel.Caption>
-            </Carousel.Item>
-          ))}
-        </Carousel>
-      );
-    } catch (error) {
-      console.error(`render: Carousel rendering error [${instanceId}]`, { error: error.message });
-      carouselContent = <div>Error rendering carousel</div>;
-    }
+    carouselContent = (
+      <Carousel style={carouselStyle}>
+        {photos.map((photo) => (
+          <Carousel.Item style={itemStyle} key={photo}>
+            <img className="d-block w-100" src={photo} alt="Property" />
+            <Carousel.Caption>
+              <Button variant="primary" onClick={() => onRemove(photo)}>
+                Remove
+              </Button>
+            </Carousel.Caption>
+          </Carousel.Item>
+        ))}
+      </Carousel>
+    );
   }
 
   return (
