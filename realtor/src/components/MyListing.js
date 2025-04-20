@@ -6,8 +6,7 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import 'react-dropzone-uploader/dist/styles.css';
-import Dropzone from 'react-dropzone-uploader';
+import { useDropzone } from 'react-dropzone';
 import { v4 as uuid } from 'uuid';
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 
@@ -55,8 +54,6 @@ const MyListing = ({ loggedIn, user }) => {
   const params = useParams();
   const instanceId = useMemo(() => Math.random().toString(36).substr(2, 9), []);
   const formRef = useRef(null);
-  const listDropzoneRef = useRef(null);
-  const arrayDropzoneRef = useRef(null);
   const isMountedRef = useRef(true);
 
   const [state, setState] = useState(() => {
@@ -154,20 +151,6 @@ const MyListing = ({ loggedIn, user }) => {
     };
   }, [loggedIn, user, location, params, instanceId, state.card, state.loaded]);
 
-  // Clean up Dropzone on unmount
-  useEffect(() => {
-    return () => {
-      if (listDropzoneRef.current) {
-        log('Cleaning up list Dropzone', { instanceId });
-        listDropzoneRef.current.removeAllFiles();
-      }
-      if (arrayDropzoneRef.current) {
-        log('Cleaning up array Dropzone', { instanceId });
-        arrayDropzoneRef.current.removeAllFiles();
-      }
-    };
-  }, [instanceId]);
-
   const onSubmit = async (event) => {
     event.preventDefault();
     log('Form submission started', { instanceId });
@@ -254,46 +237,56 @@ const MyListing = ({ loggedIn, user }) => {
     }
   };
 
-  const onListChange = useCallback(({ meta }, status) => {
-    log('onListChange triggered', { instanceId, metaName: meta.name, status });
+  const onListDrop = useCallback((acceptedFiles) => {
+    log('onListDrop triggered', { instanceId, fileCount: acceptedFiles.length });
     if (!isMountedRef.current) {
-      log('Blocked onListChange after unmount', { instanceId });
+      log('Blocked onListDrop after unmount', { instanceId });
       return;
     }
-    const sml = 'https://realtor-site-images.s3-us-west-1.amazonaws.com/media/';
-    const path = `${sml}${state.user}/${meta.name}`;
-    safeSetState((prev) => {
-      const newCard = prev.card ? { ...prev.card } : {};
-      if (status === 'done') {
+    if (acceptedFiles.length > 0) {
+      const file = acceptedFiles[0];
+      const path = `https://realtor-site-images.s3-us-west-1.amazonaws.com/media/${state.user}/${file.name}`;
+      safeSetState((prev) => {
+        const newCard = prev.card ? { ...prev.card } : {};
         newCard['List Photo'] = path;
-      } else if (status === 'removed' && newCard['List Photo'] === path) {
-        newCard['List Photo'] = '';
-      }
-      return { ...prev, card: newCard };
-    });
+        return { ...prev, card: newCard };
+      });
+      // Simulate upload to backend
+      fetch(`/upload/image/${state.user || ''}`, {
+        method: 'POST',
+        body: file,
+      }).then((response) => {
+        log('List photo upload response', { instanceId, status: response.status });
+      }).catch((error) => {
+        log('List photo upload error', { instanceId, error: error.message });
+      });
+    }
   }, [state.user, instanceId, safeSetState]);
 
-  const onArrayChange = useCallback(({ meta }, status) => {
-    log('onArrayChange triggered', { instanceId, metaName: meta.name, status });
+  const onArrayDrop = useCallback((acceptedFiles) => {
+    log('onArrayDrop triggered', { instanceId, fileCount: acceptedFiles.length });
     if (!isMountedRef.current) {
-      log('Blocked onArrayChange after unmount', { instanceId });
+      log('Blocked onArrayDrop after unmount', { instanceId });
       return;
     }
-    const sml = 'https://realtor-site-images.s3-us-west-1.amazonaws.com/media/';
-    const path = `${sml}${state.user}/${meta.name}`;
-    safeSetState((prev) => {
-      const newCard = prev.card ? { ...prev.card } : { 'Photo Array': [] };
-      const photoArr = Array.isArray(newCard['Photo Array']) ? [...newCard['Photo Array']] : [];
-      if (status === 'done') {
+    acceptedFiles.forEach((file) => {
+      const path = `https://realtor-site-images.s3-us-west-1.amazonaws.com/media/${state.user}/${file.name}`;
+      safeSetState((prev) => {
+        const newCard = prev.card ? { ...prev.card } : { 'Photo Array': [] };
+        const photoArr = Array.isArray(newCard['Photo Array']) ? [...newCard['Photo Array']] : [];
         photoArr.push(path);
-      } else if (status === 'removed') {
-        const index = photoArr.indexOf(path);
-        if (index !== -1) {
-          photoArr.splice(index, 1);
-        }
-      }
-      newCard['Photo Array'] = photoArr;
-      return { ...prev, card: newCard };
+        newCard['Photo Array'] = photoArr;
+        return { ...prev, card: newCard };
+      });
+      // Simulate upload to backend
+      fetch(`/upload/image/${state.user || ''}`, {
+        method: 'POST',
+        body: file,
+      }).then((response) => {
+        log('Array photo upload response', { instanceId, status: response.status });
+      }).catch((error) => {
+        log('Array photo upload error', { instanceId, error: error.message });
+      });
     });
   }, [state.user, instanceId, safeSetState]);
 
@@ -314,6 +307,17 @@ const MyListing = ({ loggedIn, user }) => {
       return { ...prev, card: newCard };
     });
   }, [instanceId, safeSetState]);
+
+  const { getRootProps: getListRootProps, getInputProps: getListInputProps } = useDropzone({
+    onDrop: onListDrop,
+    accept: { 'image/*': [] },
+    maxFiles: 1,
+  });
+
+  const { getRootProps: getArrayRootProps, getInputProps: getArrayInputProps } = useDropzone({
+    onDrop: onArrayDrop,
+    accept: { 'image/*': [] },
+  });
 
   log('Rendering MyListing', {
     instanceId,
@@ -530,27 +534,18 @@ const MyListing = ({ loggedIn, user }) => {
                 <>
                   <div>List Photo (Only One Image Please)</div>
                   <br />
-                  <Dropzone
-                    ref={listDropzoneRef}
-                    getUploadParams={() => ({
-                      url: `/upload/image/${state.user || ''}`,
-                    })}
-                    onChangeStatus={onListChange}
-                    accept="image/*"
-                    maxFiles={1}
-                  />
+                  <div {...getListRootProps()} style={{ border: '2px dashed #ccc', padding: '20px', textAlign: 'center' }}>
+                    <input {...getListInputProps()} />
+                    <p>Drag 'n' drop a single image here, or click to select</p>
+                  </div>
 
                   <br />
                   <div>Photo Array</div>
                   <br />
-                  <Dropzone
-                    ref={arrayDropzoneRef}
-                    getUploadParams={() => ({
-                      url: `/upload/image/${state.user || ''}`,
-                    })}
-                    onChangeStatus={onArrayChange}
-                    accept="image/*"
-                  />
+                  <div {...getArrayRootProps()} style={{ border: '2px dashed #ccc', padding: '20px', textAlign: 'center' }}>
+                    <input {...getArrayInputProps()} />
+                    <p>Drag 'n' drop images here, or click to select</p>
+                  </div>
                 </>
               )}
 
