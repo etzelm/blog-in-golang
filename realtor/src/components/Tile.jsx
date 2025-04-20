@@ -20,7 +20,6 @@ export default class Tile extends React.Component {
         var msPerDay = msPerHour * 24;
         var msPerMonth = msPerDay * 30;
         var msPerYear = msPerDay * 365;
-    
         var elapsed = current - previous;
     
         if (elapsed < msPerMinute) {
