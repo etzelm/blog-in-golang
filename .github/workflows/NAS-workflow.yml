@@ -27,6 +27,7 @@ jobs:
           pushd realtor
           yarn install
           yarn build
+          yarn test
           popd
           go mod download
           CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o blog-in-golang .
@@ -124,6 +125,7 @@ jobs:
           sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" src/components/NavBar.js
           sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" public/index.html
           yarn install
+          yarn test
           yarn build
           popd
           echo BUILDING DOCKER IMAGE

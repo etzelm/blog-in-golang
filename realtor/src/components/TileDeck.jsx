@@ -22,7 +22,7 @@ const TileDeck = ({ cards, user }) => {
   });
 
   return (
-    <div style={{ padding: '2vw 2vw' }}>
+    <div data-testid="tile-deck" style={{ padding: '2vw 2vw' }}>
       <Row className="g-4" xs={1} md={2} lg={3} xxl={4}>
         {sortedCards.map((card) => (
           <Col key={card.MLS} className="mb-4">
