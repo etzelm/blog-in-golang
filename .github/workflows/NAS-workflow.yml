@@ -74,7 +74,7 @@ jobs:
             Dockerfile
             src/**
             templates/**
-            realtor/package-lock.json
+            realtor/yarn.lock
             realtor/package.json
             realtor/public/**
             realtor/src/**
@@ -119,10 +119,10 @@ jobs:
           echo "TAG: $TAG"
           echo BUILDING REACT APP
           pushd realtor
-          sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" src/App.js
-          sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" src/components/MyListing.js
-          sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" src/components/MyListings.js
-          sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" src/components/NavBar.js
+          sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" src/App.jsx
+          sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" src/components/MyListing.jsx
+          sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" src/components/MyListings.jsx
+          sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" src/components/NavBar.jsx
           sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" public/index.html
           yarn install
           yarn test

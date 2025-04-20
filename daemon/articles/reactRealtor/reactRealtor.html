@@ -107,7 +107,7 @@ func LoadStaticFolderRoutes(server *gin.Engine) *gin.Engine {
 
                 <div class="row block-large-1-2 block-tab-full">
                     <div class="column">
-                        <h4>App.js, Main.js, & NavBar.js.</h4>
+                        <h4>App.jsx, Main.jsx, & NavBar.jsx.</h4>
                         <p>
                         This is the main starting point for all access to the react application, requests are funneled through 
                         here. Most login logic takes place here and the navbar attaches to this render function before the page 
@@ -116,7 +116,7 @@ func LoadStaticFolderRoutes(server *gin.Engine) *gin.Engine {
                     </div>
 
                     <div class="column">
-                        <h4>Tile.js & TileDeck.js.</h4>
+                        <h4>Tile.jsx & TileDeck.jsx.</h4>
                         <p>
                         These components help make the root/search pages. TileDeck takes an array of JSON objects to send to 
                         Tiles for rendering. I want to improve the row/column based display order of the individual Tiles in a 
@@ -125,18 +125,18 @@ func LoadStaticFolderRoutes(server *gin.Engine) *gin.Engine {
                     </div>
 
                     <div class="column">
-                        <h4>Home.js & Search.js.</h4>
+                        <h4>Home.jsx & Search.jsx.</h4>
                         <p>
-                        Both of these use Tile.js/TileDeck.js by making API calls to pass an array of JSON objects through 
-                        their state and into the child components through props. Search.js takes text input and finds exact 
+                        Both of these use Tile.jsx/TileDeck.jsx by making API calls to pass an array of JSON objects through 
+                        their state and into the child components through props. Search.jsx takes text input and finds exact 
                         matches in state.
                         </p>
                     </div>
 
                     <div class="column">
-                        <h4>Listing.js, MyListing.js, and MyListings.js.</h4>
+                        <h4>Listing.jsx, MyListing.jsx, and MyListings.jsx.</h4>
                         <p>
-                        The three components here make up the add, edit, and delete capabilities of the listings. MyListing.js 
+                        The three components here make up the add, edit, and delete capabilities of the listings. MyListing.jsx 
                         uses Bootstrap and an HTML Form, along with conditional rendering, to allow users to either add or edit 
                         listings.
                         </p>
