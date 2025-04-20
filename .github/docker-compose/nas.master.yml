@@ -1,5 +1,3 @@
-version: "3"
-
 services:
   blog-in-golang-master:
     image: blog:latest
@@ -17,4 +15,4 @@ services:
       AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
       ARTICLES: "Live-Articles"
       DEPLOYMENT: "NAS"
-      DOMAIN: "nas.mitchelletzel.com"
+      DOMAIN: "nas6c985b.mitchelletzel.com"

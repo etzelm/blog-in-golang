@@ -1,5 +1,3 @@
-version: "3"
-
 services:
   blog-in-golang-develop:
     image: blog:develop

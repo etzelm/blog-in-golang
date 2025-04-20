@@ -59,8 +59,9 @@ const MyListing = ({ loggedIn, user }) => {
   const [state, setState] = useState(() => {
     const search = location?.search || '';
     const urlParams = new URLSearchParams(search);
-    const isCreateMode = !urlParams.get('id');
-    log('Initializing state', { isCreateMode, loggedIn, user, instanceId });
+    const listingId = urlParams.get('MLS'); // Changed from 'id' to 'MLS'
+    const isCreateMode = !listingId;
+    log('Initializing state', { isCreateMode, loggedIn, user, instanceId, listingId });
     return {
       loggedIn: !!loggedIn,
       user: user || null,
@@ -86,7 +87,7 @@ const MyListing = ({ loggedIn, user }) => {
   useEffect(() => {
     const search = location?.search || '';
     const urlParams = new URLSearchParams(search);
-    const listingId = urlParams.get('id');
+    const listingId = urlParams.get('MLS'); // Changed from 'id' to 'MLS'
 
     if (!listingId) {
       log('Create mode, no fetch needed', { instanceId });
@@ -110,6 +111,9 @@ const MyListing = ({ loggedIn, user }) => {
         });
         if (data.length > 0 && isMountedRef.current) {
           safeSetState((prev) => ({ ...prev, card: data[0], loaded: true }));
+        } else {
+          log('No listing data found', { instanceId, listingId });
+          safeSetState((prev) => ({ ...prev, loaded: true }));
         }
       } catch (error) {
         if (error.name === 'AbortError') {
@@ -117,6 +121,7 @@ const MyListing = ({ loggedIn, user }) => {
           return;
         }
         log('fetchListing error', { instanceId, listingId, error: error.message });
+        safeSetState((prev) => ({ ...prev, loaded: true }));
       }
     };
 
@@ -251,7 +256,6 @@ const MyListing = ({ loggedIn, user }) => {
         newCard['List Photo'] = path;
         return { ...prev, card: newCard };
       });
-      // Simulate upload to backend
       fetch(`/upload/image/${state.user || ''}`, {
         method: 'POST',
         body: file,
@@ -278,7 +282,6 @@ const MyListing = ({ loggedIn, user }) => {
         newCard['Photo Array'] = photoArr;
         return { ...prev, card: newCard };
       });
-      // Simulate upload to backend
       fetch(`/upload/image/${state.user || ''}`, {
         method: 'POST',
         body: file,
