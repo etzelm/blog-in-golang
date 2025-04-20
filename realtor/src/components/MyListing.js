@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router';
+import { useLocation, useParams } from 'react-router';
 import Card from 'react-bootstrap/Card';
 import Carousel from 'react-bootstrap/Carousel';
 import Col from 'react-bootstrap/Col';
@@ -85,7 +85,7 @@ const MyListing = ({ loggedIn, user }) => {
         loaded: state.loaded,
       });
     };
-  }, [location]);
+  }, [location, instanceId, state.card, state.loaded, state.loggedIn, state.user]);
 
   const onSubmit = async (event) => {
     event.preventDefault();
