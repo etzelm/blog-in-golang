@@ -31,61 +31,79 @@ const MyListing = ({ loggedIn, user }) => {
     };
   });
 
-  useEffect(() => {
-    console.log(`useEffect: Mounting MyListing [${instanceId}]`, {
-      isClient: typeof window !== 'undefined',
-      loggedIn: state.loggedIn,
-      user: state.user,
-      location: location ? location.pathname + location.search : 'undefined',
-    });
+  // Memoized fetch function
+  const fetchListing = useCallback(async (listingId, signal) => {
+    try {
+      console.log(`fetchListing: Fetching listing [${instanceId}]`, { listingId });
+      const response = await fetch(`/listing/${listingId}`, { signal });
+      console.log(`fetchListing: Fetch response [${instanceId}]`, {
+        listingId,
+        status: response.status,
+        ok: response.ok,
+      });
+      if (!response.ok) throw new Error(`Failed to fetch listing: ${response.status}`);
+      const data = await response.json();
+      console.log(`fetchListing: Fetch data [${instanceId}]`, {
+        listingId,
+        dataLength: data.length,
+        firstItem: data[0] ? { ...data[0], 'Photo Array': data[0]['Photo Array']?.length || 0 } : null,
+      });
+      if (data.length > 0) {
+        return data[0];
+      }
+      return null;
+    } catch (error) {
+      if (error.name === 'AbortError') return null;
+      console.error(`fetchListing: Error fetching listing [${instanceId}]`, { error: error.message });
+      return null;
+    }
+  }, [instanceId]);
 
+  // Effect for fetching listing data
+  useEffect(() => {
     const search = location?.search || '';
     const urlParams = new URLSearchParams(search);
     const listingId = urlParams.get('id');
 
     if (!listingId) {
       console.log(`useEffect: Create mode, no fetch needed [${instanceId}]`);
+      setState((prev) => ({ ...prev, loaded: true }));
       return;
     }
 
     let isMounted = true;
+    const abortController = new AbortController();
 
-    const fetchListing = async () => {
-      try {
-        console.log(`useEffect: Fetching listing [${instanceId}]`, { listingId });
-        const response = await fetch(`/listing/${listingId}`);
-        console.log(`useEffect: Fetch response [${instanceId}]`, {
-          listingId,
-          status: response.status,
-          ok: response.ok,
-        });
-        if (!response.ok) throw new Error(`Failed to fetch listing: ${response.status}`);
-        const data = await response.json();
-        console.log(`useEffect: Fetch data [${instanceId}]`, {
-          listingId,
-          dataLength: data.length,
-          firstItem: data[0] ? { ...data[0], 'Photo Array': data[0]['Photo Array']?.length || 0 } : null,
-        });
-        if (data.length > 0 && isMounted) {
-          setState((prev) => ({ ...prev, card: data[0], loaded: true }));
-        }
-      } catch (error) {
-        console.error(`useEffect: Error fetching listing [${instanceId}]`, { error: error.message });
+    fetchListing(listingId, abortController.signal).then((listing) => {
+      if (isMounted && listing) {
+        setState((prev) => ({ ...prev, card: listing, loaded: true }));
       }
-    };
-
-    fetchListing();
+    });
 
     return () => {
       isMounted = false;
+      abortController.abort();
+    };
+  }, [location, fetchListing, instanceId]);
+
+  // Effect for logging mount/unmount
+  useEffect(() => {
+    console.log(`useEffect: Mounting MyListing [${instanceId}]`, {
+      isClient: typeof window !== 'undefined',
+      loggedIn,
+      user,
+      location: location ? location.pathname + location.search : 'undefined',
+    });
+
+    return () => {
       console.log(`useEffect cleanup: Unmounting MyListing [${instanceId}]`, {
-        loggedIn: state.loggedIn,
-        user: state.user,
+        loggedIn,
+        user,
         cardExists: !!state.card,
         loaded: state.loaded,
       });
     };
-  }, [location, instanceId, loggedIn, user]); // Removed state.card, state.loaded
+  }, [loggedIn, user, location, instanceId, state.card, state.loaded]);
 
   const onSubmit = async (event) => {
     event.preventDefault();
