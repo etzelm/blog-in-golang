@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import { useLocation, useParams } from 'react-router';
 import Card from 'react-bootstrap/Card';
 import Carousel from 'react-bootstrap/Carousel';
@@ -11,18 +11,59 @@ import Dropzone from 'react-dropzone-uploader';
 import { v4 as uuid } from 'uuid';
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 
+// Error Boundary Component
+class MyListingErrorBoundary extends React.Component {
+  state = { error: null };
+
+  static getDerivedStateFromError(error) {
+    return { error: error.message };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('ErrorBoundary caught error:', {
+      error: error.message,
+      stack: error.stack,
+      componentStack: errorInfo.componentStack,
+      timestamp: new Date().toISOString(),
+    });
+  }
+
+  render() {
+    if (this.state.error) {
+      return (
+        <div>
+          <h3>Error rendering MyListing: {this.state.error}</h3>
+          <p>Check the console for details.</p>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+// Structured logging function
+const log = (message, data = {}) => {
+  console.log(JSON.stringify({
+    message,
+    timestamp: new Date().toISOString(),
+    ...data,
+  }, null, 2));
+};
+
 const MyListing = ({ loggedIn, user }) => {
   const location = useLocation();
   const params = useParams();
-  const instanceId = Math.random().toString(36).substr(2, 9);
+  const instanceId = useMemo(() => Math.random().toString(36).substr(2, 9), []);
   const formRef = useRef(null);
   const listDropzoneRef = useRef(null);
   const arrayDropzoneRef = useRef(null);
+  const isMountedRef = useRef(true);
 
   const [state, setState] = useState(() => {
     const search = location?.search || '';
     const urlParams = new URLSearchParams(search);
     const isCreateMode = !urlParams.get('id');
+    log('Initializing state', { isCreateMode, loggedIn, user, instanceId });
     return {
       loggedIn: !!loggedIn,
       user: user || null,
@@ -31,86 +72,109 @@ const MyListing = ({ loggedIn, user }) => {
     };
   });
 
-  // Memoized fetch function
-  const fetchListing = useCallback(async (listingId, signal) => {
-    try {
-      console.log(`fetchListing: Fetching listing [${instanceId}]`, { listingId });
-      const response = await fetch(`/listing/${listingId}`, { signal });
-      console.log(`fetchListing: Fetch response [${instanceId}]`, {
-        listingId,
-        status: response.status,
-        ok: response.ok,
+  // Guarded state setter
+  const safeSetState = useCallback((updater) => {
+    if (isMountedRef.current) {
+      setState((prev) => {
+        const newState = typeof updater === 'function' ? updater(prev) : updater;
+        log('State updated', { instanceId, newState });
+        return newState;
       });
-      if (!response.ok) throw new Error(`Failed to fetch listing: ${response.status}`);
-      const data = await response.json();
-      console.log(`fetchListing: Fetch data [${instanceId}]`, {
-        listingId,
-        dataLength: data.length,
-        firstItem: data[0] ? { ...data[0], 'Photo Array': data[0]['Photo Array']?.length || 0 } : null,
-      });
-      if (data.length > 0) {
-        return data[0];
-      }
-      return null;
-    } catch (error) {
-      if (error.name === 'AbortError') return null;
-      console.error(`fetchListing: Error fetching listing [${instanceId}]`, { error: error.message });
-      return null;
+    } else {
+      log('Blocked state update after unmount', { instanceId });
     }
   }, [instanceId]);
 
-  // Effect for fetching listing data
+  // Fetch listing data
   useEffect(() => {
     const search = location?.search || '';
     const urlParams = new URLSearchParams(search);
     const listingId = urlParams.get('id');
 
     if (!listingId) {
-      console.log(`useEffect: Create mode, no fetch needed [${instanceId}]`);
-      setState((prev) => ({ ...prev, loaded: true }));
+      log('Create mode, no fetch needed', { instanceId });
       return;
     }
 
-    let isMounted = true;
     const abortController = new AbortController();
 
-    fetchListing(listingId, abortController.signal).then((listing) => {
-      if (isMounted && listing) {
-        setState((prev) => ({ ...prev, card: listing, loaded: true }));
+    const fetchListing = async () => {
+      log('fetchListing started', { instanceId, listingId });
+      try {
+        const response = await fetch(`/listing/${listingId}`, { signal: abortController.signal });
+        log('fetchListing response', { instanceId, listingId, status: response.status, ok: response.ok });
+        if (!response.ok) throw new Error(`Failed to fetch listing: ${response.status}`);
+        const data = await response.json();
+        log('fetchListing data', {
+          instanceId,
+          listingId,
+          dataLength: data.length,
+          firstItem: data[0] ? { ...data[0], 'Photo Array': data[0]['Photo Array']?.length || 0 } : null,
+        });
+        if (data.length > 0 && isMountedRef.current) {
+          safeSetState((prev) => ({ ...prev, card: data[0], loaded: true }));
+        }
+      } catch (error) {
+        if (error.name === 'AbortError') {
+          log('fetchListing aborted', { instanceId, listingId });
+          return;
+        }
+        log('fetchListing error', { instanceId, listingId, error: error.message });
       }
-    });
+    };
+
+    fetchListing();
 
     return () => {
-      isMounted = false;
+      log('Fetch effect cleanup', { instanceId });
       abortController.abort();
     };
-  }, [location, fetchListing, instanceId]);
+  }, [location, instanceId, safeSetState]);
 
-  // Effect for logging mount/unmount
+  // Log mount/unmount and prop changes
   useEffect(() => {
-    console.log(`useEffect: Mounting MyListing [${instanceId}]`, {
+    log('Component mounted', {
+      instanceId,
       isClient: typeof window !== 'undefined',
       loggedIn,
       user,
-      location: location ? location.pathname + location.search : 'undefined',
+      location: location.pathname + location.search,
+      params,
     });
 
     return () => {
-      console.log(`useEffect cleanup: Unmounting MyListing [${instanceId}]`, {
+      isMountedRef.current = false;
+      log('Component unmounted', {
+        instanceId,
         loggedIn,
         user,
         cardExists: !!state.card,
         loaded: state.loaded,
       });
     };
-  }, [loggedIn, user, location, instanceId, state.card, state.loaded]);
+  }, [loggedIn, user, location, params, instanceId, state.card, state.loaded]);
+
+  // Clean up Dropzone on unmount
+  useEffect(() => {
+    return () => {
+      if (listDropzoneRef.current) {
+        log('Cleaning up list Dropzone', { instanceId });
+        listDropzoneRef.current.removeAllFiles();
+      }
+      if (arrayDropzoneRef.current) {
+        log('Cleaning up array Dropzone', { instanceId });
+        arrayDropzoneRef.current.removeAllFiles();
+      }
+    };
+  }, [instanceId]);
 
   const onSubmit = async (event) => {
     event.preventDefault();
+    log('Form submission started', { instanceId });
     const { card } = state;
     const elements = formRef.current?.elements;
     if (!elements) {
-      console.error(`onSubmit: Form elements missing [${instanceId}]`);
+      log('Form elements missing', { instanceId });
       NotificationManager.warning('Form error', 'Please try again', 3000);
       return;
     }
@@ -160,14 +224,14 @@ const MyListing = ({ loggedIn, user }) => {
     ];
     for (const field of requiredFields) {
       if (!json[field]) {
-        console.error(`onSubmit: Missing required field [${instanceId}]`, { field });
+        log('Missing required field', { instanceId, field });
         NotificationManager.warning('Missing required field', `Please fill in ${field}`, 3000);
         return;
       }
     }
 
     try {
-      console.log(`onSubmit: Submitting listing [${instanceId}]`, { mls: newUuid, user: state.user });
+      log('Submitting listing', { instanceId, mls: newUuid, user: state.user });
       const rawResponse = await fetch('/listings/add/HowMuchDoesSecurityCost', {
         method: 'POST',
         headers: {
@@ -177,78 +241,88 @@ const MyListing = ({ loggedIn, user }) => {
         body: JSON.stringify(json),
       });
       const responseData = await rawResponse.json();
-      console.log(`onSubmit: Response data [${instanceId}]`, { responseData, status: rawResponse.status, ok: rawResponse.ok });
+      log('Submission response', { instanceId, responseData, status: rawResponse.status, ok: rawResponse.ok });
       if (rawResponse.ok) {
         NotificationManager.success('Success', 'Listing submitted', 3000);
-        console.log(`onSubmit: Submission successful [${instanceId}]`, { mls: newUuid });
+        log('Submission successful', { instanceId, mls: newUuid });
       } else {
         throw new Error(`Failed to submit listing: ${rawResponse.status}`);
       }
     } catch (error) {
-      console.error(`onSubmit: Submission error [${instanceId}]`, { error: error.message });
+      log('Submission error', { instanceId, error: error.message });
       NotificationManager.warning('Submission failed', 'Please try again', 3000);
     }
   };
 
   const onListChange = useCallback(({ meta }, status) => {
-    const sml = 'https://files.mitchelletzel.com/media/';
+    log('onListChange triggered', { instanceId, metaName: meta.name, status });
+    if (!isMountedRef.current) {
+      log('Blocked onListChange after unmount', { instanceId });
+      return;
+    }
+    const sml = 'https://realtor-site-images.s3-us-west-1.amazonaws.com/media/';
     const path = `${sml}${state.user}/${meta.name}`;
-    setState((prev) => {
-      const newCard = { ...prev.card } || {};
+    safeSetState((prev) => {
+      const newCard = prev.card ? { ...prev.card } : {};
       if (status === 'done') {
         newCard['List Photo'] = path;
       } else if (status === 'removed' && newCard['List Photo'] === path) {
         newCard['List Photo'] = '';
       }
-      console.log(`onListChange: Updating card [${instanceId}]`, {
-        status,
-        metaName: meta.name,
-        newListPhoto: newCard['List Photo'],
-      });
       return { ...prev, card: newCard };
     });
-  }, [state.user, instanceId]);
+  }, [state.user, instanceId, safeSetState]);
 
   const onArrayChange = useCallback(({ meta }, status) => {
-    const sml = 'https://files.mitchelletzel.com/media/';
+    log('onArrayChange triggered', { instanceId, metaName: meta.name, status });
+    if (!isMountedRef.current) {
+      log('Blocked onArrayChange after unmount', { instanceId });
+      return;
+    }
+    const sml = 'https://realtor-site-images.s3-us-west-1.amazonaws.com/media/';
     const path = `${sml}${state.user}/${meta.name}`;
-    setState((prev) => {
-      const newCard = { ...prev.card } || { 'Photo Array': [] };
-      let photoArr = [...(newCard['Photo Array'] || [])];
+    safeSetState((prev) => {
+      const newCard = prev.card ? { ...prev.card } : { 'Photo Array': [] };
+      const photoArr = Array.isArray(newCard['Photo Array']) ? [...newCard['Photo Array']] : [];
       if (status === 'done') {
         photoArr.push(path);
       } else if (status === 'removed') {
-        photoArr = photoArr.filter((p) => p !== path);
+        const index = photoArr.indexOf(path);
+        if (index !== -1) {
+          photoArr.splice(index, 1);
+        }
       }
       newCard['Photo Array'] = photoArr;
-      console.log(`onArrayChange: Updating photo array [${instanceId}]`, {
-        status,
-        metaName: meta.name,
-        newPhotoArray: newCard['Photo Array'],
-      });
       return { ...prev, card: newCard };
     });
-  }, [state.user, instanceId]);
+  }, [state.user, instanceId, safeSetState]);
 
   const onRemove = useCallback((photo) => {
-    setState((prev) => {
-      const newCard = { ...prev.card } || { 'Photo Array': [] };
-      newCard['Photo Array'] = (newCard['Photo Array'] || []).filter((p) => p !== photo);
-      console.log(`onRemove: Removing photo [${instanceId}]`, {
-        removedPhoto: photo,
-        newPhotoArray: newCard['Photo Array'],
-      });
+    log('onRemove triggered', { instanceId, photo });
+    if (!isMountedRef.current) {
+      log('Blocked onRemove after unmount', { instanceId });
+      return;
+    }
+    safeSetState((prev) => {
+      const newCard = prev.card ? { ...prev.card } : { 'Photo Array': [] };
+      const photoArr = Array.isArray(newCard['Photo Array']) ? [...newCard['Photo Array']] : [];
+      const index = photoArr.indexOf(photo);
+      if (index !== -1) {
+        photoArr.splice(index, 1);
+      }
+      newCard['Photo Array'] = photoArr;
       return { ...prev, card: newCard };
     });
-  }, [instanceId]);
+  }, [instanceId, safeSetState]);
 
-  console.log(`render: Rendering MyListing [${instanceId}]`, {
+  log('Rendering MyListing', {
+    instanceId,
     isClient: typeof window !== 'undefined',
     loggedIn: state.loggedIn,
     loaded: state.loaded,
     cardExists: !!state.card,
     photoArrayLength: state.card?.['Photo Array']?.length || 0,
-    location: location ? location.pathname + location.search : 'undefined',
+    location: location.pathname + location.search,
     params,
   });
 
@@ -296,16 +370,15 @@ const MyListing = ({ loggedIn, user }) => {
   const buttonStyle = { margin: '0', position: 'absolute', left: '50%', transform: 'translateX(-50%)' };
 
   const photos = Array.isArray(state.card?.['Photo Array']) ? state.card['Photo Array'] : [];
-  console.log(`render: Carousel data [${instanceId}]`, {
-    photoCount: photos.length,
-    photos,
-  });
+  log('Carousel data', { instanceId, photoCount: photos.length, photos });
 
   if (!state.loaded) {
+    log('Rendering loading state', { instanceId });
     return <div>Loading...</div>;
   }
 
   if (!state.loggedIn) {
+    log('Rendering not logged in state', { instanceId });
     return (
       <div>
         <br />
@@ -340,162 +413,165 @@ const MyListing = ({ loggedIn, user }) => {
     );
   }
 
+  log('Rendering main content', { instanceId });
   return (
-    <div style={listingStyle}>
-      <br />
-      <br />
-      <br />
-      <Card style={cardStyle}>
-        <h3 style={h3Style}>{!state.card ? 'List your property with us.' : 'Edit your listing'}</h3>
+    <MyListingErrorBoundary>
+      <div style={listingStyle}>
         <br />
         <br />
-        <p style={{ whiteSpace: 'pre-wrap' }}>{carouselContent}</p>
         <br />
-        <Card style={card2Style}>
-          <Form ref={formRef} onSubmit={onSubmit}>
-            <Form.Group controlId="formGridAddress1">
-              <Form.Label>Address</Form.Label>
-              <Form.Control type="text" name="Address" required defaultValue={state.card?.Street1 || ''} />
-            </Form.Group>
-
-            <Form.Group controlId="formGridAddress2">
-              <Form.Label>Address 2</Form.Label>
-              <Form.Control
-                type="text"
-                name="Address2"
-                defaultValue={state.card?.Street2 === '*' ? '' : state.card?.Street2 || ''}
-              />
-            </Form.Group>
-
-            <Row>
-              <Form.Group as={Col} controlId="formGridCity">
-                <Form.Label>City</Form.Label>
-                <Form.Control type="text" name="City" required defaultValue={state.card?.City || ''} />
+        <Card style={cardStyle}>
+          <h3 style={h3Style}>{!state.card ? 'List your property with us.' : 'Edit your listing'}</h3>
+          <br />
+          <br />
+          <p style={{ whiteSpace: 'pre-wrap' }}>{carouselContent}</p>
+          <br />
+          <Card style={card2Style}>
+            <Form ref={formRef} onSubmit={onSubmit}>
+              <Form.Group controlId="formGridAddress1">
+                <Form.Label>Address</Form.Label>
+                <Form.Control type="text" name="Address" required defaultValue={state.card?.Street1 || ''} />
               </Form.Group>
 
-              <Form.Group as={Col} controlId="formGridState">
-                <Form.Label>State</Form.Label>
-                <Form.Control type="text" name="State" required defaultValue={state.card?.State || ''} />
-              </Form.Group>
-
-              <Form.Group as={Col} controlId="formGridZipCode">
-                <Form.Label>Zip Code</Form.Label>
-                <Form.Control type="text" name="ZipCode" required defaultValue={state.card?.['Zip Code'] || ''} />
-              </Form.Group>
-            </Row>
-
-            <Row>
-              <Form.Group as={Col} controlId="formGridPrice">
-                <Form.Label>Sales Price</Form.Label>
-                <Form.Control type="text" name="Price" required defaultValue={state.card?.['Sales Price'] || ''} />
-              </Form.Group>
-
-              <Form.Group as={Col} controlId="formGridNeighborhood">
-                <Form.Label>Neighborhood</Form.Label>
+              <Form.Group controlId="formGridAddress2">
+                <Form.Label>Address 2</Form.Label>
                 <Form.Control
                   type="text"
-                  name="Neighborhood"
-                  required
-                  defaultValue={state.card?.Neighborhood || ''}
+                  name="Address2"
+                  defaultValue={state.card?.Street2 === '*' ? '' : state.card?.Street2 || ''}
                 />
               </Form.Group>
-            </Row>
 
-            <Row>
-              <Form.Group as={Col} controlId="formGridBedrooms">
-                <Form.Label>Bedrooms</Form.Label>
-                <Form.Control type="text" name="Bedrooms" required defaultValue={state.card?.Bedrooms || ''} />
-              </Form.Group>
+              <Row>
+                <Form.Group as={Col} controlId="formGridCity">
+                  <Form.Label>City</Form.Label>
+                  <Form.Control type="text" name="City" required defaultValue={state.card?.City || ''} />
+                </Form.Group>
 
-              <Form.Group as={Col} controlId="formGridBathrooms">
-                <Form.Label>Bathrooms</Form.Label>
-                <Form.Control type="text" name="Bathrooms" required defaultValue={state.card?.Bathrooms || ''} />
-              </Form.Group>
-            </Row>
+                <Form.Group as={Col} controlId="formGridState">
+                  <Form.Label>State</Form.Label>
+                  <Form.Control type="text" name="State" required defaultValue={state.card?.State || ''} />
+                </Form.Group>
 
-            <Row>
-              <Form.Group as={Col} controlId="formGridSquareFeet">
-                <Form.Label>Square Feet</Form.Label>
+                <Form.Group as={Col} controlId="formGridZipCode">
+                  <Form.Label>Zip Code</Form.Label>
+                  <Form.Control type="text" name="ZipCode" required defaultValue={state.card?.['Zip Code'] || ''} />
+                </Form.Group>
+              </Row>
+
+              <Row>
+                <Form.Group as={Col} controlId="formGridPrice">
+                  <Form.Label>Sales Price</Form.Label>
+                  <Form.Control type="text" name="Price" required defaultValue={state.card?.['Sales Price'] || ''} />
+                </Form.Group>
+
+                <Form.Group as={Col} controlId="formGridNeighborhood">
+                  <Form.Label>Neighborhood</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="Neighborhood"
+                    required
+                    defaultValue={state.card?.Neighborhood || ''}
+                  />
+                </Form.Group>
+              </Row>
+
+              <Row>
+                <Form.Group as={Col} controlId="formGridBedrooms">
+                  <Form.Label>Bedrooms</Form.Label>
+                  <Form.Control type="text" name="Bedrooms" required defaultValue={state.card?.Bedrooms || ''} />
+                </Form.Group>
+
+                <Form.Group as={Col} controlId="formGridBathrooms">
+                  <Form.Label>Bathrooms</Form.Label>
+                  <Form.Control type="text" name="Bathrooms" required defaultValue={state.card?.Bathrooms || ''} />
+                </Form.Group>
+              </Row>
+
+              <Row>
+                <Form.Group as={Col} controlId="formGridSquareFeet">
+                  <Form.Label>Square Feet</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="SquareFeet"
+                    required
+                    defaultValue={state.card?.['Square Feet'] || ''}
+                  />
+                </Form.Group>
+
+                <Form.Group as={Col} controlId="formGridLotSize">
+                  <Form.Label>Lot Size</Form.Label>
+                  <Form.Control type="text" name="LotSize" required defaultValue={state.card?.['Lot Size'] || ''} />
+                </Form.Group>
+
+                <Form.Group as={Col} controlId="formGridGarageSize">
+                  <Form.Label>Garage Size</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="GarageSize"
+                    required
+                    defaultValue={state.card?.['Garage Size'] || ''}
+                  />
+                </Form.Group>
+              </Row>
+
+              <Form.Group controlId="formGridDescription">
+                <Form.Label>Description</Form.Label>
                 <Form.Control
-                  type="text"
-                  name="SquareFeet"
+                  as="textarea"
+                  rows={3}
+                  name="Description"
                   required
-                  defaultValue={state.card?.['Square Feet'] || ''}
+                  defaultValue={state.card?.Description || ''}
                 />
               </Form.Group>
 
-              <Form.Group as={Col} controlId="formGridLotSize">
-                <Form.Label>Lot Size</Form.Label>
-                <Form.Control type="text" name="LotSize" required defaultValue={state.card?.['Lot Size'] || ''} />
-              </Form.Group>
+              {isClient && (
+                <>
+                  <div>List Photo (Only One Image Please)</div>
+                  <br />
+                  <Dropzone
+                    ref={listDropzoneRef}
+                    getUploadParams={() => ({
+                      url: `/upload/image/${state.user || ''}`,
+                    })}
+                    onChangeStatus={onListChange}
+                    accept="image/*"
+                    maxFiles={1}
+                  />
 
-              <Form.Group as={Col} controlId="formGridGarageSize">
-                <Form.Label>Garage Size</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="GarageSize"
-                  required
-                  defaultValue={state.card?.['Garage Size'] || ''}
-                />
-              </Form.Group>
-            </Row>
+                  <br />
+                  <div>Photo Array</div>
+                  <br />
+                  <Dropzone
+                    ref={arrayDropzoneRef}
+                    getUploadParams={() => ({
+                      url: `/upload/image/${state.user || ''}`,
+                    })}
+                    onChangeStatus={onArrayChange}
+                    accept="image/*"
+                  />
+                </>
+              )}
 
-            <Form.Group controlId="formGridDescription">
-              <Form.Label>Description</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                name="Description"
-                required
-                defaultValue={state.card?.Description || ''}
-              />
-            </Form.Group>
-
-            {isClient && (
-              <>
-                <div>List Photo (Only One Image Please)</div>
-                <br />
-                <Dropzone
-                  ref={listDropzoneRef}
-                  getUploadParams={() => ({
-                    url: `/upload/image/${state.user || ''}`,
-                  })}
-                  onChangeStatus={onListChange}
-                  accept="image/*"
-                  maxFiles={1}
-                />
-
-                <br />
-                <div>Photo Array</div>
-                <br />
-                <Dropzone
-                  ref={arrayDropzoneRef}
-                  getUploadParams={() => ({
-                    url: `/upload/image/${state.user || ''}`,
-                  })}
-                  onChangeStatus={onArrayChange}
-                  accept="image/*"
-                />
-              </>
-            )}
-
-            <br />
-            <br />
-            <Button style={buttonStyle} variant="primary" type="submit">
-              Submit
-            </Button>
-            <br />
-            <br />
-            {isClient && <NotificationContainer />}
-            <br />
-            <br />
-          </Form>
+              <br />
+              <br />
+              <Button style={buttonStyle} variant="primary" type="submit">
+                Submit
+              </Button>
+              <br />
+              <br />
+              {isClient && <NotificationContainer />}
+              <br />
+              <br />
+            </Form>
+          </Card>
         </Card>
-      </Card>
-      <br />
-      <br />
-      <br />
-    </div>
+        <br />
+        <br />
+        <br />
+      </div>
+    </MyListingErrorBoundary>
   );
 };
 
