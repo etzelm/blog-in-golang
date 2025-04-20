@@ -2,10 +2,20 @@ import React, { useEffect, useState } from 'react';
 import NavBar from './components/NavBar';
 import Main from './components/Main';
 
+const log = (message, data = {}) => {
+  console.log(JSON.stringify({
+    message,
+    timestamp: new Date().toISOString(),
+    ...data,
+  }, null, 2));
+};
+
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [loaded, setLoaded] = useState(false);
+
+  // Auth initialization (runs once)
   useEffect(() => {
     const initGoogleAuth = async () => {
       try {
@@ -42,6 +52,13 @@ function App() {
 
     initGoogleAuth();
   }, []);
+
+  // Log state changes
+  useEffect(() => {
+    log('App state changed', { loggedIn, user, loaded });
+  }, [loggedIn, user, loaded]);
+
+  log('App rendering', { loggedIn, user, loaded });
 
   if (!loaded) {
     return <div>Loading...</div>;
