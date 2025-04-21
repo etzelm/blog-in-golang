@@ -18,9 +18,10 @@ function App() {
   const [loaded, setLoaded] = useState(false);
   const [authLoading, setAuthLoading] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [justSignedIn, setJustSignedIn] = useState(false);
 
   // Function to update auth state
-  const updateAuthState = (isSignedIn) => {
+  const updateAuthState = (isSignedIn, isSignInAction = false) => {
     if (!window.gapi || !window.gapi.auth2) {
       log('Cannot update auth state: gapi.auth2 not available');
       return;
@@ -35,14 +36,29 @@ function App() {
       setUser(email);
       setLoggedIn(true);
       log('User signed in', { email });
-      toast.success('Successfully signed in!', { autoClose: 3000 });
+      if (isSignInAction) {
+        setJustSignedIn(true);
+        toast.success('Successfully signed in!', { autoClose: 3000 });
+      }
     } else {
       setUser(null);
       setLoggedIn(false);
       log('User signed out');
-      toast.success('Successfully signed out.', { autoClose: 3000 });
+      if (isSignInAction) {
+        toast.success('Successfully signed out.', { autoClose: 3000 });
+      }
     }
   };
+
+  // Clear justSignedIn flag after showing the toast
+  useEffect(() => {
+    if (justSignedIn) {
+      const timer = setTimeout(() => {
+        setJustSignedIn(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [justSignedIn]);
 
   // Auth initialization (runs once)
   useEffect(() => {
@@ -57,13 +73,14 @@ function App() {
 
         await window.gapi.load('auth2', () => {
           log('gapi.auth2 loaded');
-          const clientId = 'ThisIsSupposedToBeAnId';
+          const clientId = 'ThisIsSupposedToBeAnId'; // Replace with actual client ID
           log('Initializing Google Auth with client ID', { clientId });
 
           window.gapi.auth2.init({
             client_id: clientId,
             scope: 'email',
-            prompt: 'select_account'
+            prompt: 'select_account',
+            fetch_basic_profile: true,
           }).then(() => {
             log('Google Auth initialized');
             const auth2 = window.gapi.auth2.getAuthInstance();
@@ -75,13 +92,14 @@ function App() {
               setLoaded(true);
               return;
             }
-            const signedIn = auth2.isSignedIn.get();
-            updateAuthState(signedIn);
+            // Do not automatically restore session on page load
+            setLoaded(true);
 
             // Listen for sign-in state changes
-            const listener = auth2.isSignedIn.listen(updateAuthState);
+            const listener = auth2.isSignedIn.listen((isSignedIn) => {
+              updateAuthState(isSignedIn, true);
+            });
             log('Sign-in state listener added');
-            setLoaded(true);
 
             // Clean up listener on unmount
             return () => {
@@ -109,6 +127,13 @@ function App() {
     initGoogleAuth();
   }, [hasInteracted]);
 
+  // Clear cookies on sign-out
+  const clearCookies = () => {
+    document.cookie = 'user=; Max-Age=0; path=/; domain=mitchelletzel.com';
+    document.cookie = 'userToken=; Max-Age=0; path=/; domain=mitchelletzel.com';
+    log('Cookies cleared', { cookies: ['user', 'userToken'] });
+  };
+
   // Handle sign-in with debounce and error handling
   const handleSignIn = async () => {
     if (authLoading) {
@@ -127,7 +152,7 @@ function App() {
       }
       log('Initiating sign-in');
       await auth2.signIn();
-      updateAuthState(true);
+      updateAuthState(true, true);
     } catch (error) {
       const errorMessage = error.message || (error.error ? error.error : 'Unknown error');
       log('Sign-in failed', { error: errorMessage, details: error });
@@ -160,8 +185,9 @@ function App() {
         throw new Error('Authentication instance not available');
       }
       log('Initiating sign-out');
-      await auth2.signOut();
-      updateAuthState(false);
+      await auth2.disconnect(); // Use disconnect to revoke access
+      clearCookies(); // Clear application cookies
+      updateAuthState(false, true);
     } catch (error) {
       const errorMessage = error.message || (error.error ? error.error : 'Unknown error');
       log('Sign-out failed', { error: errorMessage, details: error });
@@ -173,10 +199,10 @@ function App() {
 
   // Log state changes
   useEffect(() => {
-    log('App state changed', { loggedIn, user, loaded, authLoading, hasInteracted });
-  }, [loggedIn, user, loaded, authLoading, hasInteracted]);
+    log('App state changed', { loggedIn, user, loaded, authLoading, hasInteracted, justSignedIn });
+  }, [loggedIn, user, loaded, authLoading, hasInteracted, justSignedIn]);
 
-  log('App rendering', { loggedIn, user, loaded, authLoading, hasInteracted });
+  log('App rendering', { loggedIn, user, loaded, authLoading, hasInteracted, justSignedIn });
 
   if (!loaded) {
     return <div>Loading...</div>;
