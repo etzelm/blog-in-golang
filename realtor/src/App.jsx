@@ -15,6 +15,21 @@ function App() {
   const [user, setUser] = useState(null);
   const [loaded, setLoaded] = useState(false);
 
+  // Function to update auth state
+  const updateAuthState = (isSignedIn) => {
+    const auth2 = window.gapi.auth2.getAuthInstance();
+    if (isSignedIn) {
+      const email = auth2.currentUser.get().getBasicProfile().getEmail();
+      setUser(email);
+      setLoggedIn(true);
+      log('User signed in', { email });
+    } else {
+      setUser(null);
+      setLoggedIn(false);
+      log('User signed out');
+    }
+  };
+
   // Auth initialization (runs once)
   useEffect(() => {
     const initGoogleAuth = async () => {
@@ -32,13 +47,18 @@ function App() {
           }).then(() => {
             const auth2 = window.gapi.auth2.getAuthInstance();
             const signedIn = auth2.isSignedIn.get();
+            updateAuthState(signedIn);
 
-            if (signedIn) {
-              const email = auth2.currentUser.get().getBasicProfile().getEmail();
-              setUser(email);
-              setLoggedIn(true);
-            }
+            // Listen for sign-in state changes
+            const listener = auth2.isSignedIn.listen(updateAuthState);
             setLoaded(true);
+
+            // Clean up listener on unmount
+            return () => {
+              if (listener) {
+                log('Cleaning up auth listener');
+              }
+            };
           }).catch(error => {
             console.error('Google Auth initialization failed:', error);
             setLoaded(true);
@@ -52,6 +72,28 @@ function App() {
 
     initGoogleAuth();
   }, []);
+
+  // Handle sign-in
+  const handleSignIn = async () => {
+    try {
+      const auth2 = window.gapi.auth2.getAuthInstance();
+      await auth2.signIn();
+      updateAuthState(true); // Update state after successful sign-in
+    } catch (error) {
+      console.error('Sign-in failed:', error);
+    }
+  };
+
+  // Handle sign-out
+  const handleSignOut = async () => {
+    try {
+      const auth2 = window.gapi.auth2.getAuthInstance();
+      await auth2.signOut();
+      updateAuthState(false); // Update state after sign-out
+    } catch (error) {
+      console.error('Sign-out failed:', error);
+    }
+  };
 
   // Log state changes
   useEffect(() => {
@@ -69,12 +111,8 @@ function App() {
       <NavBar 
         loggedIn={loggedIn} 
         user={user} 
-        onSignIn={() => {
-          window.gapi.auth2.getAuthInstance().signIn();
-        }}
-        onSignOut={() => {
-          window.gapi.auth2.getAuthInstance().signOut();
-        }}
+        onSignIn={handleSignIn}
+        onSignOut={handleSignOut}
       />
       <Main 
         loggedIn={loggedIn} 
