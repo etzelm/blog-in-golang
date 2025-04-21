@@ -8,11 +8,10 @@ export default class Tile extends React.Component {
     this.state = {
       card: this.props.card || null
     };
-    this.timeDifference = this.timeDifference.bind(this);
     this.onStateChange = this.onStateChange.bind(this);
   }
 
-  timeDifference(current, previous) {
+  static timeDifference(current, previous) {
     var msPerMinute = 60 * 1000;
     var msPerHour = msPerMinute * 60;
     var msPerDay = msPerHour * 24;
@@ -85,7 +84,7 @@ export default class Tile extends React.Component {
     const desc2 = `Square Feet: ${this.props.card['Square Feet']} | ` + 
       `Lot Size: ${this.props.card['Lot Size']}`;
     const time = new Date().getTime();
-    const ago = this.timeDifference(time, this.props.card['Last Modified']);
+    const ago = Tile.timeDifference(time, this.props.card['Last Modified']);
     const price = `Price: $${this.props.card['Sales Price']}`;
     
     return (

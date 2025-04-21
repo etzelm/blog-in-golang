@@ -120,9 +120,6 @@ jobs:
           echo BUILDING REACT APP
           pushd realtor
           sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" src/App.jsx
-          sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" src/components/MyListing.jsx
-          sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" src/components/MyListings.jsx
-          sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" src/components/NavBar.jsx
           sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" public/index.html
           yarn install
           yarn test

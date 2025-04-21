@@ -1,8 +1,8 @@
 import React from "react";
-import Card from 'react-bootstrap/Card'
-import Carousel from 'react-bootstrap/Carousel'
-import ListGroup from 'react-bootstrap/ListGroup'
-import ListGroupItem from 'react-bootstrap/ListGroupItem'
+import Card from 'react-bootstrap/Card';
+import Carousel from 'react-bootstrap/Carousel';
+import ListGroup from 'react-bootstrap/ListGroup';
+import ListGroupItem from 'react-bootstrap/ListGroupItem';
 import Tile from "./Tile";
 
 export default class Listing extends React.Component {
@@ -99,7 +99,7 @@ export default class Listing extends React.Component {
             desc2 = `Beds: ${card['Bedrooms']} | ` + 
                         `Baths: ${card['Bathrooms']}`;
             const time = new Date().getTime();
-            ago = new Tile().timeDifference(time, card['Last Modified']);
+            ago = Tile.timeDifference(time, card['Last Modified']);
             price = `Price: $${card['Sales Price']}`;
             d.setUTCSeconds(card['Date Listed']/1000);
             listed = `First Listed: ${d.toString()}`;

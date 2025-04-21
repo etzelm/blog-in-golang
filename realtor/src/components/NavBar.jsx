@@ -1,7 +1,7 @@
 import React from "react";
 import { Nav, Navbar, NavDropdown, Container } from 'react-bootstrap';
 
-const NavBar = ({ loggedIn, user, onSignIn, onSignOut }) => {
+const NavBar = ({ loggedIn, user, onSignIn, onSignOut, authLoading }) => {
   return (
     <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark" fixed="top">
       <Container>
@@ -15,22 +15,25 @@ const NavBar = ({ loggedIn, user, onSignIn, onSignOut }) => {
               {loggedIn ? (
                 <NavDropdown title={user} id="collapsible-nav-dropdown">
                   <NavDropdown.Item href="/realtor/my-listings">View/Modify Listings</NavDropdown.Item>
-                  <NavDropdown.Item onClick={onSignOut}>Sign Out</NavDropdown.Item>
+                  <NavDropdown.Item onClick={onSignOut} disabled={authLoading}>
+                    {authLoading ? 'Signing Out...' : 'Sign Out'}
+                  </NavDropdown.Item>
                 </NavDropdown>
               ) : (
                 <button 
                   id="loginButton"
                   onClick={onSignIn}
                   className="btn btn-light"
+                  disabled={authLoading}
                 >
-                  Sign In
+                  {authLoading ? 'Signing In...' : 'Sign In'}
                 </button>
               )}
             </Nav>
           </Nav>
         </Navbar.Collapse>
-        </Container>
-      </Navbar>
+      </Container>
+    </Navbar>
   );
 };
 
