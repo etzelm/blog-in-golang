@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import NavBar from './components/NavBar';
 import Main from './components/Main';
-import { NotificationManager } from 'react-notifications';
+import { NotificationManager, NotificationContainer } from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
 
 const log = (message, data = {}) => {
@@ -20,16 +20,26 @@ function App() {
 
   // Function to update auth state
   const updateAuthState = (isSignedIn) => {
+    if (!window.gapi || !window.gapi.auth2) {
+      log('Cannot update auth state: gapi.auth2 not available');
+      return;
+    }
     const auth2 = window.gapi.auth2.getAuthInstance();
+    if (!auth2) {
+      log('Cannot update auth state: auth2 instance is null');
+      return;
+    }
     if (isSignedIn) {
       const email = auth2.currentUser.get().getBasicProfile().getEmail();
       setUser(email);
       setLoggedIn(true);
       log('User signed in', { email });
+      NotificationManager.success('Successfully signed in!', 'Welcome', 3000);
     } else {
       setUser(null);
       setLoggedIn(false);
       log('User signed out');
+      NotificationManager.success('Successfully signed out.', 'Goodbye', 3000);
     }
   };
 
@@ -37,32 +47,37 @@ function App() {
   useEffect(() => {
     const initGoogleAuth = async () => {
       try {
+        log('Starting Google Auth initialization');
         if (!window.gapi) {
+          log('Loading gapi library');
           const response = await fetch('https://apis.google.com/js/platform.js');
           if (!response.ok) throw new Error('Failed to load Google Auth library');
         }
 
         await window.gapi.load('auth2', () => {
-          // Validate client_id
-          const clientId = 'ThisIsSupposedToBeAnId';
-          if (clientId === 'ThisIsSupposedToBeAnId') {
-            console.error('Invalid Google OAuth Client ID');
-            NotificationManager.error('Authentication configuration error. Please contact support.', 'Error', 5000);
-            setLoaded(true);
-            return;
-          }
+          log('gapi.auth2 loaded');
+          const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID || 'ThisIsSupposedToBeAnId';
+          log('Initializing Google Auth with client ID', { clientId });
 
           window.gapi.auth2.init({
             client_id: clientId,
             scope: 'email',
             prompt: 'select_account'
           }).then(() => {
+            log('Google Auth initialized');
             const auth2 = window.gapi.auth2.getAuthInstance();
+            if (!auth2) {
+              log('Failed to get auth2 instance');
+              NotificationManager.error('Authentication setup failed. Please try again later.', 'Error', 5000);
+              setLoaded(true);
+              return;
+            }
             const signedIn = auth2.isSignedIn.get();
             updateAuthState(signedIn);
 
             // Listen for sign-in state changes
             const listener = auth2.isSignedIn.listen(updateAuthState);
+            log('Sign-in state listener added');
             setLoaded(true);
 
             // Clean up listener on unmount
@@ -72,13 +87,13 @@ function App() {
               }
             };
           }).catch(error => {
-            console.error('Google Auth initialization failed:', error);
+            log('Google Auth initialization failed', { error: error.message, details: error });
             NotificationManager.error('Failed to initialize authentication. Please try again later.', 'Error', 5000);
             setLoaded(true);
           });
         });
       } catch (error) {
-        console.error('Error loading Google Auth:', error);
+        log('Error loading Google Auth', { error: error.message });
         NotificationManager.error('Failed to load authentication library. Please check your network and try again.', 'Error', 5000);
         setLoaded(true);
       }
@@ -89,20 +104,35 @@ function App() {
 
   // Handle sign-in with debounce and error handling
   const handleSignIn = async () => {
-    if (authLoading) return; // Prevent multiple clicks
+    if (authLoading) {
+      log('Sign-in attempt ignored: authLoading is true');
+      return;
+    }
     setAuthLoading(true);
     try {
+      if (!window.gapi || !window.gapi.auth2) {
+        throw new Error('Google Auth library not loaded');
+      }
       const auth2 = window.gapi.auth2.getAuthInstance();
+      if (!auth2) {
+        throw new Error('Authentication instance not available');
+      }
+      log('Initiating sign-in');
       await auth2.signIn();
       updateAuthState(true);
-      NotificationManager.success('Successfully signed in!', 'Welcome', 3000);
     } catch (error) {
-      console.error('Sign-in failed:', error);
+      log('Sign-in failed', { error: error.message, details: error });
       let errorMessage = 'Failed to sign in. Please try again.';
       if (error.error === 'popup_closed_by_user') {
         errorMessage = 'Sign-in canceled. Please complete the sign-in process.';
       } else if (error.error === 'access_denied') {
         errorMessage = 'Permission denied. Please grant the required permissions to sign in.';
+      } else if (error.error === 'invalid_client') {
+        errorMessage = 'Invalid authentication configuration. Please contact support.';
+      } else if (error.message === 'Google Auth library not loaded' || error.message === 'Authentication instance not available') {
+        errorMessage = 'Authentication service unavailable. Please try again later.';
+      } else if (error.message.includes('null')) {
+        errorMessage = 'Authentication error: Service not initialized. Please try again.';
       }
       NotificationManager.error(errorMessage, 'Sign-In Error', 5000);
     } finally {
@@ -112,15 +142,24 @@ function App() {
 
   // Handle sign-out with debounce and error handling
   const handleSignOut = async () => {
-    if (authLoading) return; // Prevent multiple clicks
+    if (authLoading) {
+      log('Sign-out attempt ignored: authLoading is true');
+      return;
+    }
     setAuthLoading(true);
     try {
+      if (!window.gapi || !window.gapi.auth2) {
+        throw new Error('Google Auth library not loaded');
+      }
       const auth2 = window.gapi.auth2.getAuthInstance();
+      if (!auth2) {
+        throw new Error('Authentication instance not available');
+      }
+      log('Initiating sign-out');
       await auth2.signOut();
       updateAuthState(false);
-      NotificationManager.success('Successfully signed out.', 'Goodbye', 3000);
     } catch (error) {
-      console.error('Sign-out failed:', error);
+      log('Sign-out failed', { error: error.message, details: error });
       NotificationManager.error('Failed to sign out. Please try again.', 'Sign-Out Error', 5000);
     } finally {
       setAuthLoading(false);
@@ -151,6 +190,7 @@ function App() {
         loggedIn={loggedIn} 
         user={user}
       />
+      <NotificationContainer />
     </div>
   );
 }
