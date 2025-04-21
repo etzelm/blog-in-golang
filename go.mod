@@ -1,6 +1,6 @@
 module github.com/etzelm/blog-in-golang
 
-go 1.24
+go 1.24.2
 
 require (
 	github.com/aws/aws-sdk-go v1.55.6
@@ -58,5 +58,3 @@ require (
 	google.golang.org/protobuf v1.36.6 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-replace golang.org/x/crypto v0.0.0-20180222182404-49796115aa4b => github.com/golang/crypto v0.0.0-20180222182404-49796115aa4b
