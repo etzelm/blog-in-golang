@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import NavBar from './components/NavBar';
 import Main from './components/Main';
-import { NotificationManager, NotificationContainer } from 'react-notifications';
-import 'react-notifications/lib/notifications.css';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const log = (message, data = {}) => {
   console.log(JSON.stringify({
@@ -34,12 +34,12 @@ function App() {
       setUser(email);
       setLoggedIn(true);
       log('User signed in', { email });
-      NotificationManager.success('Successfully signed in!', 'Welcome', 3000);
+      toast.success('Successfully signed in!', { autoClose: 3000 });
     } else {
       setUser(null);
       setLoggedIn(false);
       log('User signed out');
-      NotificationManager.success('Successfully signed out.', 'Goodbye', 3000);
+      toast.success('Successfully signed out.', { autoClose: 3000 });
     }
   };
 
@@ -56,7 +56,7 @@ function App() {
 
         await window.gapi.load('auth2', () => {
           log('gapi.auth2 loaded');
-          const clientId = 'ThisIsSupposedToBeAnId';
+          const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID || 'ThisIsSupposedToBeAnId';
           log('Initializing Google Auth with client ID', { clientId });
 
           window.gapi.auth2.init({
@@ -68,7 +68,7 @@ function App() {
             const auth2 = window.gapi.auth2.getAuthInstance();
             if (!auth2) {
               log('Failed to get auth2 instance');
-              NotificationManager.error('Authentication setup failed. Please try again later.', 'Error', 5000);
+              toast.error('Authentication setup failed. Please try again later.', { autoClose: 5000 });
               setLoaded(true);
               return;
             }
@@ -88,13 +88,13 @@ function App() {
             };
           }).catch(error => {
             log('Google Auth initialization failed', { error: error.message, details: error });
-            NotificationManager.error('Failed to initialize authentication. Please try again later.', 'Error', 5000);
+            toast.error('Failed to initialize authentication. Please try again later.', { autoClose: 5000 });
             setLoaded(true);
           });
         });
       } catch (error) {
         log('Error loading Google Auth', { error: error.message });
-        NotificationManager.error('Failed to load authentication library. Please check your network and try again.', 'Error', 5000);
+        toast.error('Failed to load authentication library. Please check your network and try again.', { autoClose: 5000 });
         setLoaded(true);
       }
     };
@@ -129,12 +129,14 @@ function App() {
         errorMessage = 'Permission denied. Please grant the required permissions to sign in.';
       } else if (error.error === 'invalid_client') {
         errorMessage = 'Invalid authentication configuration. Please contact support.';
+      } else if (error.error === 'idpiframe_initialization_failed') {
+        errorMessage = 'Authentication configuration error. Please contact support.';
       } else if (error.message === 'Google Auth library not loaded' || error.message === 'Authentication instance not available') {
         errorMessage = 'Authentication service unavailable. Please try again later.';
       } else if (error.message.includes('null')) {
         errorMessage = 'Authentication error: Service not initialized. Please try again.';
       }
-      NotificationManager.error(errorMessage, 'Sign-In Error', 5000);
+      toast.error(errorMessage, { autoClose: 5000 });
     } finally {
       setAuthLoading(false);
     }
@@ -160,7 +162,7 @@ function App() {
       updateAuthState(false);
     } catch (error) {
       log('Sign-out failed', { error: error.message, details: error });
-      NotificationManager.error('Failed to sign out. Please try again.', 'Sign-Out Error', 5000);
+      toast.error('Failed to sign out. Please try again.', { autoClose: 5000 });
     } finally {
       setAuthLoading(false);
     }
@@ -190,7 +192,7 @@ function App() {
         loggedIn={loggedIn} 
         user={user}
       />
-      <NotificationContainer />
+      <ToastContainer />
     </div>
   );
 }
