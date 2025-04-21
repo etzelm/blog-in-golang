@@ -59,12 +59,10 @@ const MyListing = ({ loggedIn, user }) => {
   const [state, setState] = useState(() => {
     const search = location?.search || '';
     const urlParams = new URLSearchParams(search);
-    const listingId = urlParams.get('MLS'); // Changed from 'id' to 'MLS'
+    const listingId = urlParams.get('MLS');
     const isCreateMode = !listingId;
     log('Initializing state', { isCreateMode, loggedIn, user, instanceId, listingId });
     return {
-      loggedIn: !!loggedIn,
-      user: user || null,
       card: null,
       loaded: isCreateMode,
     };
@@ -87,7 +85,7 @@ const MyListing = ({ loggedIn, user }) => {
   useEffect(() => {
     const search = location?.search || '';
     const urlParams = new URLSearchParams(search);
-    const listingId = urlParams.get('MLS'); // Changed from 'id' to 'MLS'
+    const listingId = urlParams.get('MLS');
 
     if (!listingId) {
       log('Create mode, no fetch needed', { instanceId });
@@ -192,7 +190,7 @@ const MyListing = ({ loggedIn, user }) => {
       State: sanitizeInput(elements.State.value),
       Street1: sanitizeInput(elements.Address.value),
       Street2: sanitizeInput(elements.Address2.value) || '*',
-      User: state.user || '',
+      User: user || '',
       'Zip Code': sanitizeInput(elements.ZipCode.value),
     };
 
@@ -219,7 +217,7 @@ const MyListing = ({ loggedIn, user }) => {
     }
 
     try {
-      log('Submitting listing', { instanceId, mls: newUuid, user: state.user });
+      log('Submitting listing', { instanceId, mls: newUuid, user });
       const rawResponse = await fetch('/listings/add/HowMuchDoesSecurityCost', {
         method: 'POST',
         headers: {
@@ -250,13 +248,13 @@ const MyListing = ({ loggedIn, user }) => {
     }
     if (acceptedFiles.length > 0) {
       const file = acceptedFiles[0];
-      const path = `https://realtor-site-images.s3-us-west-1.amazonaws.com/media/${state.user}/${file.name}`;
+      const path = `https://realtor-site-images.s3-us-west-1.amazonaws.com/media/${user}/${file.name}`;
       safeSetState((prev) => {
         const newCard = prev.card ? { ...prev.card } : {};
         newCard['List Photo'] = path;
         return { ...prev, card: newCard };
       });
-      fetch(`/upload/image/${state.user || ''}`, {
+      fetch(`/upload/image/${user || ''}`, {
         method: 'POST',
         body: file,
       }).then((response) => {
@@ -265,7 +263,7 @@ const MyListing = ({ loggedIn, user }) => {
         log('List photo upload error', { instanceId, error: error.message });
       });
     }
-  }, [state.user, instanceId, safeSetState]);
+  }, [user, instanceId, safeSetState]);
 
   const onArrayDrop = useCallback((acceptedFiles) => {
     log('onArrayDrop triggered', { instanceId, fileCount: acceptedFiles.length });
@@ -274,7 +272,7 @@ const MyListing = ({ loggedIn, user }) => {
       return;
     }
     acceptedFiles.forEach((file) => {
-      const path = `https://realtor-site-images.s3-us-west-1.amazonaws.com/media/${state.user}/${file.name}`;
+      const path = `https://realtor-site-images.s3-us-west-1.amazonaws.com/media/${user}/${file.name}`;
       safeSetState((prev) => {
         const newCard = prev.card ? { ...prev.card } : { 'Photo Array': [] };
         const photoArr = Array.isArray(newCard['Photo Array']) ? [...newCard['Photo Array']] : [];
@@ -282,7 +280,7 @@ const MyListing = ({ loggedIn, user }) => {
         newCard['Photo Array'] = photoArr;
         return { ...prev, card: newCard };
       });
-      fetch(`/upload/image/${state.user || ''}`, {
+      fetch(`/upload/image/${user || ''}`, {
         method: 'POST',
         body: file,
       }).then((response) => {
@@ -291,7 +289,7 @@ const MyListing = ({ loggedIn, user }) => {
         log('Array photo upload error', { instanceId, error: error.message });
       });
     });
-  }, [state.user, instanceId, safeSetState]);
+  }, [user, instanceId, safeSetState]);
 
   const onRemove = useCallback((photo) => {
     log('onRemove triggered', { instanceId, photo });
@@ -325,7 +323,7 @@ const MyListing = ({ loggedIn, user }) => {
   log('Rendering MyListing', {
     instanceId,
     isClient: typeof window !== 'undefined',
-    loggedIn: state.loggedIn,
+    loggedIn,
     loaded: state.loaded,
     cardExists: !!state.card,
     photoArrayLength: state.card?.['Photo Array']?.length || 0,
@@ -384,7 +382,7 @@ const MyListing = ({ loggedIn, user }) => {
     return <div>Loading...</div>;
   }
 
-  if (!state.loggedIn) {
+  if (!loggedIn) {
     log('Rendering not logged in state', { instanceId });
     return (
       <div>
