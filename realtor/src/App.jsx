@@ -17,6 +17,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [loaded, setLoaded] = useState(false);
   const [authLoading, setAuthLoading] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
 
   // Function to update auth state
   const updateAuthState = (isSignedIn) => {
@@ -68,7 +69,9 @@ function App() {
             const auth2 = window.gapi.auth2.getAuthInstance();
             if (!auth2) {
               log('Failed to get auth2 instance');
-              toast.error('Authentication setup failed. Please try again later.', { autoClose: 5000 });
+              if (hasInteracted) {
+                toast.error('Authentication setup failed. Please try again later.', { autoClose: 5000 });
+              }
               setLoaded(true);
               return;
             }
@@ -87,20 +90,24 @@ function App() {
               }
             };
           }).catch(error => {
-            log('Google Auth initialization failed', { error: error.message, details: error });
-            toast.error('Failed to initialize authentication. Please try again later.', { autoClose: 5000 });
+            log('Google Auth initialization failed', { error: error.message || 'Unknown error', details: error });
+            if (hasInteracted) {
+              toast.error('Failed to initialize authentication. Please try again later.', { autoClose: 5000 });
+            }
             setLoaded(true);
           });
         });
       } catch (error) {
-        log('Error loading Google Auth', { error: error.message });
-        toast.error('Failed to load authentication library. Please check your network and try again.', { autoClose: 5000 });
+        log('Error loading Google Auth', { error: error.message || 'Unknown error' });
+        if (hasInteracted) {
+          toast.error('Failed to load authentication library. Please check your network and try again.', { autoClose: 5000 });
+        }
         setLoaded(true);
       }
     };
 
     initGoogleAuth();
-  }, []);
+  }, [hasInteracted]);
 
   // Handle sign-in with debounce and error handling
   const handleSignIn = async () => {
@@ -109,6 +116,7 @@ function App() {
       return;
     }
     setAuthLoading(true);
+    setHasInteracted(true);
     try {
       if (!window.gapi || !window.gapi.auth2) {
         throw new Error('Google Auth library not loaded');
@@ -121,22 +129,15 @@ function App() {
       await auth2.signIn();
       updateAuthState(true);
     } catch (error) {
-      log('Sign-in failed', { error: error.message, details: error });
-      let errorMessage = 'Failed to sign in. Please try again.';
+      const errorMessage = error.message || (error.error ? error.error : 'Unknown error');
+      log('Sign-in failed', { error: errorMessage, details: error });
+      let displayMessage = 'Failed to sign in. Please try again.';
       if (error.error === 'popup_closed_by_user') {
-        errorMessage = 'Sign-in canceled. Please complete the sign-in process.';
+        displayMessage = 'Sign-in canceled. Please complete the sign-in process.';
       } else if (error.error === 'access_denied') {
-        errorMessage = 'Permission denied. Please grant the required permissions to sign in.';
-      } else if (error.error === 'invalid_client') {
-        errorMessage = 'Invalid authentication configuration. Please contact support.';
-      } else if (error.error === 'idpiframe_initialization_failed') {
-        errorMessage = 'Authentication configuration error. Please contact support.';
-      } else if (error.message === 'Google Auth library not loaded' || error.message === 'Authentication instance not available') {
-        errorMessage = 'Authentication service unavailable. Please try again later.';
-      } else if (error.message.includes('null')) {
-        errorMessage = 'Authentication error: Service not initialized. Please try again.';
+        displayMessage = 'Permission denied. Please grant the required permissions to sign in.';
       }
-      toast.error(errorMessage, { autoClose: 5000 });
+      toast.error(displayMessage, { autoClose: 5000 });
     } finally {
       setAuthLoading(false);
     }
@@ -149,6 +150,7 @@ function App() {
       return;
     }
     setAuthLoading(true);
+    setHasInteracted(true);
     try {
       if (!window.gapi || !window.gapi.auth2) {
         throw new Error('Google Auth library not loaded');
@@ -161,7 +163,8 @@ function App() {
       await auth2.signOut();
       updateAuthState(false);
     } catch (error) {
-      log('Sign-out failed', { error: error.message, details: error });
+      const errorMessage = error.message || (error.error ? error.error : 'Unknown error');
+      log('Sign-out failed', { error: errorMessage, details: error });
       toast.error('Failed to sign out. Please try again.', { autoClose: 5000 });
     } finally {
       setAuthLoading(false);
@@ -170,10 +173,10 @@ function App() {
 
   // Log state changes
   useEffect(() => {
-    log('App state changed', { loggedIn, user, loaded, authLoading });
-  }, [loggedIn, user, loaded, authLoading]);
+    log('App state changed', { loggedIn, user, loaded, authLoading, hasInteracted });
+  }, [loggedIn, user, loaded, authLoading, hasInteracted]);
 
-  log('App rendering', { loggedIn, user, loaded, authLoading });
+  log('App rendering', { loggedIn, user, loaded, authLoading, hasInteracted });
 
   if (!loaded) {
     return <div>Loading...</div>;
