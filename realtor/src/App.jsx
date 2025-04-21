@@ -56,7 +56,7 @@ function App() {
 
         await window.gapi.load('auth2', () => {
           log('gapi.auth2 loaded');
-          const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID || 'ThisIsSupposedToBeAnId';
+          const clientId = 'ThisIsSupposedToBeAnId';
           log('Initializing Google Auth with client ID', { clientId });
 
           window.gapi.auth2.init({
