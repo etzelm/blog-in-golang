@@ -26,14 +26,14 @@ const MyListings = (props) => {
     <div>
       {!props.loggedIn && (
         <div style={{ textAlign: "center", marginTop: "50px" }}>
-          <h3>Please sign in above to see your listed properties.</h3>
-          <h3>Thank you.</h3>
+          <br/><br/><br/><h3>Please sign in above to see your listed properties.</h3>
+          <br/><h3>Thank you.</h3>
         </div>
       )}
 
       {props.loggedIn && cards.length === 0 && (
-        <div style={{ textAlign: "center", marginTop: "50px" }}>
-          <h3>You have no properties listed with us.</h3>
+        <div style={{ textAlign: "center", marginTop: "100px" }}>
+          <br/><br/><br/><h3>You have no properties listed with us.</h3>
         </div>
       )}
 
