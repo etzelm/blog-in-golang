@@ -17,50 +17,8 @@ function App() {
   const [user, setUser] = useState(null);
   const [loaded, setLoaded] = useState(false);
   const [authLoading, setAuthLoading] = useState(false);
-  const [hasInteracted, setHasInteracted] = useState(false);
-  const [justSignedIn, setJustSignedIn] = useState(false);
 
-  // Function to update auth state
-  const updateAuthState = (isSignedIn, isSignInAction = false) => {
-    if (!window.gapi || !window.gapi.auth2) {
-      log('Cannot update auth state: gapi.auth2 not available');
-      return;
-    }
-    const auth2 = window.gapi.auth2.getAuthInstance();
-    if (!auth2) {
-      log('Cannot update auth state: auth2 instance is null');
-      return;
-    }
-    if (isSignedIn) {
-      const email = auth2.currentUser.get().getBasicProfile().getEmail();
-      setUser(email);
-      setLoggedIn(true);
-      log('User signed in', { email });
-      if (isSignInAction) {
-        setJustSignedIn(true);
-        toast.success('Successfully signed in!', { autoClose: 3000 });
-      }
-    } else {
-      setUser(null);
-      setLoggedIn(false);
-      log('User signed out');
-      if (isSignInAction) {
-        toast.success('Successfully signed out.', { autoClose: 3000 });
-      }
-    }
-  };
-
-  // Clear justSignedIn flag after showing the toast
-  useEffect(() => {
-    if (justSignedIn) {
-      const timer = setTimeout(() => {
-        setJustSignedIn(false);
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [justSignedIn]);
-
-  // Auth initialization (runs once)
+  // Initialize Google Auth
   useEffect(() => {
     const initGoogleAuth = async () => {
       try {
@@ -86,112 +44,104 @@ function App() {
             const auth2 = window.gapi.auth2.getAuthInstance();
             if (!auth2) {
               log('Failed to get auth2 instance');
-              if (hasInteracted) {
-                toast.error('Authentication setup failed. Please try again later.', { autoClose: 5000 });
-              }
+              toast.error('Authentication setup failed.', { autoClose: 5000 });
               setLoaded(true);
               return;
             }
-            // Do not automatically restore session on page load
-            setLoaded(true);
+
+            // Check if user manually signed out
+            const isSignedOut = localStorage.getItem('signedOut') === 'true';
+            if (!isSignedOut && auth2.isSignedIn.get()) {
+              const email = auth2.currentUser.get().getBasicProfile().getEmail();
+              setUser(email);
+              setLoggedIn(true);
+              log('Session restored', { email });
+            }
 
             // Listen for sign-in state changes
-            const listener = auth2.isSignedIn.listen((isSignedIn) => {
-              updateAuthState(isSignedIn, true);
-            });
-            log('Sign-in state listener added');
-
-            // Clean up listener on unmount
-            return () => {
-              if (listener) {
-                log('Cleaning up auth listener');
+            auth2.isSignedIn.listen((isSignedIn) => {
+              if (isSignedIn) {
+                const email = auth2.currentUser.get().getBasicProfile().getEmail();
+                setUser(email);
+                setLoggedIn(true);
+                localStorage.removeItem('signedOut');
+                log('User signed in via listener', { email });
+              } else {
+                setUser(null);
+                setLoggedIn(false);
+                localStorage.setItem('signedOut', 'true');
+                log('User signed out via listener');
               }
-            };
+            });
+
+            setLoaded(true);
           }).catch(error => {
-            log('Google Auth initialization failed', { error: error.message || 'Unknown error', details: error });
-            if (hasInteracted) {
-              toast.error('Failed to initialize authentication. Please try again later.', { autoClose: 5000 });
-            }
+            log('Google Auth initialization failed', { error: error.message || 'Unknown error' });
+            toast.error('Failed to initialize authentication.', { autoClose: 5000 });
             setLoaded(true);
           });
         });
       } catch (error) {
         log('Error loading Google Auth', { error: error.message || 'Unknown error' });
-        if (hasInteracted) {
-          toast.error('Failed to load authentication library. Please check your network and try again.', { autoClose: 5000 });
-        }
+        toast.error('Failed to load authentication library.', { autoClose: 5000 });
         setLoaded(true);
       }
     };
 
     initGoogleAuth();
-  }, [hasInteracted]);
+  }, []);
 
-  // Clear cookies on sign-out
-  const clearCookies = () => {
-    document.cookie = 'user=; Max-Age=0; path=/; domain=mitchelletzel.com';
-    document.cookie = 'userToken=; Max-Age=0; path=/; domain=mitchelletzel.com';
-    log('Cookies cleared', { cookies: ['user', 'userToken'] });
-  };
-
-  // Handle sign-in with debounce and error handling
+  // Handle sign-in
   const handleSignIn = async () => {
     if (authLoading) {
       log('Sign-in attempt ignored: authLoading is true');
       return;
     }
     setAuthLoading(true);
-    setHasInteracted(true);
     try {
-      if (!window.gapi || !window.gapi.auth2) {
-        throw new Error('Google Auth library not loaded');
-      }
       const auth2 = window.gapi.auth2.getAuthInstance();
-      if (!auth2) {
-        throw new Error('Authentication instance not available');
-      }
+      if (!auth2) throw new Error('Authentication instance not available');
       log('Initiating sign-in');
       await auth2.signIn();
-      updateAuthState(true, true);
+      const email = auth2.currentUser.get().getBasicProfile().getEmail();
+      setUser(email);
+      setLoggedIn(true);
+      localStorage.removeItem('signedOut');
+      log('User signed in', { email });
+      toast.success('Successfully signed in!', { autoClose: 3000, toastId: 'sign-in' });
     } catch (error) {
-      const errorMessage = error.message || (error.error ? error.error : 'Unknown error');
-      log('Sign-in failed', { error: errorMessage, details: error });
-      let displayMessage = 'Failed to sign in. Please try again.';
-      if (error.error === 'popup_closed_by_user') {
-        displayMessage = 'Sign-in canceled. Please complete the sign-in process.';
-      } else if (error.error === 'access_denied') {
-        displayMessage = 'Permission denied. Please grant the required permissions to sign in.';
-      }
+      log('Sign-in failed', { error: error.message || (error.error ? error.error : 'Unknown error') });
+      const displayMessage = error.error === 'popup_closed_by_user'
+        ? 'Sign-in canceled.'
+        : error.error === 'access_denied'
+        ? 'Permission denied.'
+        : 'Failed to sign in.';
       toast.error(displayMessage, { autoClose: 5000 });
     } finally {
       setAuthLoading(false);
     }
   };
 
-  // Handle sign-out with debounce and error handling
+  // Handle sign-out
   const handleSignOut = async () => {
     if (authLoading) {
       log('Sign-out attempt ignored: authLoading is true');
       return;
     }
     setAuthLoading(true);
-    setHasInteracted(true);
     try {
-      if (!window.gapi || !window.gapi.auth2) {
-        throw new Error('Google Auth library not loaded');
-      }
       const auth2 = window.gapi.auth2.getAuthInstance();
-      if (!auth2) {
-        throw new Error('Authentication instance not available');
-      }
+      if (!auth2) throw new Error('Authentication instance not available');
       log('Initiating sign-out');
-      await auth2.disconnect(); // Use disconnect to revoke access
-      clearCookies(); // Clear application cookies
-      updateAuthState(false, true);
+      await auth2.signOut();
+      setUser(null);
+      setLoggedIn(false);
+      localStorage.setItem('signedOut', 'true');
+      log('Sign-out successful');
+      toast.success('Successfully signed out.', { autoClose: 3000, toastId: 'sign-out' });
     } catch (error) {
-      const errorMessage = error.message || (error.error ? error.error : 'Unknown error');
-      log('Sign-out failed', { error: errorMessage, details: error });
-      toast.error('Failed to sign out. Please try again.', { autoClose: 5000 });
+      log('Sign-out failed', { error: error.message || (error.error ? error.error : 'Unknown error') });
+      toast.error('Failed to sign out.', { autoClose: 5000 });
     } finally {
       setAuthLoading(false);
     }
@@ -199,10 +149,10 @@ function App() {
 
   // Log state changes
   useEffect(() => {
-    log('App state changed', { loggedIn, user, loaded, authLoading, hasInteracted, justSignedIn });
-  }, [loggedIn, user, loaded, authLoading, hasInteracted, justSignedIn]);
+    log('App state changed', { loggedIn, user, loaded, authLoading });
+  }, [loggedIn, user, loaded, authLoading]);
 
-  log('App rendering', { loggedIn, user, loaded, authLoading, hasInteracted, justSignedIn });
+  log('App rendering', { loggedIn, user, loaded, authLoading });
 
   if (!loaded) {
     return <div>Loading...</div>;
