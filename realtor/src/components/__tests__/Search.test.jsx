@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen, waitFor, cleanup } from '@testing-library/react';
-import { BrowserRouter } from 'react-router';
+import { BrowserRouter, MemoryRouter } from 'react-router';
 import Home from '../Home';
+import Search from '../Search';
 import '@testing-library/jest-dom';
 
 // Mock fetch
@@ -149,5 +150,20 @@ describe('Home Component', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
     const finalTiles = screen.getAllByTestId(/tile-\d+/);
     expect(finalTiles.length).toBe(5);
+  });
+});
+
+describe('Search.jsx', () => {
+  it('renders search form when not logged in', async () => {
+    render(
+      <MemoryRouter>
+        <Search loggedIn={false} user={null} />
+      </MemoryRouter>
+    );
+
+    // Check for form labels to confirm form rendering
+    expect(screen.getByLabelText('City')).toBeInTheDocument();
+    expect(screen.getByLabelText('State')).toBeInTheDocument();
+    expect(screen.getByLabelText('Zip Code')).toBeInTheDocument();
   });
 });
