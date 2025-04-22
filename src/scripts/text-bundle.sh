@@ -1,0 +1,79 @@
+#!/bin/bash
+
+# Script to combine multiple source code files into a single text file
+# for the realtor React app and blog Go app
+
+# Output file
+OUTPUT_FILE="combined_code_snapshot.txt"
+TIMESTAMP=$(date +"%Y-%m-%d %H:%M:%S")
+
+# Initialize the output file with a header
+echo "Combined Code Snapshot - Generated on $TIMESTAMP" > "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+
+# Function to append a file to the output with delimiters
+append_file() {
+    local file_path="$1"
+    if [ -f "$file_path" ]; then
+        echo "// Start of $file_path //" >> "$OUTPUT_FILE"
+        echo "" >> "$OUTPUT_FILE"
+        cat "$file_path" >> "$OUTPUT_FILE"
+        echo "" >> "$OUTPUT_FILE"
+        echo "// End of $file_path //" >> "$OUTPUT_FILE"
+        echo "" >> "$OUTPUT_FILE"
+    else
+        echo "Warning: File $file_path not found" >&2
+    fi
+}
+
+# List of files from realtor React app (adjusted for realtor/src directory)
+REACT_FILES=(
+    "realtor/src/index.jsx"
+    "realtor/src/components/MyListing.jsx"
+    "realtor/src/components/Listing.jsx"
+    "realtor/src/components/TileDeck.jsx"
+    "realtor/src/components/NavBar.jsx"
+    "realtor/src/components/Tile.jsx"
+    "realtor/src/components/Home.jsx"
+    "realtor/src/components/Main.jsx"
+    "realtor/src/components/MyListings.jsx"
+    "realtor/src/components/Search.jsx"
+    "realtor/src/App.jsx"
+    "realtor/package.json"
+)
+
+# List of files from blog Go app
+GO_FILES=(
+    ".github/workflows/NAS-workflow.yml"
+    "docker-compose.yml"
+    "Dockerfile"
+    "README.md"
+    "go.mod"
+    "app.go"
+    "daemon/articles/awsEMR/awsEMR.go"
+    "daemon/articles/infraCode/infraCode.go"
+    "daemon/articles/graphStore/graphStore.go"
+    "daemon/articles/reactRealtor/reactRealtor.go"
+    "daemon/articles/googleSRE/googleSRE.go"
+    "daemon/app.go"
+    "src/models/realtor.models.go"
+    "src/models/blog.models.go"
+    "src/models/auth.models.go"
+    "src/handlers/blog.handlers.go"
+    "src/handlers/auth.handlers.go"
+    "src/handlers/realtor.handlers.go"
+)
+
+# Append React app files
+echo "Appending React app files..." >&2
+for file in "${REACT_FILES[@]}"; do
+    append_file "$file"
+done
+
+# Append Go app files
+echo "Appending Go app files..." >&2
+for file in "${GO_FILES[@]}"; do
+    append_file "$file"
+done
+
+echo "Code snapshot generated at $OUTPUT_FILE" >&2
