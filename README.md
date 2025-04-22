@@ -2,7 +2,8 @@
 
 ![Go](https://img.shields.io/badge/Go-1.24+-00ADD8.svg?style=flat&logo=go)
 ![React](https://img.shields.io/badge/React-19.1+-61DAFB.svg?style=flat&logo=react)
-![AWS](https://img.shields.io/badge/AWS-CloudFront%20%7C%20DynamoDB%20%7C%20S3-FF9900.svg?style=flat&logo=amazonaws)
+![AWS](https://img.shields.io/badge/AWS-ACM%20%7C%20CloudFront%20%7C%20DynamoDB%20%7C%20S3%20%7C%20Route53-FF9900.svg?style=flat&logo=amazonaws)
+![GCP Compute Engine](https://img.shields.io/badge/GCP-Compute%20Engine-4285F4.svg?style=flat&logo=google-cloud)
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
 
 A full-stack web application featuring a blog and realtor listing service. Built with **Go** (Gin) for the blog/backend, **React** for the sample frontend application, and **AWS DynamoDB/S3** for storage. Supports user authentication, blog post management, and real estate CRUD/search.
