@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen, waitFor, cleanup } from '@testing-library/react';
 import { BrowserRouter } from 'react-router';
 import Home from '../Home';
+import Tile from '../Tile';
 import '@testing-library/jest-dom';
 
 // Mock fetch
@@ -150,4 +151,36 @@ describe('Home Component', () => {
     const finalTiles = screen.getAllByTestId(/tile-\d+/);
     expect(finalTiles.length).toBe(5);
   });
+});
+
+it('renders Tile with listing details', () => {
+  const listing = {
+    MLS: '1234567890',
+    Street1: '123 Real St',
+    Street2: 'Apt 4',
+    City: 'Bend',
+    State: 'OR',
+    "Zip Code": '97701',
+    "Sales Price": '500,000',
+    "Square Feet": '1200',
+    "Lot Size": '1500',
+    Bedrooms: '3',
+    Bathrooms: '2',
+    "Last Modified": String(new Date().getTime() - 86400000), // 1 day ago
+    deleted: 'false',
+  };
+
+  render(
+    <BrowserRouter>
+      <Tile card={listing} user={null} />
+    </BrowserRouter>
+  );
+
+  expect(screen.getByTestId('tile-1234567890')).toBeInTheDocument();
+  expect(screen.getByText(/123 Real St, Apt 4 | Bend, OR 97701/)).toBeInTheDocument();
+  expect(screen.getByText(/Price: \$500,000/)).toBeInTheDocument();
+  expect(screen.getByText(/Beds: 3 | Baths: 2/)).toBeInTheDocument();
+  expect(screen.getByText(/Square Feet: 1200 | Lot Size: 1500/)).toBeInTheDocument();
+  expect(screen.getByText(/Last updated:/)).toBeInTheDocument();
+  expect(screen.getByText(/1 days ago/)).toBeInTheDocument();
 });

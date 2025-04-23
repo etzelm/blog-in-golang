@@ -28,7 +28,15 @@ append_file() {
 
 # List of files from realtor React app (adjusted for realtor/src directory)
 REACT_FILES=(
-    "realtor/src/index.jsx"
+    "realtor/src/components/__tests__/index.test.jsx"
+    "realtor/src/components/__tests__/App.test.jsx"
+    "realtor/src/components/__tests__/Home.test.jsx"
+    "realtor/src/components/__tests__/Listing.test.jsx"
+    "realtor/src/components/__tests__/Main.test.jsx"
+    "realtor/src/components/__tests__/MyListing.test.jsx"
+    "realtor/src/components/__tests__/MyListings.test.jsx"
+    "realtor/src/components/__tests__/NavBar.test.jsx"
+    "realtor/src/components/__tests__/Search.test.jsx"
     "realtor/src/components/MyListing.jsx"
     "realtor/src/components/Listing.jsx"
     "realtor/src/components/TileDeck.jsx"
@@ -38,8 +46,17 @@ REACT_FILES=(
     "realtor/src/components/Main.jsx"
     "realtor/src/components/MyListings.jsx"
     "realtor/src/components/Search.jsx"
+    "realtor/src/index.jsx"
     "realtor/src/App.jsx"
+    "realtor/src/setupTests.jsx"
     "realtor/package.json"
+    "realtor/vitest.config.js"
+    "realtor/test-data/index.js"
+    "realtor/test-data/listing1.json"
+    "realtor/test-data/listing2.json"
+    "realtor/test-data/listing3.json"
+    "realtor/test-data/listing4.json"
+    "realtor/test-data/listing5.json"
 )
 
 # List of files from blog Go app
