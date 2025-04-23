@@ -34,3 +34,24 @@ describe('NavBar', () => {
     expect(screen.getByText('Sign In')).toBeInTheDocument();
   });
 });
+
+it('renders NavDropdown when logged in', () => {
+  render(
+    <MemoryRouter>
+      <NavBar loggedIn={true} user="test@example.com" onSignIn={() => {}} onSignOut={() => {}} authLoading={false} />
+    </MemoryRouter>
+  );
+  expect(screen.getByText('test@example.com')).toBeInTheDocument();
+  expect(screen.getByText('List Your Property')).toBeInTheDocument();
+});
+
+it('renders disabled Sign In button when authLoading is true', () => {
+  render(
+    <MemoryRouter>
+      <NavBar loggedIn={false} user={null} onSignIn={() => {}} onSignOut={() => {}} authLoading={true} />
+    </MemoryRouter>
+  );
+  const signInButton = screen.getByText('Signing In...');
+  expect(signInButton).toBeInTheDocument();
+  expect(signInButton).toBeDisabled();
+});
