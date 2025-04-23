@@ -28,6 +28,7 @@ append_file() {
 
 # List of files from realtor React app (adjusted for realtor/src directory)
 REACT_FILES=(
+    "realtor/src/components/__tests__/index.test.jsx"
     "realtor/src/components/__tests__/App.test.jsx"
     "realtor/src/components/__tests__/Home.test.jsx"
     "realtor/src/components/__tests__/Listing.test.jsx"
