@@ -225,4 +225,152 @@ describe('MyListing Component - Edit Mode', () => {
        expect(fetchMock).not.toHaveBeenCalledWith('/listings/add/HowMuchDoesSecurityCost', expect.any(Object));
     });
   // --- END OF NEW TEST ---
+
+  // --- SIMPLER TEST FOR EMPTY PHOTO ARRAY ---
+  it('should render the form and an empty carousel when Photo Array is empty', async () => {
+    const userEmail = 'test@example.com';
+    // 1. Define mock data with an empty Photo Array
+    const mockDataEmptyPhotos = {
+      ...mockListingData, // Use other data from existing mock
+      'Photo Array': []   // Override Photo Array to be empty
+    };
+
+    // Mock fetch to return the specific data for this test
+    fetchMock.mockImplementationOnce((url) => {
+        if (url.startsWith('/listing/edit-123')) {
+             return Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve([mockDataEmptyPhotos]), // Return data with empty array
+            });
+        }
+         return Promise.resolve({ ok: true, json: () => Promise.resolve({}) }); // Default fallback
+    });
+
+
+    const { container } = render(
+      <MemoryRouter initialEntries={['/realtor/my-listing?MLS=edit-123']}>
+        <Routes>
+          <Route
+            path="/realtor/my-listing"
+            element={<MyListing loggedIn={true} user={userEmail} />}
+          />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    // 2. Wait for form to load and check carousel emptiness
+    await waitFor(() => {
+      // Verify a form field is populated (ensures form loaded)
+      expect(screen.getByLabelText('Address')).toHaveValue(mockDataEmptyPhotos.Street1);
+
+      // Verify the carousel structure is present but contains no items/images
+      const carousel = container.querySelector('.carousel.slide');
+      expect(carousel).toBeInTheDocument();
+      const carouselItems = container.querySelectorAll('.carousel-item');
+      expect(carouselItems.length).toBe(0); // ASSERT: No items in the carousel
+    });
+
+     // 3. Verify fetch was called
+     expect(fetchMock).toHaveBeenCalledWith('/listing/edit-123', expect.any(Object));
+  });
+  // --- END OF SIMPLER TEST ---
+
+  // --- TEST FOR FAILED INITIAL DATA FETCH ---
+  it('should render empty form when initial data fetch fails', async () => {
+    const userEmail = 'test@example.com';
+    const consoleLogSpy = vi.spyOn(console, 'log'); // Spy on console.log
+
+    // 1. Mock fetch to simulate a failed network response for the listing
+    fetchMock.mockImplementationOnce(async (url) => {
+      if (url.startsWith('/listing/edit-123')) {
+        // Simulate a server error response
+        return Promise.resolve({
+          ok: false, // Indicate failure
+          status: 500,
+          json: () => Promise.resolve({ message: 'Server Error' }) // Mock error body
+        });
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve({}) }); // Default
+    });
+
+    // 2. Render component in edit mode, triggering the fetch
+    render(
+      <MemoryRouter initialEntries={['/realtor/my-listing?MLS=edit-123']}>
+        <Routes>
+          <Route
+            path="/realtor/my-listing"
+            element={<MyListing loggedIn={true} user={userEmail} />}
+          />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    // 3. Verify form renders empty and error was logged
+    await waitFor(() => {
+      // Check fetch was called
+      expect(fetchMock).toHaveBeenCalledWith('/listing/edit-123', expect.any(Object));
+
+      // Check that the component logged the fetch error [cite: 207]
+      // The component uses a custom log function stringifying JSON
+      expect(consoleLogSpy).toHaveBeenCalledWith(
+        expect.stringContaining('fetchListing error')
+      );
+      expect(consoleLogSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Failed to fetch listing: 500')
+      );
+
+      // Check a form field is rendered but empty (as fetch failed)
+      expect(screen.getByLabelText('Address')).toHaveValue('');
+    });
+
+    consoleLogSpy.mockRestore(); // Clean up spy
+  });
+  // --- END OF FAILED FETCH TEST ---
+  // --- TEST FOR ADDRESS 2 RENDERING WHEN Street2 IS "*" ---
+  it('should render Address 2 input as empty if fetched Street2 is "*"', async () => {
+    const userEmail = 'test@example.com';
+
+    // 1. Mock data ensuring Street2 is exactly "*"
+    const mockDataWithStarStreet2 = {
+      ...mockListingData, // Use base mock data
+      Street2: '*'       // Set Street2 to "*"
+    };
+
+    // Mock fetch to return this specific data for the listing
+    fetchMock.mockImplementationOnce(async (url) => {
+      if (url.startsWith('/listing/edit-123')) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve([mockDataWithStarStreet2]),
+        });
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve({}) }); // Default fallback
+    });
+
+    // 2. Render component in edit mode
+    render(
+      <MemoryRouter initialEntries={['/realtor/my-listing?MLS=edit-123']}>
+        <Routes>
+          <Route
+            path="/realtor/my-listing"
+            element={<MyListing loggedIn={true} user={userEmail} />}
+          />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    // 3. Wait for form and assert Address 2 input value is empty
+    await waitFor(() => {
+      // Find the Address 2 input field by its label
+      const address2Input = screen.getByLabelText('Address 2');
+      expect(address2Input).toBeInTheDocument();
+      // Assert that its value is an empty string because Street2 was "*"
+      expect(address2Input).toHaveValue('');
+    });
+
+    // Also verify the fetch was called as expected
+    expect(fetchMock).toHaveBeenCalledWith('/listing/edit-123', expect.any(Object));
+  });
+  // --- END OF ADDRESS 2 TEST ---
+
 });
