@@ -88,7 +88,6 @@ describe('Tile Component', () => {
             'Content-Type': 'application/json',
           },
           // Check that the body contains the updated 'deleted' status
-          body: expect.stringContaining(`"MLS":"${mockListing.MLS}"`),
           body: expect.stringContaining(`"deleted":"true"`), // Should now be true
         })
       );
