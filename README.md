@@ -19,55 +19,57 @@ A full-stack web application featuring a blog and realtor listing service. Built
   - Build docker containers on push to `develop`/`master`
   - Deploy to NAS/GCP containers conditionally based on branch
   - Invalidate CloudFront caches
-  - Test deployed URLs listed in `.github/workflows/public-urls.txt` or `.github/workflows/local-urls.txt`
+  - Test deployed URLs listed in 
+    - `.github/workflows/public-urls.txt`
+    - `.github/workflows/local-urls.txt`
 
 ## Environment Variables
 
 The application and deployment scripts rely on several environment variables. Key variables include:
 
--   `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`: For AWS API access (DynamoDB, S3, CloudFront).
--   `GAPI`: Your Google API Client ID for the React frontend authentication.
--   `ARTICLES`: The DynamoDB table name for blog articles (e.g., `Live-Articles`, `Test-Articles`).
--   `NAS_*`, `GCP_*`: Secrets for deploying to NAS and GCP environments (defined in GitHub Secrets).
--   `DISTRIBUTION_ID1`, `DISTRIBUTION_ID2`: CloudFront distribution IDs for cache invalidation.
+- `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`: For AWS API access (DynamoDB, S3, CloudFront).
+- `GAPI`: Your Google API Client ID for the React frontend authentication.
+- `ARTICLES`: The DynamoDB table name for blog articles (e.g., `Live-Articles`, `Test-Articles`).
+- `NAS_*`, `GCP_*`: Secrets for deploying to NAS and GCP environments (defined in GitHub Secrets).
+- `DISTRIBUTION_ID1`, `DISTRIBUTION_ID2`: CloudFront distribution IDs for cache invalidation.
 
-Ensure these are configured appropriately in your local environment (e.g., via `.env` file, though beware of committing secrets) or in your CI/CD environment settings.
+Ensure these are configured appropriately in your local environment and/or in your CI/CD settings.
 
 ## Sample Commands
 
--   **Local Development & Testing**:
-    -   Install frontend dependencies: `cd realtor && yarn install`
-    -   Test frontend (using Vitest): `yarn test`
-    -   Build frontend: `yarn build`
-    -   Install backend dependencies: `cd .. && go mod download`
-    -   Run backend server: `go run app.go` (Server typically runs on port 8080 for HTTP if not using CertMagic, or 80/443 with CertMagic)
-    -   Run article update daemon (example for ID 1): `cd daemon && go run app.go 1` (This pushes specific article content to DynamoDB)
+- **Local Development & Testing**:
+  - Install frontend dependencies: `cd realtor && yarn install`
+  - Test frontend (using Vitest): `yarn test`
+  - Build frontend: `yarn build`
+  - Install backend dependencies: `cd .. && go mod download`
+  - Run backend server: `go run app.go` 
+  - Run article update daemon: `cd daemon && go run app.go 1`
 
--   **Docker Helper Commands**:
-    -   Stop all containers: `docker stop $(docker ps -aq)`
-    -   Remove all containers: `docker rm $(docker ps -aq)`
-    -   Remove all images: `docker rmi --force $(docker images -q)`
-    -   Build image (match tag to branch/env): `docker build -t blog:<your-branch-name> .` (e.g., `blog:develop`, `blog:latest`)
-    -   Run container (example mapping host 80 to container 8080): `docker run -d -p 80:8080 blog:<tag>` (Adjust port mapping as needed based on local setup)
-    -   Start with compose (uses `docker-compose.yml`): `docker compose up --force-recreate -d`
-    -   Stop with compose: `docker compose down`
-    -   Clean up unused Docker resources: `docker system prune -a -f`
+- **Docker Helper Commands**:
+  - Stop all containers: `docker stop $(docker ps -aq)`
+  - Remove all containers: `docker rm $(docker ps -aq)`
+  - Remove all images: `docker rmi --force $(docker images -q)`
+  - Build image(match tag to branch/env): `docker build -t blog:<your-branch-name> .`
+  - Run container: `docker run -d -p 80:8080 blog:<tag>` 
+  - Start with compose: `docker compose up --force-recreate -d`
+  - Stop with compose: `docker compose down`
+  - Clean up unused Docker resources: `docker system prune -a -f`
 
 ## Features
 
--   **Blog**: Create and categorize posts using Go templates, stored in DynamoDB.
--   **Realtor**: React-based SPA to manage listings with image uploads (to S3) and multi-parameter searches, data stored in DynamoDB.
--   **Auth**: Google OAuth2 integration in React frontend, potentially custom Go auth (`/auth` route exists but implementation details may vary).
--   **Performance**: Gin middleware for Gzip compression and caching (in-memory and HTTP headers).
--   **Security**: Basic middleware to block common malicious request paths. Automatic HTTPS via CertMagic in production environments.
+- **Blog**: Create and categorize posts using Go templates, stored in DynamoDB.
+- **Realtor**: React-based SPA to manage listings with image uploads and multi-parameter searches.
+- **Auth**: Google OAuth2 integration in React frontend as well as a custom Go auth API implementation.
+- **Performance**: Gin middleware for Gzip compression and caching (in-memory and HTTP headers).
+- **Security**: Middleware to block malicious request paths. Automatic HTTPS via CertMagic in prod envs.
 
 ## Contributing
 
--   Fork the repository.
--   Create a feature branch: `git checkout -b feature/your-amazing-feature`
--   Commit your changes: `git commit -m "Add some amazing feature"`
--   Push to the branch: `git push origin feature/your-amazing-feature`
--   Open a Pull Request.
+- Fork the repository.
+- Create a feature branch: `git checkout -b feature/your-amazing-feature`
+- Commit your changes: `git commit -m "Add some amazing feature"`
+- Push to the branch: `git push origin feature/your-amazing-feature`
+- Open a Pull Request.
 
 ## Contact
 
