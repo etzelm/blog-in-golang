@@ -3,7 +3,7 @@
 ![Go](https://img.shields.io/badge/Go-1.24+-00ADD8.svg?style=flat&logo=go)
 ![React](https://img.shields.io/badge/React-19.1+-61DAFB.svg?style=flat&logo=react)
 ![Testing](https://img.shields.io/badge/Testing-Vitest-green.svg?style=flat&logo=vitest)
-![Coverage](https://img.shields.io/badge/Code%20Coverage->90%-green.svg?style=flat&logo=vitest)
+![Code Coverage](https://img.shields.io/badge/Code%20Coverage-%3E90%25-green.svg?style=flat&logo=vitest)
 ![AWS](https://img.shields.io/badge/AWS-ACM%20%7C%20CloudFront%20%7C%20DynamoDB%20%7C%20Route53%20%7C%20S3-FF9900.svg?style=flat&logo=amazonaws)
 ![GCP Compute Engine](https://img.shields.io/badge/GCP-Compute%20Engine-4285F4.svg?style=flat&logo=google-cloud)
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
