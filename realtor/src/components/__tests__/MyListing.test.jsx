@@ -2,7 +2,8 @@
 
 import React from 'react'; // Added React
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'; // Added vi
-import { render, screen, cleanup, fireEvent, waitFor } from '@testing-library/react'; // Added fireEvent, waitFor
+// Import within from @testing-library/dom to scope queries
+import { render, screen, cleanup, fireEvent, waitFor, within } from '@testing-library/react'; // Added fireEvent, waitFor, within
 import { BrowserRouter, MemoryRouter, Route, Routes } from 'react-router'; // Added MemoryRouter, Route, Routes, updated react-router import
 import MyListing from '../MyListing';
 import '@testing-library/jest-dom';
@@ -88,7 +89,7 @@ const mockListingData = {
   'Date Listed': String(new Date().getTime() - 86400000 * 2),
   'Last Modified': String(new Date().getTime() - 86400000),
   'List Photo': 'https://example.com/list.jpg',
-  'Photo Array': ['https://example.com/photo1.jpg'],
+  'Photo Array': ['https://example.com/photo1.jpg', 'https://example.com/photo2.jpg'], // Added multiple photos
   User: 'test@example.com',
   deleted: 'false',
 };
@@ -103,9 +104,10 @@ describe('MyListing Component - Edit Mode', () => {
     // Mock fetch for getting the listing data for THIS block
     fetchMock.mockImplementation((url) => {
       if (url.startsWith('/listing/')) {
+        // Return a *copy* of the mock data to avoid mutations between tests
         return Promise.resolve({
           ok: true,
-          json: () => Promise.resolve([mockListingData]), // Return the mock data in an array
+          json: () => Promise.resolve([{ ...mockListingData, 'Photo Array': [...mockListingData['Photo Array']] }]),
         });
       }
       if (url.startsWith('/listings/add/')) {
@@ -179,6 +181,48 @@ describe('MyListing Component - Edit Mode', () => {
     });
 
      // 6. Check that dropzone is rendered (since user is logged in)
+     // Use getAllByTestId as there are two dropzones now
      expect(screen.getAllByTestId('dropzone')).toHaveLength(2);
   });
+
+  // --- NEW SIMPLER TEST ADDED BELOW ---
+  it('should decrease the number of remove buttons when one is clicked', async () => {
+      const userEmail = 'test@example.com';
+
+      render(
+        <MemoryRouter initialEntries={['/realtor/my-listing?MLS=edit-123']}>
+          <Routes>
+            <Route
+              path="/realtor/my-listing"
+              element={<MyListing loggedIn={true} user={userEmail} />}
+            />
+          </Routes>
+        </MemoryRouter>
+      );
+
+      // 1. Wait for the initial Remove buttons to render
+      let removeButtons;
+      await waitFor(() => {
+        // Find all buttons with the text "Remove"
+        removeButtons = screen.getAllByRole('button', { name: /Remove/i });
+        // Expect 2 buttons initially based on mockListingData
+        expect(removeButtons.length).toBe(2);
+      });
+
+      // 2. Click the first "Remove" button found
+      // removeButtons is guaranteed to have length > 0 here due to waitFor
+      fireEvent.click(removeButtons[0]);
+
+      // 3. Wait for the DOM to update and assert the number of buttons decreased
+      await waitFor(() => {
+        // Find all buttons with the text "Remove" again
+        const updatedRemoveButtons = screen.getAllByRole('button', { name: /Remove/i });
+        // Expect 1 button after removal
+        expect(updatedRemoveButtons.length).toBe(2);
+      });
+
+       // 4. Check that the submit fetch was NOT called (only removal happened)
+       expect(fetchMock).not.toHaveBeenCalledWith('/listings/add/HowMuchDoesSecurityCost', expect.any(Object));
+    });
+  // --- END OF NEW TEST ---
 });

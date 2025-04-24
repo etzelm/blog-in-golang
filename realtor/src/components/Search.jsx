@@ -56,7 +56,7 @@ export default class Search extends React.Component {
             "Zip Code": this.zipCodeRef.current?.value?.trim() || null,
             Bedrooms: this.bedroomsRef.current?.value ? Number(this.bedroomsRef.current.value) : null,
             Bathrooms: this.bathroomsRef.current?.value ? Number(this.bathroomsRef.current.value) : null,
-            MLS: this.cityRef.current?.value?.trim() || null,
+            MLS: this.mlsRef.current?.value?.trim() || null,
             "Square Feet": this.squareFeetRef.current?.value ? Number(this.squareFeetRef.current.value) : null,
         };
 
