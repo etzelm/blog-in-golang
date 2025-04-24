@@ -37,6 +37,7 @@ REACT_FILES=(
     "realtor/src/components/__tests__/MyListings.test.jsx"
     "realtor/src/components/__tests__/NavBar.test.jsx"
     "realtor/src/components/__tests__/Search.test.jsx"
+    "realtor/src/components/__tests__/Tile.test.jsx"
     "realtor/src/components/MyListing.jsx"
     "realtor/src/components/Listing.jsx"
     "realtor/src/components/TileDeck.jsx"

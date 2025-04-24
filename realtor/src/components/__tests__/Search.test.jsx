@@ -17,7 +17,7 @@ beforeEach(() => {
   global.fetch = fetchMock;
   fetchMock.mockClear();
   vi.spyOn(console, 'log').mockImplementation(() => {});
-  vi.spyOn(console, 'error').mockImplementation(() => {});
+  vi.spyOn(console, 'error').mockImplementation(() => {}); // Spy on console.error
 });
 
 afterEach(() => {
@@ -266,4 +266,140 @@ describe('Search.jsx', () => {
      // Check console log for filtered cards result (covers line 209)
      expect(console.log).toHaveBeenCalledWith('Filtered cards:', expect.any(Array));
   });
+
+  it('should return all listings when Submit is clicked with no criteria', async () => {
+    const { listings } = await import('../../../test-data');
+    // Mock fetch to return initial data
+    fetchMock.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(listings),
+    });
+
+    render(
+      <MemoryRouter>
+        <Search loggedIn={false} user={null} />
+      </MemoryRouter>
+    );
+
+    // 1. Wait for initial data to load and tiles to render
+    let initialTiles;
+    await waitFor(() => {
+      initialTiles = screen.getAllByTestId(/tile-\d+/);
+      expect(initialTiles.length).toBe(listings.filter(l => l.deleted === 'false').length);
+    });
+
+    // 2. Simulate clicking the Submit button without changing any inputs
+    const submitButton = screen.getByRole('button', { name: /submit/i });
+    fireEvent.click(submitButton);
+
+    // 3. Wait for filtering (which should do nothing) and assert all original tiles are still present
+    await waitFor(() => {
+      const currentTiles = screen.getAllByTestId(/tile-\d+/);
+      // Expect the same number of tiles as initially loaded
+      expect(currentTiles.length).toBe(initialTiles.length);
+      // Check if a specific tile is still there
+      expect(screen.getByTestId('tile-1234567890')).toBeInTheDocument();
+       // Ensure the "No results" message is NOT shown
+      expect(screen.queryByText('No listings match your criteria.')).not.toBeInTheDocument();
+    });
+
+    // Check console log for filter values (all should be null or empty)
+    expect(console.log).toHaveBeenCalledWith('Filter values:', {
+      City: null, State: null, 'Zip Code': null, Bedrooms: null, Bathrooms: null, MLS: null, 'Square Feet': null
+    });
+  });
+
+  it('should handle error during initial listing fetch', async () => {
+    const errorMessage = 'Failed to fetch';
+    // Mock fetch to simulate an error
+    fetchMock.mockRejectedValue(new Error(errorMessage));
+
+    render(
+      <MemoryRouter>
+        <Search loggedIn={false} user={null} />
+      </MemoryRouter>
+    );
+
+    // 1. Wait for the fetch attempt and the error handling
+    await waitFor(() => {
+      // Check if console.error was called with the expected message
+      expect(console.error).toHaveBeenCalledWith("Error fetching listings:", expect.any(Error));
+      // Optionally, check the specific error message if needed:
+      // expect(console.error).toHaveBeenCalledWith("Error fetching listings:", new Error(errorMessage));
+    });
+
+    // 2. Assert that no listing tiles are rendered
+    const tiles = screen.queryAllByTestId(/tile-\d+/);
+    expect(tiles.length).toBe(0);
+
+    // 3. Assert that the search form is still rendered
+    expect(screen.getByLabelText('City')).toBeInTheDocument();
+  });
+
+  // --- NEW TEST ADDED BELOW ---
+  it('should correctly filter out listings with missing data for filtered fields', async () => {
+    // Define mock listings with missing data
+    const mockListingsWithMissingData = [
+      // Valid listing matching filter
+      { MLS: 'valid-1', Street1: '1 Valid St', City: 'Bend', State: 'OR', Bedrooms: '3', deleted: 'false', 'List Photo': 'https://placehold.co/300x200/eee/aaa?text=Valid' },
+      // Listing with missing City
+      { MLS: 'missing-city', Street1: '2 Missing City St', City: null, State: 'OR', Bedrooms: '3', deleted: 'false', 'List Photo': 'https://placehold.co/300x200/eee/aaa?text=Missing+City' },
+      // Listing with missing Bedrooms
+      { MLS: 'missing-beds', Street1: '3 Missing Beds St', City: 'Bend', State: 'OR', Bedrooms: null, deleted: 'false', 'List Photo': 'https://placehold.co/300x200/eee/aaa?text=Missing+Beds' },
+      // Listing that doesn't match filter criteria
+      { MLS: 'other-data', Street1: '4 Other St', City: 'Redmond', State: 'OR', Bedrooms: '2', deleted: 'false', 'List Photo': 'https://placehold.co/300x200/eee/aaa?text=Other' },
+    ];
+
+    // Mock fetch to return these specific listings
+    fetchMock.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(mockListingsWithMissingData),
+    });
+
+    render(
+      <MemoryRouter>
+        <Search loggedIn={false} user={null} />
+      </MemoryRouter>
+    );
+
+    // 1. Wait for initial data to load
+    await waitFor(() => {
+      expect(screen.getByTestId('tile-valid-1')).toBeInTheDocument();
+      expect(screen.getByTestId('tile-missing-city')).toBeInTheDocument();
+      expect(screen.getByTestId('tile-missing-beds')).toBeInTheDocument();
+      expect(screen.getByTestId('tile-other-data')).toBeInTheDocument();
+      expect(screen.getAllByTestId(/tile-\w+/).length).toBe(5); // All 4 initially
+    });
+
+    // 2. Find inputs and submit button
+    const cityInput = screen.getByLabelText('City');
+    const bedroomsInput = screen.getByLabelText('Bedrooms');
+    const submitButton = screen.getByRole('button', { name: /submit/i });
+
+    // 3. Simulate entering filter criteria ('Bend' and '3' bedrooms)
+    fireEvent.change(cityInput, { target: { value: 'Bend' } });
+    fireEvent.change(bedroomsInput, { target: { value: '3' } });
+
+    // 4. Simulate clicking the Submit button
+    fireEvent.click(submitButton);
+
+    // 5. Wait for filtering and assert results
+    await waitFor(() => {
+      // Only the valid listing should remain
+      expect(screen.getByTestId('tile-valid-1')).toBeInTheDocument();
+      // Listings with missing data for filtered fields should be gone
+      expect(screen.queryByTestId('tile-missing-city')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('tile-missing-beds')).not.toBeInTheDocument();
+      // Listing that didn't match criteria should be gone
+      expect(screen.queryByTestId('tile-other-data')).not.toBeInTheDocument();
+      // Only 1 tile should remain
+      expect(screen.getAllByTestId(/tile-\w+/).length).toBe(2);
+    });
+
+     // Check console log for filter values
+     expect(console.log).toHaveBeenCalledWith('Filter values:', expect.objectContaining({ City: 'bend', Bedrooms: 3 }));
+     // Check console log for filtered cards result
+     expect(console.log).toHaveBeenCalledWith('Filtered cards:', expect.arrayContaining([expect.objectContaining({ MLS: 'valid-1' })]));
+  });
+  // --- END OF NEW TEST ---
 });
