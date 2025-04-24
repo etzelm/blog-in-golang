@@ -1,5 +1,10 @@
 name: blog-in-golang-nas
 # This workflow deploys blog changes from my NAS
+
+# Add the permissions block here
+permissions:
+  contents: read # Allows checkout and reading repository content
+
 on:
   push:
     branches:
@@ -11,6 +16,7 @@ on:
 jobs:
 
   NAS-build:
+    # No specific token permissions needed beyond checkout
     if: github.ref != 'refs/heads/master' && github.ref != 'refs/heads/develop'
     runs-on: [self-hosted, Linux, X64, nas]
     steps:
@@ -33,6 +39,7 @@ jobs:
           CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o blog-in-golang .
 
   NAS-deploy:
+    # No specific token permissions needed beyond checkout and changed-files
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop'
     runs-on: [self-hosted, Linux, X64, nas]
     env:
@@ -80,7 +87,7 @@ jobs:
             realtor/src/**
             public/**
       - name: Push Article Changes
-        if: steps.changed-daemon-files.outputs.any_changed == 'true'  
+        if: steps.changed-daemon-files.outputs.any_changed == 'true'
         shell: bash
         run: |
           set -e
@@ -89,9 +96,9 @@ jobs:
           BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
           echo "BRANCH: $BRANCH"
           if [[ $BRANCH == "master" ]]
-          then 
+          then
             export ARTICLES="Live-Articles"
-          else 
+          else
             export ARTICLES="Test-Articles"
           fi
           echo "Articles: ${ARTICLES}"
@@ -102,7 +109,7 @@ jobs:
           popd
       - name: Build & Deploy
         id: deploy
-        if: steps.changed-build-files.outputs.any_changed == 'true'  
+        if: steps.changed-build-files.outputs.any_changed == 'true'
         shell: bash
         run: |
           set -e
@@ -111,9 +118,9 @@ jobs:
           BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
           echo "BRANCH: $BRANCH"
           if [[ $BRANCH == "master" ]]
-          then 
+          then
             TAG="latest"
-          else 
+          else
             TAG="$BRANCH"
           fi
           echo "TAG: $TAG"
@@ -130,7 +137,7 @@ jobs:
           echo DEPLOYING NAS DOCKER CONTAINER
           sshpass -p $NAS_PASS ssh $NAS_USER@$NAS_ADDR $NAS_ARGS -t "cd $NAS_DIR-$BRANCH; $NAS_BIN/docker compose up --force-recreate -d"
           if [[ $BRANCH == "master" ]]
-          then 
+          then
             echo DEPLOYING GCP DOCKER CONTAINER
             docker save blog:latest > blog.tar
             scp -i ~/.ssh/gcp_rsa $GCP_ARGS blog.tar $GCP_USER@$GCP_ADDR:$GCP_DIR.
@@ -159,10 +166,10 @@ jobs:
           set -o pipefail
           BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
           if [[ $BRANCH == "master" ]]
-          then 
+          then
             echo RUNNING TESTS TO CACHE CLOUDFRONT CONTENT
             TEST=.github/workflows/public-urls.txt
-          else 
+          else
             echo RUNNING TESTS
             TEST=.github/workflows/local-urls.txt
           fi
