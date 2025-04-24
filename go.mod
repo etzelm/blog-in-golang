@@ -3,7 +3,7 @@ module github.com/etzelm/blog-in-golang
 go 1.24.2
 
 require (
-	github.com/aws/aws-sdk-go v1.55.6
+	github.com/aws/aws-sdk-go v1.55.7
 	github.com/caddyserver/certmagic v0.23.0
 	github.com/gin-contrib/cache v1.3.2
 	github.com/gin-contrib/static v1.1.5
