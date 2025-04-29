@@ -32,8 +32,8 @@ jobs:
           echo "BRANCH: $BRANCH"
           pushd realtor
           yarn install
-          yarn build
           yarn test --coverage
+          yarn build
           popd
           go mod download
           CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o blog-in-golang .
