@@ -6,7 +6,7 @@
     "@babel/core": "^7.0.0-0",
     "@babel/plugin-syntax-flow": "^7.14.5",
     "@babel/plugin-transform-private-property-in-object": "^7.27.1",
-    "@babel/plugin-transform-react-jsx": "^7.14.9",
+    "@babel/plugin-transform-react-jsx": "^7.27.1",
     "@react-oauth/google": "^0.12.1",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
