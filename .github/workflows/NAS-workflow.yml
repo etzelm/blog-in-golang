@@ -124,16 +124,8 @@ jobs:
             TAG="$BRANCH"
           fi
           echo "TAG: $TAG"
-          echo BUILDING REACT APP
-          pushd realtor
-          sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" src/App.jsx
-          sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" public/index.html
-          yarn install
-          yarn test --coverage
-          yarn build
-          popd
           echo BUILDING DOCKER IMAGE
-          docker build -t blog:$TAG .
+          docker build --build-arg GAPI=$GAPI -t blog:$TAG .
           echo DEPLOYING NAS DOCKER CONTAINER
           sshpass -p $NAS_PASS ssh $NAS_USER@$NAS_ADDR $NAS_ARGS -t "cd $NAS_DIR-$BRANCH; $NAS_BIN/docker compose up --force-recreate -d"
           if [[ $BRANCH == "master" ]]
