@@ -62,6 +62,7 @@ REACT_FILES=(
 
 # List of files from blog Go app
 GO_FILES=(
+    ".github/docker-compose/github-runner/Dockerfile"
     ".github/workflows/NAS-workflow.yml"
     "docker-compose.yml"
     "Dockerfile"
