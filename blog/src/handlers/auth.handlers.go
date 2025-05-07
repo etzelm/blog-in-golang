@@ -20,7 +20,6 @@ import (
 // AuthPage : Gets Authenticaton Details And Verify "Client"
 func AuthPage(c *gin.Context) {
 	c.Header("Cache-Control", "no-cache")
-
 	// Call the HTML method of the Context to render a template
 	c.HTML(
 		// Set the HTTP status to 200 (OK)
