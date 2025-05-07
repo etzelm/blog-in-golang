@@ -8,11 +8,11 @@ RUN apk add --no-cache git
 WORKDIR /app
 
 # Copy go.mod and go.sum first to leverage Docker cache for dependencies
-COPY go.mod go.sum ./
+COPY blog/go.mod blog/go.sum ./
 RUN go mod download
 
 # Copy the rest of the Go source code
-COPY . .
+COPY blog/ .
 
 # Build the Go application
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o blog-in-golang .

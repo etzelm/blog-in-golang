@@ -31,12 +31,18 @@ jobs:
           BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
           echo "BRANCH: $BRANCH"
           pushd realtor
+          echo "React Build Starting"
           yarn install
           yarn test --coverage
           yarn build
+          echo "React Build Finished"
           popd
+          pushd blog
+          echo "Golang Build Starting"
           go mod download
           CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o blog-in-golang .
+          echo "Golang Build Finished"
+          popd
 
   NAS-deploy:
     # No specific token permissions needed beyond checkout and changed-files
@@ -75,17 +81,17 @@ jobs:
         uses: tj-actions/changed-files@v45
         with:
           files: |
-            go.mod
-            go.sum
-            app.go
-            Dockerfile
-            src/**
-            templates/**
+            blog/go.mod
+            blog/go.sum
+            blog/app.go
+            blog/Dockerfile
+            blog/public/**
+            blog/src/**
+            blog/templates/**
             realtor/yarn.lock
             realtor/package.json
             realtor/public/**
             realtor/src/**
-            public/**
       - name: Push Article Changes
         if: steps.changed-daemon-files.outputs.any_changed == 'true'
         shell: bash
@@ -125,7 +131,7 @@ jobs:
           fi
           echo "TAG: $TAG"
           echo BUILDING DOCKER IMAGE
-          docker build --build-arg GAPI=$GAPI -t blog:$TAG .
+          docker build --build-arg GAPI=$GAPI -t blog:$TAG -f blog/Dockerfile .
           echo DEPLOYING NAS DOCKER CONTAINER
           sshpass -p $NAS_PASS ssh $NAS_USER@$NAS_ADDR $NAS_ARGS -t "cd $NAS_DIR-$BRANCH; $NAS_BIN/docker compose up --force-recreate -d"
           if [[ $BRANCH == "master" ]]

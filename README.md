@@ -42,17 +42,17 @@ Ensure these are configured appropriately in your local environment and/or in yo
   - Install frontend dependencies: `cd realtor && yarn install`
   - Test frontend (using Vitest): `yarn test`
   - Build frontend: `yarn build`
-  - Install backend dependencies: `cd .. && go mod download`
+  - Install backend dependencies: `cd ../blog && go mod download`
   - Run backend server: `go run app.go` 
-  - Run article update daemon: `cd daemon && go run app.go 1`
+  - Run article update daemon: `cd ../daemon && go run app.go 1`
 
 - **Docker Helper Commands**:
   - Stop all containers: `docker stop $(docker ps -aq)`
   - Remove all containers: `docker rm $(docker ps -aq)`
   - Remove all images: `docker rmi --force $(docker images -q)`
-  - Build image(match tag to branch/env): `docker build -t blog:<your-branch-name> .`
+  - Build image: `docker build --build-arg GAPI=$GAPI -t blog:<branch-name> -f blog/Dockerfile .`
   - Run container: `docker run -d -p 80:8080 blog:<tag>` 
-  - Start with compose: `docker compose up --force-recreate -d`
+  - Start with compose: `docker compose --file blog/docker-compose.yml up --force-recreate -d`
   - Stop with compose: `docker compose down`
   - Clean up unused Docker resources: `docker system prune -a -f`
 
@@ -63,22 +63,3 @@ Ensure these are configured appropriately in your local environment and/or in yo
 - **Auth**: Google OAuth2 integration in React frontend as well as a custom Go auth API implementation.
 - **Performance**: Gin middleware for Gzip compression and caching (in-memory and HTTP headers).
 - **Security**: Middleware to block malicious request paths. Automatic HTTPS via CertMagic in prod envs.
-
-## Contributing
-
-- Fork the repository.
-- Create a feature branch: `git checkout -b feature/your-amazing-feature`
-- Commit your changes: `git commit -m "Add some amazing feature"`
-- Push to the branch: `git push origin feature/your-amazing-feature`
-- Open a Pull Request.
-
-## Contact
-
-- **Mitchell Etzel**
-- Email: [etzelm@live.com](mailto:etzelm@live.com)
-- GitHub: [etzelm](https://github.com/etzelm)
-
-## Support
-
-- Submit feedback via the contact form at `/contact`
-- Report issues on GitHub
