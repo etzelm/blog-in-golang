@@ -50,9 +50,9 @@ Ensure these are configured appropriately in your local environment and/or in yo
   - Stop all containers: `docker stop $(docker ps -aq)`
   - Remove all containers: `docker rm $(docker ps -aq)`
   - Remove all images: `docker rmi --force $(docker images -q)`
-  - Build image(match tag to branch/env): `docker build -t blog:<your-branch-name> .`
+  - Build image: `docker build --build-arg GAPI=$GAPI -t blog:<branch-name> -f blog/Dockerfile .`
   - Run container: `docker run -d -p 80:8080 blog:<tag>` 
-  - Start with compose: `docker compose up --force-recreate -d`
+  - Start with compose: `docker compose --file blog/docker-compose.yml up --force-recreate -d`
   - Stop with compose: `docker compose down`
   - Clean up unused Docker resources: `docker system prune -a -f`
 
