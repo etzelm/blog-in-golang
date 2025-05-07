@@ -42,9 +42,9 @@ Ensure these are configured appropriately in your local environment and/or in yo
   - Install frontend dependencies: `cd realtor && yarn install`
   - Test frontend (using Vitest): `yarn test`
   - Build frontend: `yarn build`
-  - Install backend dependencies: `cd .. && go mod download`
+  - Install backend dependencies: `cd ../blog && go mod download`
   - Run backend server: `go run app.go` 
-  - Run article update daemon: `cd daemon && go run app.go 1`
+  - Run article update daemon: `cd ../daemon && go run app.go 1`
 
 - **Docker Helper Commands**:
   - Stop all containers: `docker stop $(docker ps -aq)`
