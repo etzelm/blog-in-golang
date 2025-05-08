@@ -10,6 +10,14 @@
 
 A full-stack web application featuring a blog and realtor listing service. Built with **Go** (Gin) for the blog/backend, **React** for the sample frontend application, and **AWS DynamoDB/S3** for storage. Supports user authentication, blog post management, and real estate CRUD/search.
 
+## Features
+
+- **Blog**: Create and categorize posts using Go templates, stored in DynamoDB.
+- **Realtor**: React-based SPA to manage listings with image uploads and multi-parameter searches.
+- **Auth**: Google OAuth2 integration in React frontend as well as a custom Go auth API implementation.
+- **Performance**: Gin middleware for Gzip compression and caching (in-memory and HTTP headers).
+- **Security**: Middleware to block malicious request paths. Automatic HTTPS via CertMagic in prod envs.
+
 ## Deployment
 
 - Published at [mitchelletzel.com](https://mitchelletzel.com)
@@ -55,11 +63,3 @@ Ensure these are configured appropriately in your local environment and/or in yo
   - Start with compose: `docker compose --file blog/docker-compose.yml up --force-recreate -d`
   - Stop with compose: `docker compose down`
   - Clean up unused Docker resources: `docker system prune -a -f`
-
-## Features
-
-- **Blog**: Create and categorize posts using Go templates, stored in DynamoDB.
-- **Realtor**: React-based SPA to manage listings with image uploads and multi-parameter searches.
-- **Auth**: Google OAuth2 integration in React frontend as well as a custom Go auth API implementation.
-- **Performance**: Gin middleware for Gzip compression and caching (in-memory and HTTP headers).
-- **Security**: Middleware to block malicious request paths. Automatic HTTPS via CertMagic in prod envs.
