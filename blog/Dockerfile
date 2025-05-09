@@ -15,7 +15,8 @@ RUN go mod download
 COPY blog/ .
 
 # Test the Go application
-RUN go test
+RUN go test -v -coverprofile=coverage.out ./...
+RUN go tool cover -func=coverage.out
 
 # Build the Go application
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o blog-in-golang .
