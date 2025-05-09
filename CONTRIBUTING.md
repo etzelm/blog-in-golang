@@ -1,4 +1,4 @@
-## Contributing
+# Contributing
 
 - Fork the repository.
 - Create a feature branch: `git checkout -b feature/your-amazing-feature`
