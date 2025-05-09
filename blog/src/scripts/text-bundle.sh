@@ -69,6 +69,7 @@ GO_FILES=(
     "README.md"
     "blog/go.mod"
     "blog/app.go"
+    "blog/app_test.go"
     "daemon/articles/awsEMR/awsEMR.go"
     "daemon/articles/infraCode/infraCode.go"
     "daemon/articles/graphStore/graphStore.go"
@@ -80,6 +81,7 @@ GO_FILES=(
     "blog/src/models/auth.models.go"
     "blog/src/handlers/blog.handlers.go"
     "blog/src/handlers/auth.handlers.go"
+    "blog/src/handlers/auth.handlers_test.go"
     "blog/src/handlers/realtor.handlers.go"
 )
 

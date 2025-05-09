@@ -14,6 +14,10 @@ RUN go mod download
 # Copy the rest of the Go source code
 COPY blog/ .
 
+# Test the Go application
+RUN go test -v -coverprofile=coverage.out ./...
+RUN go tool cover -func=coverage.out
+
 # Build the Go application
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o blog-in-golang .
 
@@ -39,6 +43,9 @@ COPY realtor/ ./
 # Ensure GAPI is set during docker build (e.g., --build-arg GAPI=$GAPI)
 RUN sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" src/App.jsx
 RUN sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" public/index.html
+
+# Run the JS-level Unit Tests
+RUN yarn test --coverage
 
 # Build the React application
 RUN yarn build
