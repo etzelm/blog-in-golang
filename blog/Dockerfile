@@ -14,6 +14,9 @@ RUN go mod download
 # Copy the rest of the Go source code
 COPY blog/ .
 
+# Test the Go application
+RUN go test
+
 # Build the Go application
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o blog-in-golang .
 
