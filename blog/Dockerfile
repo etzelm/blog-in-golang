@@ -40,6 +40,9 @@ COPY realtor/ ./
 RUN sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" src/App.jsx
 RUN sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" public/index.html
 
+# Run the JS-level Unit Tests
+RUN yarn test --coverage
+
 # Build the React application
 RUN yarn build
 
