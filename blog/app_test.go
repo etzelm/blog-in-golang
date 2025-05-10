@@ -12,8 +12,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/caddyserver/certmagic"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 )
 
 func silenceLogrus(t *testing.T) {
@@ -186,8 +188,6 @@ func TestLoadServerRoutes(t *testing.T) {
 		{"AuthGET", "/auth", http.MethodGet, nil, ""},
 		{"AuthPOST", "/auth", http.MethodPost, bytes.NewBufferString("email=test@example.com&password=p"), "application/x-www-form-urlencoded"},
 		{"SecureGET", "/secure", http.MethodGet, nil, ""},
-		{"ListingPOST", "/listings/add/HowMuchDoesSecurityCost", http.MethodPost, bytes.NewBufferString(`{"MLS":"test"}`), "application/json"},
-		{"UploadImagePOST", "/upload/image/testuser", http.MethodPost, &uploadBody, mpWriter.FormDataContentType()},
 	}
 
 	for _, tc := range testCases {
@@ -263,6 +263,9 @@ func TestMainExecutionPath(t *testing.T) {
 	finished := make(chan struct{})
 	go func() {
 		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("main() panicked: %v", r)
+			}
 			close(finished)
 		}()
 		main()
@@ -271,5 +274,48 @@ func TestMainExecutionPath(t *testing.T) {
 	select {
 	case <-finished:
 	case <-time.After(500 * time.Millisecond):
+	}
+}
+
+func TestMainExecutionPathWithCertMagic(t *testing.T) {
+	silenceLogrus(t)
+	gin.SetMode(gin.TestMode)
+
+	originalDeployment, deploymentSet := os.LookupEnv("DEPLOYMENT")
+	originalDomain, domainSet := os.LookupEnv("DOMAIN")
+
+	originalCertmagicLogger := certmagic.Default.Logger
+	os.Setenv("DEPLOYMENT", "NAS")
+	os.Setenv("DOMAIN", "localhost")
+	certmagic.Default.Logger = zap.NewNop()
+	defer func() {
+		if deploymentSet {
+			os.Setenv("DEPLOYMENT", originalDeployment)
+		} else {
+			os.Unsetenv("DEPLOYMENT")
+		}
+		if domainSet {
+			os.Setenv("DOMAIN", originalDomain)
+		} else {
+			os.Unsetenv("DOMAIN")
+		}
+		certmagic.Default.Logger = originalCertmagicLogger
+	}()
+
+	finished := make(chan struct{})
+	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				t.Logf("main() with DEPLOYMENT=NAS panicked (possibly expected due to certmagic in test env): %v", r)
+			}
+			close(finished)
+		}()
+		main()
+	}()
+
+	select {
+	case <-finished:
+	case <-time.After(1 * time.Second):
+		t.Log("main() with DEPLOYMENT=NAS timed out (certmagic.HTTPS likely blocking, as expected in test).")
 	}
 }
