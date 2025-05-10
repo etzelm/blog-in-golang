@@ -8,5 +8,5 @@
 
 ## Reporting a Vulnerability
 
-- Submit vulnerabilies via the contact form at `/contact`
+- Submit vulnerabilities via the contact form at `/contact`
 - Report issues on GitHub

@@ -28,7 +28,7 @@ A full-stack web application featuring a blog and realtor listing service. Built
   - Build docker containers on push to `develop`/`master`
   - Deploy to NAS/GCP containers conditionally based on branch
   - Invalidate CloudFront caches
-  - Test deployed URLs listed in 
+  - Test deployed URLs listed in
     - `.github/workflows/public-urls.txt`
     - `.github/workflows/local-urls.txt`
 
@@ -51,7 +51,7 @@ Ensure these are configured appropriately in your local environment and/or in yo
   - Test frontend (using Vitest): `yarn test`
   - Build frontend: `yarn build`
   - Install backend dependencies: `cd ../blog && go mod download`
-  - Run backend server: `go run app.go` 
+  - Run backend server: `go run app.go`
   - Run article update daemon: `cd ../daemon && go run app.go 1`
 
 - **Docker Helper Commands**:
@@ -59,7 +59,7 @@ Ensure these are configured appropriately in your local environment and/or in yo
   - Remove all containers: `docker rm $(docker ps -aq)`
   - Remove all images: `docker rmi --force $(docker images -q)`
   - Build image: `docker build --build-arg GAPI=$GAPI -t blog:<branch-name> -f blog/Dockerfile .`
-  - Run container: `docker run -d -p 80:8080 blog:<tag>` 
+  - Run container: `docker run -d -p 80:8080 blog:<tag>`
   - Start with compose: `docker compose --file blog/docker-compose.yml up --force-recreate -d`
   - Stop with compose: `docker compose down`
   - Clean up unused Docker resources: `docker system prune -a -f`
