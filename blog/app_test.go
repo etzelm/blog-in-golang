@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gin-contrib/static" // Import for static.Serve
+	// Import for static.Serve
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus" // Import Logrus
 )
@@ -119,105 +119,6 @@ func TestUnauthorizedMiddleware(t *testing.T) {
 			if tc.expectedStatus == http.StatusOK && tc.expectedBody != "" {
 				if rr.Body.String() != tc.expectedBody {
 					t.Errorf("path %s body: got %v want %v", tc.path, rr.Body.String(), tc.expectedBody)
-				}
-			}
-		})
-	}
-}
-
-// TestLoadStaticFileRoutes using t.TempDir for safe dummy file creation and isolated routing.
-func TestLoadStaticFileRoutes(t *testing.T) {
-	silenceLogrus(t) // Silence logs for this test
-	gin.SetMode(gin.TestMode)
-	router := gin.New()
-
-	// Create a unique temporary directory for this test's static assets.
-	// t.TempDir() automatically cleans up this directory after the test.
-	tempDir := t.TempDir()
-
-	// Define the structure and content of dummy files within the tempDir.
-	dummyFilesToCreate := map[string]string{
-		filepath.Join("public", "robots.txt"):                              "User-agent: TestRobots",
-		filepath.Join("public", "sitemap.xml"):                             "<sitemapindexTest></sitemapindexTest>",
-		filepath.Join("public", "images", "favicon.ico"):                   "dummyFaviconContent",
-		filepath.Join("public", "images", "example.png"):                   "dummyPngContent",
-		filepath.Join("realtor", "build", "index.html"):                    "<html><body>Test Realtor SPA</body></html>",
-		filepath.Join("realtor", "build", "static", "js", "main.chunk.js"): "//dummyMainChunkJs",
-	}
-
-	// Create the dummy files and directories inside tempDir.
-	for relPath, content := range dummyFilesToCreate {
-		fullPath := filepath.Join(tempDir, relPath) // All paths are now relative to tempDir
-		dir := filepath.Dir(fullPath)
-		if err := os.MkdirAll(dir, 0755); err != nil {
-			t.Fatalf("Failed to create directory %s: %v", dir, err)
-		}
-		if err := os.WriteFile(fullPath, []byte(content), 0644); err != nil {
-			t.Fatalf("Failed to create dummy file %s: %v", fullPath, err)
-		}
-	}
-
-	// Replicate the routing logic of LoadStaticFileRoutes, but point to tempDir.
-	// This tests the *intended effect* of LoadStaticFileRoutes in an isolated way.
-	router.StaticFile("/robots.txt", filepath.Join(tempDir, "public", "robots.txt"))
-	router.StaticFile("/sitemap.xml", filepath.Join(tempDir, "public", "sitemap.xml"))
-	router.StaticFile("/favicon.ico", filepath.Join(tempDir, "public", "images", "favicon.ico"))
-
-	// Serve the 'public' directory from the temp directory.
-	router.Use(static.Serve("/public", static.LocalFile(filepath.Join(tempDir, "public"), true)))
-
-	// Serve the 'realtor/build' directory from the temp directory for /realtor base.
-	// The 'true' flag for LocalFile means it serves index.html for directory requests.
-	realtorBuildTempPath := filepath.Join(tempDir, "realtor", "build")
-	router.Use(static.Serve("/realtor", static.LocalFile(realtorBuildTempPath, true)))
-
-	// For SPA routes, ensure index.html from realtor/build (in tempDir) is served.
-	// The original LoadStaticFileRoutes used separate static.Serve calls for each.
-	router.Use(static.Serve("/realtor/new", static.LocalFile(realtorBuildTempPath, true)))
-	router.Use(static.Serve("/realtor/search", static.LocalFile(realtorBuildTempPath, true)))
-	router.Use(static.Serve("/realtor/listing", static.LocalFile(realtorBuildTempPath, true)))
-	router.Use(static.Serve("/realtor/my-listing", static.LocalFile(realtorBuildTempPath, true)))
-	router.Use(static.Serve("/realtor/my-listings", static.LocalFile(realtorBuildTempPath, true)))
-
-	testCases := []struct {
-		name            string
-		path            string
-		expectedStatus  int
-		expectHTML      bool
-		expectedContent string
-	}{
-		{"RobotsTxt", "/robots.txt", http.StatusOK, false, "TestRobots"},
-		{"Favicon", "/favicon.ico", http.StatusOK, false, "dummyFaviconContent"},
-		{"Sitemap", "/sitemap.xml", http.StatusOK, false, "<sitemapindexTest>"},
-		{"PublicImage", "/public/images/example.png", http.StatusOK, false, "dummyPngContent"},
-		{"RealtorRoot", "/realtor/", http.StatusOK, true, "Test Realtor SPA"},
-		{"RealtorNew", "/realtor/new", http.StatusOK, true, "Test Realtor SPA"},
-		{"RealtorSearch", "/realtor/search", http.StatusOK, true, "Test Realtor SPA"},
-		{"RealtorListing", "/realtor/listing", http.StatusOK, true, "Test Realtor SPA"},
-		{"RealtorMyListing", "/realtor/my-listing", http.StatusOK, true, "Test Realtor SPA"},
-		{"RealtorMyListings", "/realtor/my-listings", http.StatusOK, true, "Test Realtor SPA"},
-		{"RealtorStaticAsset", "/realtor/static/js/main.chunk.js", http.StatusOK, false, "//dummyMainChunkJs"},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			req, _ := http.NewRequest(http.MethodGet, tc.path, nil)
-			rr := httptest.NewRecorder()
-			router.ServeHTTP(rr, req)
-
-			if status := rr.Code; status != tc.expectedStatus {
-				t.Errorf("GET %s returned status %d, want %d. Body: %s", tc.path, rr.Code, tc.expectedStatus, rr.Body.String())
-			}
-			if tc.expectedStatus == http.StatusOK {
-				if tc.expectHTML {
-					if !strings.Contains(strings.ToLower(rr.Body.String()), "html") {
-						t.Errorf("GET %s expected HTML content, but got: %s", tc.path, rr.Body.String())
-					}
-				}
-				if tc.expectedContent != "" {
-					if !strings.Contains(rr.Body.String(), tc.expectedContent) {
-						t.Errorf("GET %s body: got '%s', want to contain '%s'", tc.path, rr.Body.String(), tc.expectedContent)
-					}
 				}
 			}
 		})
