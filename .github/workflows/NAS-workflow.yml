@@ -86,6 +86,7 @@ jobs:
             blog/go.mod
             blog/go.sum
             blog/app.go
+            blog/app_test.go
             blog/Dockerfile
             blog/public/**
             blog/src/**
