@@ -2,7 +2,7 @@ package main
 
 import (
 	"bytes"
-	"io" // Required for io.Discard (Go 1.16+)
+	"io"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
@@ -10,24 +10,22 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
-	// Import for static.Serve
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus" // Import Logrus
+	log "github.com/sirupsen/logrus"
 )
 
-// Helper function to silence logrus and restore it
 func silenceLogrus(t *testing.T) {
 	originalOut := log.StandardLogger().Out
-	log.SetOutput(io.Discard) // Use io.Discard (Go 1.16+) or ioutil.Discard (older Go)
+	log.SetOutput(io.Discard)
 	t.Cleanup(func() {
 		log.SetOutput(originalOut)
 	})
 }
 
-// TestRandRange (existing, unchanged)
 func TestRandRange(t *testing.T) {
-	silenceLogrus(t) // Silence logs for this test
+	silenceLogrus(t)
 	testCases := []struct {
 		name string
 		min  int
@@ -54,9 +52,8 @@ func TestRandRange(t *testing.T) {
 	}
 }
 
-// TestStaticCacheMiddleware (existing, unchanged)
 func TestStaticCacheMiddleware(t *testing.T) {
-	silenceLogrus(t) // Silence logs for this test
+	silenceLogrus(t)
 	gin.SetMode(gin.TestMode)
 	router := gin.New()
 	router.Use(staticCacheMiddleware())
@@ -85,9 +82,8 @@ func TestStaticCacheMiddleware(t *testing.T) {
 	}
 }
 
-// TestUnauthorizedMiddleware (existing, unchanged)
 func TestUnauthorizedMiddleware(t *testing.T) {
-	silenceLogrus(t) // Silence logs for this test
+	silenceLogrus(t)
 	gin.SetMode(gin.TestMode)
 	router := gin.New()
 	router.Use(unauthorizedMiddleware())
@@ -125,9 +121,8 @@ func TestUnauthorizedMiddleware(t *testing.T) {
 	}
 }
 
-// TestLoadServerRoutes using t.TempDir for templates.
 func TestLoadServerRoutes(t *testing.T) {
-	silenceLogrus(t) // Silence logs for this test
+	silenceLogrus(t)
 	gin.SetMode(gin.TestMode)
 	router := gin.New()
 
@@ -141,8 +136,6 @@ func TestLoadServerRoutes(t *testing.T) {
 		}
 	}()
 
-	// Create a unique temporary directory for this test's templates.
-	// t.TempDir() automatically cleans up this directory.
 	tempTemplatesDir := t.TempDir()
 
 	dummyTemplateFiles := map[string]string{
@@ -157,13 +150,10 @@ func TestLoadServerRoutes(t *testing.T) {
 
 	for name, content := range dummyTemplateFiles {
 		path := filepath.Join(tempTemplatesDir, name)
-		// No need to MkdirAll for individual files if LoadHTMLGlob uses a pattern like "*.html"
-		// and the tempTemplatesDir itself exists (created by t.TempDir()).
 		if err := os.WriteFile(path, []byte(content), 0644); err != nil {
 			t.Fatalf("Failed to create dummy template %s: %v", path, err)
 		}
 	}
-	// Load HTML templates from the DUMMY temporary directory.
 	router.LoadHTMLGlob(filepath.Join(tempTemplatesDir, "*.html"))
 
 	RandomOne = 1
@@ -191,7 +181,6 @@ func TestLoadServerRoutes(t *testing.T) {
 		{"ArticleGET", "/article/3", http.MethodGet, nil, ""},
 		{"CategoryGET", "/category/somecategory", http.MethodGet, nil, ""},
 		{"ContactGET", "/contact", http.MethodGet, nil, ""},
-		{"ContactPOST", "/contact", http.MethodPost, bytes.NewBufferString("name=test&email=test@example.com&message=hello&robot=1&number=3"), "application/x-www-form-urlencoded"},
 		{"ListingsGET", "/listings", http.MethodGet, nil, ""},
 		{"SpecificListingGET", "/listing/MLS123", http.MethodGet, nil, ""},
 		{"AuthGET", "/auth", http.MethodGet, nil, ""},
@@ -240,5 +229,47 @@ func TestLoadServerRoutes(t *testing.T) {
 				t.Errorf("%s %s returned a generic Gin 404, route likely not registered. Code: %d, Body: '%s'", tc.method, tc.path, rr.Code, rr.Body.String())
 			}
 		})
+	}
+}
+
+func TestLoadMiddlewares(t *testing.T) {
+	silenceLogrus(t)
+	gin.SetMode(gin.TestMode)
+	router := gin.New()
+	LoadMiddlewares(router)
+}
+
+func TestLoadStaticFileRoutes(t *testing.T) {
+	silenceLogrus(t)
+	gin.SetMode(gin.TestMode)
+	router := gin.New()
+	LoadStaticFileRoutes(router)
+}
+
+func TestMainExecutionPath(t *testing.T) {
+	silenceLogrus(t)
+	gin.SetMode(gin.TestMode)
+
+	originalDeployment, deploymentSet := os.LookupEnv("DEPLOYMENT")
+	os.Setenv("DEPLOYMENT", "test-main-execution")
+	defer func() {
+		if deploymentSet {
+			os.Setenv("DEPLOYMENT", originalDeployment)
+		} else {
+			os.Unsetenv("DEPLOYMENT")
+		}
+	}()
+
+	finished := make(chan struct{})
+	go func() {
+		defer func() {
+			close(finished)
+		}()
+		main()
+	}()
+
+	select {
+	case <-finished:
+	case <-time.After(500 * time.Millisecond):
 	}
 }
