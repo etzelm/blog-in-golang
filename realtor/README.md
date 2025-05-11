@@ -2,6 +2,27 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Code Coverage (v8 Report)
+
+| File           | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s   |
+| :------------- | :------ | :------- | :------ | :------ | :------------------ |
+| **All files** | **90.26** | **80.25** | **94.44** | **90.26** |                     |
+| `src`          | 91.01   | 72.97    | 100     | 91.01   |                     |
+| `App.jsx`      | 90.38   | 72.97    | 100     | 90.38   | ...50,97-99,128-130 |
+| `index.jsx`    | 100     | 100      | 100     | 100     |                     |
+| `src/components` | 90.09   | 81.63    | 93.54   | 90.09   |                     |
+| `Home.jsx`     | 100     | 100      | 100     | 100     |                     |
+| `Listing.jsx`  | 94.16   | 77.77    | 100     | 94.16   | ...4,42-43,45-46,92 |
+| `Main.jsx`     | 100     | 100      | 100     | 100     |                     |
+| `MyListing.jsx`| 82.26   | 78.88    | 80      | 82.26   | ...,269-291,300-309 |
+| `MyListings.jsx`| 94.59  | 91.66    | 100     | 94.59   | 17-18               |
+| `NavBar.jsx`   | 100     | 100      | 100     | 100     |                     |
+| `Search.jsx`   | 97.32   | 82.35    | 100     | 97.32   | 83-85,221-223       |
+| `Tile.jsx`     | 96.22   | 70.58    | 100     | 96.22   | 23,25,27,31         |
+| `TileDeck.jsx` | 92.3    | 83.33    | 100     | 92.3    | 14-15               |
+| `test-data`    | 100     | 100      | 100     | 100     |                     |
+| `index.js`     | 100     | 100      | 100     | 100     |                     |
+
 ## Available Scripts
 
 In the project directory, you can run:
