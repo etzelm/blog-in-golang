@@ -13,18 +13,18 @@ This folder contains the Go backend for the blog functionality of the `blog-in-g
 | `github.com/etzelm/blog-in-golang/app.go:101`             | `staticCacheMiddleware`      | `100.0%` |
 | `github.com/etzelm/blog-in-golang/app.go:121`             | `unauthorizedMiddleware`     | `100.0%` |
 | `github.com/etzelm/blog-in-golang/app.go:140`             | `randRange`                  | `100.0%` |
-| `github.com/etzelm/blog-in-golang/src/handlers/auth.handlers.go:21` | `AuthPage`                   | `0.0%`   |
-| `github.com/etzelm/blog-in-golang/src/handlers/auth.handlers.go:38` | `SecurePage`                 | `0.0%`   |
-| `github.com/etzelm/blog-in-golang/src/handlers/auth.handlers.go:76` | `AuthResponse`               | `0.0%`   |
+| `github.com/etzelm/blog-in-golang/src/handlers/auth.handlers.go:21` | `AuthPage`                   | `100.0%` |
+| `github.com/etzelm/blog-in-golang/src/handlers/auth.handlers.go:38` | `SecurePage`                 | `100.0%` |
+| `github.com/etzelm/blog-in-golang/src/handlers/auth.handlers.go:76` | `AuthResponse`               | `73.1%`  |
 | `github.com/etzelm/blog-in-golang/src/handlers/auth.handlers.go:159`| `HashPassword`               | `100.0%` |
 | `github.com/etzelm/blog-in-golang/src/handlers/auth.handlers.go:164`| `CheckPasswordHash`          | `100.0%` |
-| `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:21` | `PostPage`                   | `0.0%`   |
-| `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:41` | `CategoryPage`               | `0.0%`   |
+| `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:21` | `PostPage`                   | `100.0%` |
+| `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:41` | `CategoryPage`               | `75.0%`  |
 | `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:75` | `ArticlePage`                | `0.0%`   |
 | `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:110`| `AboutPage`                  | `0.0%`   |
 | `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:126`| `ContactPage`                | `0.0%`   |
-| `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:147`| `ContactResponse`            | `0.0%`   |
-| `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:216`| `renderErrorPage`            | `0.0%`   |
+| `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:147`| `ContactResponse`            | `24.2%`  |
+| `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:216`| `renderErrorPage`            | `100.0%` |
 | `github.com/etzelm/blog-in-golang/src/handlers/realtor.handlers.go:22`| `ListingsGETAPI`             | `0.0%`   |
 | `github.com/etzelm/blog-in-golang/src/handlers/realtor.handlers.go:32`| `ListingGETAPI`              | `0.0%`   |
 | `github.com/etzelm/blog-in-golang/src/handlers/realtor.handlers.go:54`| `ListingPOSTAPI`             | `0.0%`   |
@@ -33,8 +33,8 @@ This folder contains the Go backend for the blog functionality of the `blog-in-g
 | `github.com/etzelm/blog-in-golang/src/models/blog.models.go:142`    | `GetCategoryPageArticlePanels` | `42.1%`  |
 | `github.com/etzelm/blog-in-golang/src/models/blog.models.go:217`    | `GetArticleByID`             | `34.4%`  |
 | `github.com/etzelm/blog-in-golang/src/models/realtor.models.go:41`  | `GetRealtorListings`         | `60.0%`  |
-| `github.com/etzelm/blog-in-golang/src/models/realtor.models.go:104` | `GetRealtorListing`          | `0.0%`   |
-| **Total** |                              | **`36.1%`** |
+| `github.com/etzelm/blog-in-golang/src/models/realtor.models.go:104` | `GetRealtorListing`          | `60.0%`  |
+| **Total** |                              | **`52.5%`** |
 
 ## Key Components
 
