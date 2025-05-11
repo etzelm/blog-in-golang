@@ -76,6 +76,7 @@ GO_FILES=(
     "blog/src/models/blog.models_test.go"
     "blog/src/models/auth.models.go"
     "blog/src/handlers/blog.handlers.go"
+    "blog/src/handlers/blog.handlers_test.go"
     "blog/src/handlers/auth.handlers.go"
     "blog/src/handlers/auth.handlers_test.go"
     "blog/src/handlers/realtor.handlers.go"
