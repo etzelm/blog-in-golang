@@ -25,16 +25,16 @@ This folder contains the Go backend for the blog functionality of the `blog-in-g
 | `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:126`| `ContactPage`                | `0.0%`   |
 | `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:147`| `ContactResponse`            | `24.2%`  |
 | `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:216`| `renderErrorPage`            | `100.0%` |
-| `github.com/etzelm/blog-in-golang/src/handlers/realtor.handlers.go:22`| `ListingsGETAPI`             | `0.0%`   |
-| `github.com/etzelm/blog-in-golang/src/handlers/realtor.handlers.go:32`| `ListingGETAPI`              | `0.0%`   |
-| `github.com/etzelm/blog-in-golang/src/handlers/realtor.handlers.go:54`| `ListingPOSTAPI`             | `0.0%`   |
-| `github.com/etzelm/blog-in-golang/src/handlers/realtor.handlers.go:132`| `UploadImagePOSTAPI`         | `0.0%`   |
-| `github.com/etzelm/blog-in-golang/src/models/blog.models.go:69`     | `GetArticlePanels`           | `86.5%`  |
+| `github.com/etzelm/blog-in-golang/src/handlers/realtor.handlers.go:21`| `ListingsGETAPI`           | `0.0%`   |
+| `github.com/etzelm/blog-in-golang/src/handlers/realtor.handlers.go:31`| `ListingGETAPI`            | `0.0%`   |
+| `github.com/etzelm/blog-in-golang/src/handlers/realtor.handlers.go:53`| `ListingPOSTAPI`           | `80.0%`  |
+| `github.com/etzelm/blog-in-golang/src/handlers/realtor.handlers.go:131`| `UploadImagePOSTAPI`       | `88.9%`  |
+| `github.com/etzelm/blog-in-golang/src/models/blog.models.go:69`     | `GetArticlePanels`           | `40.5%`  |
 | `github.com/etzelm/blog-in-golang/src/models/blog.models.go:142`    | `GetCategoryPageArticlePanels` | `42.1%`  |
 | `github.com/etzelm/blog-in-golang/src/models/blog.models.go:217`    | `GetArticleByID`             | `34.4%`  |
 | `github.com/etzelm/blog-in-golang/src/models/realtor.models.go:41`  | `GetRealtorListings`         | `60.0%`  |
 | `github.com/etzelm/blog-in-golang/src/models/realtor.models.go:104` | `GetRealtorListing`          | `60.0%`  |
-| **Total** |                              | **`52.5%`** |
+| **Total** |                              | **`59.6%`** |
 
 ## Key Components
 
