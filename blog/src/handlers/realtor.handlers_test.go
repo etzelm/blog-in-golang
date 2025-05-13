@@ -94,7 +94,6 @@ func TestListingPOSTAPI(t *testing.T) {
 		req, _ := http.NewRequest(http.MethodPost, "/listings/add/HowMuchDoesSecurityCost", bytes.NewBuffer(invalidJSON))
 		req.Header.Set("Content-Type", "application/json")
 
-		// Set credentials here as well, so the session creation doesn't fail first
 		os.Setenv("AWS_ACCESS_KEY_ID", "FAKE_KEY_ID_FOR_BIND_ERROR")
 		os.Setenv("AWS_SECRET_ACCESS_KEY", "FAKE_SECRET_KEY_FOR_BIND_ERROR")
 		defer os.Unsetenv("AWS_ACCESS_KEY_ID")
@@ -102,9 +101,7 @@ func TestListingPOSTAPI(t *testing.T) {
 
 		router.ServeHTTP(w, req)
 
-		// Expect 500 because PutItem should fail due to invalid data from failed bind
 		assert.Equal(t, http.StatusBadRequest, w.Code, "Expected 500 status for invalid JSON leading to AWS error")
-		// Check for a generic AWS error message part, as the exact error might vary
 		assert.Contains(t, w.Body.String(), "Error:")
 		assert.Equal(t, "no-cache", w.Header().Get("Cache-Control"))
 	})
@@ -162,6 +159,57 @@ func TestUploadImagePOSTAPI(t *testing.T) {
 	t.Run("MissingUserInRoute", func(t *testing.T) {
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest(http.MethodPost, "/upload/image/", nil)
+
+		router.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusNotFound, w.Code)
+	})
+}
+
+func TestListingsGETAPI(t *testing.T) {
+	router := setupTestRouter()
+	router.GET("/listings", ListingsGETAPI)
+
+	t.Run("Success", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest(http.MethodGet, "/listings", nil)
+
+		os.Setenv("AWS_ACCESS_KEY_ID", "FAKE_KEY_ID")
+		os.Setenv("AWS_SECRET_ACCESS_KEY", "FAKE_SECRET_KEY")
+		defer os.Unsetenv("AWS_ACCESS_KEY_ID")
+		defer os.Unsetenv("AWS_SECRET_ACCESS_KEY")
+
+		router.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+		assert.Equal(t, "no-cache", w.Header().Get("Cache-Control"))
+		assert.Equal(t, `[]`, w.Body.String())
+	})
+}
+
+func TestListingGETAPI(t *testing.T) {
+	router := setupTestRouter()
+	router.GET("/listing/:listing", ListingGETAPI)
+
+	t.Run("SuccessWithValidListingParam", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest(http.MethodGet, "/listing/MLS123", nil)
+
+		os.Setenv("AWS_ACCESS_KEY_ID", "FAKE_KEY_ID")
+		os.Setenv("AWS_SECRET_ACCESS_KEY", "FAKE_SECRET_KEY")
+		defer os.Unsetenv("AWS_ACCESS_KEY_ID")
+		defer os.Unsetenv("AWS_SECRET_ACCESS_KEY")
+
+		router.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+		assert.Equal(t, "no-cache", w.Header().Get("Cache-Control"))
+		assert.Equal(t, `[]`, w.Body.String())
+	})
+
+	t.Run("MissingListingParam", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest(http.MethodGet, "/listing/", nil)
 
 		router.ServeHTTP(w, req)
 
