@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"bytes"
-	"fmt"
 	"net/http"
 	"os"
 
@@ -171,7 +170,7 @@ func UploadImagePOSTAPI(c *gin.Context) {
 			}
 			resp, _ := svc.PutObject(params)
 
-			fmt.Printf("response %s", awsutil.StringValue(resp))
+			log.Debug("response: ", awsutil.StringValue(resp))
 		}
 
 		empty := []byte(``)
