@@ -16,7 +16,7 @@
     "jsdom": "^26.1.0",
     "prop-types": "^15.8.1",
     "react": "^19.1.0",
-    "react-bootstrap": "^2.9.0",
+    "react-bootstrap": "^2.10.10",
     "react-dom": "^19.1.0",
     "react-dropzone": "^14.3.8",
     "react-notifications": "^1.6.0",
