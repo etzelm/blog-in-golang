@@ -215,3 +215,87 @@ func TestCategoryPage_ErrorOnNoPanels(t *testing.T) {
 		t.Errorf("Expected title to contain %q, got %q", expectedTitle, recorder.Body.String())
 	}
 }
+
+func TestContactResponse_InvalidFormData(t *testing.T) {
+	silenceLogrus(t)
+	dummyTemplates := map[string]string{
+		"error.html":    "<html><head><title>{{.title}}</title></head><body>Error Message: {{.error}}</body></html>",
+		"response.html": "<html><head><title>{{.title}}</title></head><body>Success!</body></html>",
+	}
+	router, _, _ := setupTestRouterWithHTMLTemplates(t, dummyTemplates)
+
+	testRandomOne := 3
+	testRandomTwo := 5
+
+	router.POST("/contact", ContactResponse(&testRandomOne, &testRandomTwo))
+
+	testCases := []struct {
+		name           string
+		formData       url.Values
+		expectedStatus int
+		expectedBody   string
+	}{
+		{
+			name: "MissingName",
+			formData: url.Values{
+				"email":   {"test@example.com"},
+				"message": {"Hello"},
+				"robot":   {"1"},
+				"number":  {strconv.Itoa(testRandomOne + testRandomTwo)},
+			},
+			expectedStatus: http.StatusBadRequest,
+			expectedBody:   "Error Message: Invalid form data.",
+		},
+		{
+			name: "MissingEmail",
+			formData: url.Values{
+				"name":    {"Test"},
+				"message": {"Hello"},
+				"robot":   {"1"},
+				"number":  {strconv.Itoa(testRandomOne + testRandomTwo)},
+			},
+			expectedStatus: http.StatusBadRequest,
+			expectedBody:   "Error Message: Invalid form data.",
+		},
+		{
+			name: "MissingMessage",
+			formData: url.Values{
+				"name":   {"Test"},
+				"email":  {"test@example.com"},
+				"robot":  {"1"},
+				"number": {strconv.Itoa(testRandomOne + testRandomTwo)},
+			},
+			expectedStatus: http.StatusBadRequest,
+			expectedBody:   "Error Message: Invalid form data.",
+		},
+		{
+			name: "InvalidName",
+			formData: url.Values{
+				"name":    {"!@#$"},
+				"email":   {"test@example.com"},
+				"message": {"Hello"},
+				"robot":   {"1"},
+				"number":  {strconv.Itoa(testRandomOne + testRandomTwo)},
+			},
+			expectedStatus: http.StatusUnauthorized,
+			expectedBody:   "Error Message: Name should contain only alphanumeric characters",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			req, _ := http.NewRequest(http.MethodPost, "/contact", strings.NewReader(tc.formData.Encode()))
+			req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+			recorder := httptest.NewRecorder()
+			router.ServeHTTP(recorder, req)
+
+			if recorder.Code != tc.expectedStatus {
+				t.Errorf("Test %s: Expected status %d, got %d. Response body: %s", tc.name, tc.expectedStatus, recorder.Code, recorder.Body.String())
+			}
+			if !strings.Contains(recorder.Body.String(), tc.expectedBody) {
+				t.Errorf("Test %s: Expected body to contain %q, got %q", tc.name, tc.expectedBody, recorder.Body.String())
+			}
+		})
+	}
+}
