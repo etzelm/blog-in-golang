@@ -389,3 +389,35 @@ func TestArticlePage_InvalidPostType(t *testing.T) {
 		t.Errorf("Expected body to contain 'Error: Please provide a valid Article ID.', got %q", recorder.Body.String())
 	}
 }
+
+func TestAboutPage_Simple(t *testing.T) {
+	silenceLogrus(t)
+	dummyTemplateContent := "<html><head><title>About Page</title></head><body>About Us</body></html>"
+	templateFileName := "about.html"
+
+	router, recorder, _ := setupTestRouterWithHTMLTemplate(t, templateFileName, dummyTemplateContent)
+
+	router.GET("/about", AboutPage)
+
+	req, err := http.NewRequest(http.MethodGet, "/about", nil)
+	if err != nil {
+		t.Fatalf("Couldn't create request: %v\n", err)
+	}
+
+	router.ServeHTTP(recorder, req)
+
+	if recorder.Code != http.StatusOK {
+		t.Errorf("Expected status %d; got %d. Response body: %s", http.StatusOK, recorder.Code, recorder.Body.String())
+	}
+
+	expectedBodySubstring := "About Us"
+	if !strings.Contains(recorder.Body.String(), expectedBodySubstring) {
+		t.Errorf("Expected body to contain %q, got %q", expectedBodySubstring, recorder.Body.String())
+	}
+
+	expectedCacheControl := "public, max-age=31536000"
+	actualCacheControl := recorder.Header().Get("Cache-Control")
+	if actualCacheControl != expectedCacheControl {
+		t.Errorf("Expected Cache-Control header %q, got %q", expectedCacheControl, actualCacheControl)
+	}
+}
