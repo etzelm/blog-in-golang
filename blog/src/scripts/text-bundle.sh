@@ -51,6 +51,7 @@ REACT_FILES=(
     "realtor/src/App.jsx"
     "realtor/src/setupTests.jsx"
     "realtor/package.json"
+    "realtor/README.md"
     "realtor/vitest.config.js"
     "realtor/test-data/index.js"
     "realtor/test-data/listing1.json"
