@@ -137,7 +137,7 @@ jobs:
           DOCKER_BUILD_SUCCESS=false
           for i in 1 2; do # Attempt 1, then Retry 1 (total 2 attempts)
             echo "Attempt $i to build Docker image..."
-            if docker build --build-arg GAPI=$GAPI --build-arg AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID --build-arg  AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY -t blog:$TAG -f blog/Dockerfile .; then
+            if docker build --build-arg GAPI=$GAPI --build-arg AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID --build-arg AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY -t blog:$TAG -f blog/Dockerfile .; then
               echo "Docker build successful on attempt $i."
               DOCKER_BUILD_SUCCESS=true
               break # Exit loop if successful
