@@ -80,6 +80,7 @@ GO_FILES=(
     "blog/src/handlers/auth.handlers.go"
     "blog/src/handlers/auth.handlers_test.go"
     "blog/src/handlers/realtor.handlers.go"
+    "blog/src/handlers/realtor.handlers_test.go"
     "daemon/articles/awsEMR/awsEMR.go"
     "daemon/articles/awsEMR/awsEMR.html"
     "daemon/articles/infraCode/infraCode.go"

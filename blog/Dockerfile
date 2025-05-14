@@ -1,6 +1,10 @@
 # Stage 1: Go Builder
 FROM golang:1.24.2-alpine3.21 AS golang-builder
 
+# Declare ARGs for AWS creds
+ARG AWS_ACCESS_KEY_ID
+ARG AWS_SECRET_ACCESS_KEY
+
 # Install git for dependency management
 RUN apk add --no-cache git
 
