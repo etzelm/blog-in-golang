@@ -421,3 +421,38 @@ func TestAboutPage_Simple(t *testing.T) {
 		t.Errorf("Expected Cache-Control header %q, got %q", expectedCacheControl, actualCacheControl)
 	}
 }
+
+func TestContactPage_Simple(t *testing.T) {
+	silenceLogrus(t)
+	dummyTemplateContent := "<html><head><title>Contact Page</title></head><body>Contact Us: 3 + 5</body></html>"
+	templateFileName := "contact.html"
+
+	router, recorder, _ := setupTestRouterWithHTMLTemplate(t, templateFileName, dummyTemplateContent)
+
+	testRandomOne := 3
+	testRandomTwo := 5
+
+	router.GET("/contact", ContactPage(&testRandomOne, &testRandomTwo))
+
+	req, err := http.NewRequest(http.MethodGet, "/contact", nil)
+	if err != nil {
+		t.Fatalf("Couldn't create request: %v\n", err)
+	}
+
+	router.ServeHTTP(recorder, req)
+
+	if recorder.Code != http.StatusOK {
+		t.Errorf("Expected status %d; got %d. Response body: %s", http.StatusOK, recorder.Code, recorder.Body.String())
+	}
+
+	expectedBodySubstring := "Contact Us: 3 + 5"
+	if !strings.Contains(recorder.Body.String(), expectedBodySubstring) {
+		t.Errorf("Expected body to contain %q, got %q", expectedBodySubstring, recorder.Body.String())
+	}
+
+	expectedCacheControl := "no-cache"
+	actualCacheControl := recorder.Header().Get("Cache-Control")
+	if actualCacheControl != expectedCacheControl {
+		t.Errorf("Expected Cache-Control header %q, got %q", expectedCacheControl, actualCacheControl)
+	}
+}
