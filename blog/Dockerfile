@@ -15,6 +15,11 @@ RUN go mod download
 COPY blog/ .
 
 # Test the Go application
+# Declare ARGs for AWS creds
+ARG AWS_ACCESS_KEY_ID
+ARG AWS_SECRET_ACCESS_KEY
+RUN export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+RUN export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
 RUN go test -v -coverprofile=coverage.out ./...
 RUN go tool cover -func=coverage.out
 

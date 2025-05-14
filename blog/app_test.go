@@ -283,7 +283,6 @@ func TestMainExecutionPathWithCertMagic(t *testing.T) {
 
 	originalDeployment, deploymentSet := os.LookupEnv("DEPLOYMENT")
 	originalDomain, domainSet := os.LookupEnv("DOMAIN")
-
 	originalCertmagicLogger := certmagic.Default.Logger
 	os.Setenv("DEPLOYMENT", "NAS")
 	os.Setenv("DOMAIN", "localhost")

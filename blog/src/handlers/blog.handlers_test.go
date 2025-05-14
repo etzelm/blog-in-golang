@@ -299,3 +299,160 @@ func TestContactResponse_InvalidFormData(t *testing.T) {
 		})
 	}
 }
+
+func TestArticlePage_InvalidArticleID(t *testing.T) {
+	silenceLogrus(t)
+	dummyTemplates := map[string]string{
+		"error.html":   "<html><head><title>{{.title}}</title></head><body>Error: {{.error}}</body></html>",
+		"article.html": "<html><head><title>{{.title}}</title></head><body>Article Content</body></html>",
+	}
+	router, _, _ := setupTestRouterWithHTMLTemplates(t, dummyTemplates)
+
+	router.GET("/article/:article_id", ArticlePage)
+
+	testCases := []struct {
+		name           string
+		articleID      string
+		expectedStatus int
+		expectedBody   string
+	}{
+		{
+			name:           "InvalidArticleIDFormat",
+			articleID:      "invalid",
+			expectedStatus: http.StatusNotFound,
+			expectedBody:   "Error: Please provide a valid Article ID.",
+		},
+		{
+			name:           "EmptyArticleID",
+			articleID:      "",
+			expectedStatus: http.StatusNotFound,
+			expectedBody:   "404 page not found",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			req, _ := http.NewRequest(http.MethodGet, "/article/"+tc.articleID, nil)
+			recorder := httptest.NewRecorder()
+			router.ServeHTTP(recorder, req)
+
+			if recorder.Code != tc.expectedStatus {
+				t.Errorf("Test %s: Expected status %d, got %d. Response body: %s", tc.name, tc.expectedStatus, recorder.Code, recorder.Body.String())
+			}
+			if !strings.Contains(recorder.Body.String(), tc.expectedBody) {
+				t.Errorf("Test %s: Expected body to contain %q, got %q", tc.name, tc.expectedBody, recorder.Body.String())
+			}
+		})
+	}
+}
+
+func TestArticlePage_ArticleNotFound(t *testing.T) {
+	silenceLogrus(t)
+	dummyTemplates := map[string]string{
+		"error.html":   "<html><head><title>{{.title}}</title></head><body>Error: {{.error}}</body></html>",
+		"article.html": "<html><head><title>{{.title}}</title></head><body>Article Content</body></html>",
+	}
+	router, _, _ := setupTestRouterWithHTMLTemplates(t, dummyTemplates)
+
+	router.GET("/article/:article_id", ArticlePage)
+
+	req, _ := http.NewRequest(http.MethodGet, "/article/9999", nil) // Assuming 9999 is an ID that doesn't exist
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, req)
+
+	if recorder.Code != http.StatusNotFound {
+		t.Errorf("Expected status %d for non-existent ID, got %d. Response body: %s", http.StatusNotFound, recorder.Code, recorder.Body.String())
+	}
+	if !strings.Contains(recorder.Body.String(), "Error: Please provide a valid Article ID.") {
+		t.Errorf("Expected body to contain 'Error: Please provide a valid Article ID.', got %q", recorder.Body.String())
+	}
+}
+
+func TestArticlePage_InvalidPostType(t *testing.T) {
+	silenceLogrus(t)
+	dummyTemplates := map[string]string{
+		"error.html":   "<html><head><title>{{.title}}</title></head><body>Error: {{.error}}</body></html>",
+		"article.html": "<html><head><title>{{.title}}</title></head><body>Article Content</body></html>",
+	}
+	router, _, _ := setupTestRouterWithHTMLTemplates(t, dummyTemplates)
+
+	router.GET("/article/:article_id", ArticlePage)
+
+	req, _ := http.NewRequest(http.MethodGet, "/article/1", nil) // Assuming 1 is an ID with an invalid PostType
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, req)
+
+	if recorder.Code != http.StatusNotFound {
+		t.Errorf("Expected status %d for invalid PostType, got %d. Response body: %s", http.StatusUnauthorized, recorder.Code, recorder.Body.String())
+	}
+	if !strings.Contains(recorder.Body.String(), "Error: Please provide a valid Article ID.") {
+		t.Errorf("Expected body to contain 'Error: Please provide a valid Article ID.', got %q", recorder.Body.String())
+	}
+}
+
+func TestAboutPage_Simple(t *testing.T) {
+	silenceLogrus(t)
+	dummyTemplateContent := "<html><head><title>About Page</title></head><body>About Us</body></html>"
+	templateFileName := "about.html"
+
+	router, recorder, _ := setupTestRouterWithHTMLTemplate(t, templateFileName, dummyTemplateContent)
+
+	router.GET("/about", AboutPage)
+
+	req, err := http.NewRequest(http.MethodGet, "/about", nil)
+	if err != nil {
+		t.Fatalf("Couldn't create request: %v\n", err)
+	}
+
+	router.ServeHTTP(recorder, req)
+
+	if recorder.Code != http.StatusOK {
+		t.Errorf("Expected status %d; got %d. Response body: %s", http.StatusOK, recorder.Code, recorder.Body.String())
+	}
+
+	expectedBodySubstring := "About Us"
+	if !strings.Contains(recorder.Body.String(), expectedBodySubstring) {
+		t.Errorf("Expected body to contain %q, got %q", expectedBodySubstring, recorder.Body.String())
+	}
+
+	expectedCacheControl := "public, max-age=31536000"
+	actualCacheControl := recorder.Header().Get("Cache-Control")
+	if actualCacheControl != expectedCacheControl {
+		t.Errorf("Expected Cache-Control header %q, got %q", expectedCacheControl, actualCacheControl)
+	}
+}
+
+func TestContactPage_Simple(t *testing.T) {
+	silenceLogrus(t)
+	dummyTemplateContent := "<html><head><title>Contact Page</title></head><body>Contact Us: 3 + 5</body></html>"
+	templateFileName := "contact.html"
+
+	router, recorder, _ := setupTestRouterWithHTMLTemplate(t, templateFileName, dummyTemplateContent)
+
+	testRandomOne := 3
+	testRandomTwo := 5
+
+	router.GET("/contact", ContactPage(&testRandomOne, &testRandomTwo))
+
+	req, err := http.NewRequest(http.MethodGet, "/contact", nil)
+	if err != nil {
+		t.Fatalf("Couldn't create request: %v\n", err)
+	}
+
+	router.ServeHTTP(recorder, req)
+
+	if recorder.Code != http.StatusOK {
+		t.Errorf("Expected status %d; got %d. Response body: %s", http.StatusOK, recorder.Code, recorder.Body.String())
+	}
+
+	expectedBodySubstring := "Contact Us: 3 + 5"
+	if !strings.Contains(recorder.Body.String(), expectedBodySubstring) {
+		t.Errorf("Expected body to contain %q, got %q", expectedBodySubstring, recorder.Body.String())
+	}
+
+	expectedCacheControl := "no-cache"
+	actualCacheControl := recorder.Header().Get("Cache-Control")
+	if actualCacheControl != expectedCacheControl {
+		t.Errorf("Expected Cache-Control header %q, got %q", expectedCacheControl, actualCacheControl)
+	}
+}
