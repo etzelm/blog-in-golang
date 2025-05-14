@@ -299,3 +299,93 @@ func TestContactResponse_InvalidFormData(t *testing.T) {
 		})
 	}
 }
+
+func TestArticlePage_InvalidArticleID(t *testing.T) {
+	silenceLogrus(t)
+	dummyTemplates := map[string]string{
+		"error.html":   "<html><head><title>{{.title}}</title></head><body>Error: {{.error}}</body></html>",
+		"article.html": "<html><head><title>{{.title}}</title></head><body>Article Content</body></html>",
+	}
+	router, _, _ := setupTestRouterWithHTMLTemplates(t, dummyTemplates)
+
+	router.GET("/article/:article_id", ArticlePage)
+
+	testCases := []struct {
+		name           string
+		articleID      string
+		expectedStatus int
+		expectedBody   string
+	}{
+		{
+			name:           "InvalidArticleIDFormat",
+			articleID:      "invalid",
+			expectedStatus: http.StatusNotFound,
+			expectedBody:   "Error: Please provide a valid Article ID.",
+		},
+		{
+			name:           "EmptyArticleID",
+			articleID:      "",
+			expectedStatus: http.StatusNotFound,
+			expectedBody:   "404 page not found",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			req, _ := http.NewRequest(http.MethodGet, "/article/"+tc.articleID, nil)
+			recorder := httptest.NewRecorder()
+			router.ServeHTTP(recorder, req)
+
+			if recorder.Code != tc.expectedStatus {
+				t.Errorf("Test %s: Expected status %d, got %d. Response body: %s", tc.name, tc.expectedStatus, recorder.Code, recorder.Body.String())
+			}
+			if !strings.Contains(recorder.Body.String(), tc.expectedBody) {
+				t.Errorf("Test %s: Expected body to contain %q, got %q", tc.name, tc.expectedBody, recorder.Body.String())
+			}
+		})
+	}
+}
+
+func TestArticlePage_ArticleNotFound(t *testing.T) {
+	silenceLogrus(t)
+	dummyTemplates := map[string]string{
+		"error.html":   "<html><head><title>{{.title}}</title></head><body>Error: {{.error}}</body></html>",
+		"article.html": "<html><head><title>{{.title}}</title></head><body>Article Content</body></html>",
+	}
+	router, _, _ := setupTestRouterWithHTMLTemplates(t, dummyTemplates)
+
+	router.GET("/article/:article_id", ArticlePage)
+
+	req, _ := http.NewRequest(http.MethodGet, "/article/9999", nil) // Assuming 9999 is an ID that doesn't exist
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, req)
+
+	if recorder.Code != http.StatusNotFound {
+		t.Errorf("Expected status %d for non-existent ID, got %d. Response body: %s", http.StatusNotFound, recorder.Code, recorder.Body.String())
+	}
+	if !strings.Contains(recorder.Body.String(), "Error: Please provide a valid Article ID.") {
+		t.Errorf("Expected body to contain 'Error: Please provide a valid Article ID.', got %q", recorder.Body.String())
+	}
+}
+
+func TestArticlePage_InvalidPostType(t *testing.T) {
+	silenceLogrus(t)
+	dummyTemplates := map[string]string{
+		"error.html":   "<html><head><title>{{.title}}</title></head><body>Error: {{.error}}</body></html>",
+		"article.html": "<html><head><title>{{.title}}</title></head><body>Article Content</body></html>",
+	}
+	router, _, _ := setupTestRouterWithHTMLTemplates(t, dummyTemplates)
+
+	router.GET("/article/:article_id", ArticlePage)
+
+	req, _ := http.NewRequest(http.MethodGet, "/article/1", nil) // Assuming 1 is an ID with an invalid PostType
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, req)
+
+	if recorder.Code != http.StatusNotFound {
+		t.Errorf("Expected status %d for invalid PostType, got %d. Response body: %s", http.StatusUnauthorized, recorder.Code, recorder.Body.String())
+	}
+	if !strings.Contains(recorder.Body.String(), "Error: Please provide a valid Article ID.") {
+		t.Errorf("Expected body to contain 'Error: Please provide a valid Article ID.', got %q", recorder.Body.String())
+	}
+}
