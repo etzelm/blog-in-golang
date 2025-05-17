@@ -20,21 +20,21 @@ This folder contains the Go backend for the blog functionality of the `blog-in-g
 | `github.com/etzelm/blog-in-golang/src/handlers/auth.handlers.go:164`| `CheckPasswordHash`          | `100.0%` |
 | `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:21` | `PostPage`                   | `100.0%` |
 | `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:41` | `CategoryPage`               | `75.0%`  |
-| `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:75` | `ArticlePage`                | `62.5%`  |
+| `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:75` | `ArticlePage`                | `87.5%`  |
 | `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:110`| `AboutPage`                  | `100.0%` |
 | `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:126`| `ContactPage`                | `100.0%` |
-| `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:147`| `ContactResponse`            | `45.5%`  |
+| `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:147`| `ContactResponse`            | `87.9%`  |
 | `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:216`| `renderErrorPage`            | `100.0%` |
 | `github.com/etzelm/blog-in-golang/src/handlers/realtor.handlers.go:21`| `ListingsGETAPI`           | `100.0%` |
 | `github.com/etzelm/blog-in-golang/src/handlers/realtor.handlers.go:31`| `ListingGETAPI`            | `66.7%`  |
 | `github.com/etzelm/blog-in-golang/src/handlers/realtor.handlers.go:53`| `ListingPOSTAPI`           | `80.0%`  |
 | `github.com/etzelm/blog-in-golang/src/handlers/realtor.handlers.go:131`| `UploadImagePOSTAPI`       | `88.9%`  |
 | `github.com/etzelm/blog-in-golang/src/models/blog.models.go:69`     | `GetArticlePanels`           | `86.5%`  |
-| `github.com/etzelm/blog-in-golang/src/models/blog.models.go:142`    | `GetCategoryPageArticlePanels` | `42.1%`  |
+| `github.com/etzelm/blog-in-golang/src/models/blog.models.go:142`    | `GetCategoryPageArticlePanels` | `86.8%`  |
 | `github.com/etzelm/blog-in-golang/src/models/blog.models.go:217`    | `GetArticleByID`             | `90.6%`  |
 | `github.com/etzelm/blog-in-golang/src/models/realtor.models.go:41`  | `GetRealtorListings`         | `60.0%`  |
 | `github.com/etzelm/blog-in-golang/src/models/realtor.models.go:104` | `GetRealtorListing`          | `60.0%`  |
-| **Total** |                              | **`75.5%`** |
+| **Total** |                              | **`84.2%`** |
 
 ## Key Components
 

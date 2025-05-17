@@ -3,6 +3,8 @@ package models
 import (
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetRealtorListings_Simple(t *testing.T) {
@@ -26,7 +28,8 @@ func TestGetRealtorListings_Simple(t *testing.T) {
 		}
 	}()
 
-	_ = GetRealtorListings()
+	listings := GetRealtorListings()
+	assert.NotNil(t, listings, "GetRealtorListings should return an empty slice, not nil, on typical scan failure with dummy credentials")
 }
 
 func TestGetRealtorListing_Simple(t *testing.T) {
@@ -51,5 +54,6 @@ func TestGetRealtorListing_Simple(t *testing.T) {
 	}()
 
 	dummyMLSID := "0000000000"
-	_ = GetRealtorListing(dummyMLSID)
+	listings := GetRealtorListing(dummyMLSID)
+	assert.NotNil(t, listings, "GetRealtorListing should return an empty slice, not nil, on typical scan failure")
 }
