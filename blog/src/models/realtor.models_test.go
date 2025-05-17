@@ -32,6 +32,12 @@ func TestGetRealtorListings_Simple(t *testing.T) {
 	assert.NotNil(t, listings, "GetRealtorListings should return an empty slice, not nil, on typical scan failure with dummy credentials")
 }
 
+func TestGetRealtorListings_Real(t *testing.T) {
+	silenceLogrus(t)
+	listings := GetRealtorListings()
+	assert.NotNil(t, listings, "GetRealtorListings should return an empty slice, not nil, on typical scan failure with dummy credentials")
+}
+
 func TestGetRealtorListing_Simple(t *testing.T) {
 	silenceLogrus(t)
 	originalAccessKeyID, accessKeyIDSet := os.LookupEnv("AWS_ACCESS_KEY_ID")
@@ -56,4 +62,11 @@ func TestGetRealtorListing_Simple(t *testing.T) {
 	dummyMLSID := "0000000000"
 	listings := GetRealtorListing(dummyMLSID)
 	assert.NotNil(t, listings, "GetRealtorListing should return an empty slice, not nil, on typical scan failure")
+}
+
+func TestGetRealtorListing_Real(t *testing.T) {
+	silenceLogrus(t)
+	realMLSID := "e0377-aed6-f12-0f66-ee8ab4edcfdc"
+	listing := GetRealtorListing(realMLSID)
+	assert.NotNil(t, listing, "GetRealtorListing should return an empty slice, not nil, on typical scan failure")
 }
