@@ -43,15 +43,11 @@ func GetRealtorListings() []Listing {
 	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
 	var myCredentials = credentials.NewStaticCredentials(aid, key, "")
 
-	sess, err := session.NewSession(&aws.Config{
+	sess, _ := session.NewSession(&aws.Config{
 		Credentials: myCredentials,
 		Region:      aws.String("us-west-1"),
 		//Endpoint:    aws.String("http://localhost:8000"),
 	})
-	if err != nil {
-		log.Error(err)
-		return nil
-	}
 	dbSvc := dynamodb.New(sess)
 
 	filt := expression.Name("deleted").NotEqual(expression.Value("anything"))
@@ -82,7 +78,7 @@ func GetRealtorListings() []Listing {
 	for _, i := range result.Items {
 		listing := Listing{}
 
-		err = dynamodbattribute.UnmarshalMap(i, &listing)
+		err := dynamodbattribute.UnmarshalMap(i, &listing)
 
 		if err != nil {
 			log.Error("Got error unmarshalling:")
@@ -106,15 +102,11 @@ func GetRealtorListing(listing string) []Listing {
 	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
 	var myCredentials = credentials.NewStaticCredentials(aid, key, "")
 
-	sess, err := session.NewSession(&aws.Config{
+	sess, _ := session.NewSession(&aws.Config{
 		Credentials: myCredentials,
 		Region:      aws.String("us-west-1"),
 		//Endpoint:    aws.String("http://localhost:8000"),
 	})
-	if err != nil {
-		log.Error(err)
-		return nil
-	}
 	dbSvc := dynamodb.New(sess)
 
 	filt := expression.Name("MLS").Equal(expression.Value(listing))
@@ -145,7 +137,7 @@ func GetRealtorListing(listing string) []Listing {
 	for _, i := range result.Items {
 		listing := Listing{}
 
-		err = dynamodbattribute.UnmarshalMap(i, &listing)
+		err := dynamodbattribute.UnmarshalMap(i, &listing)
 
 		if err != nil {
 			log.Error("Got error unmarshalling:")

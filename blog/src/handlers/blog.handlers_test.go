@@ -288,6 +288,29 @@ func TestCategoryPage_ErrorOnNoPanels(t *testing.T) {
 	}
 }
 
+func TestCategoryPage_RealPanels(t *testing.T) {
+	silenceLogrus(t)
+	os.Setenv("ARTICLES", "Test-Articles")
+
+	dummyTemplates := map[string]string{
+		"index.html": "<html><head><title>{{.title}}</title></head><body>Category: {{.category}} {{if .payload}}Have Payload{{else}}No Payload{{end}}</body></html>",
+		"error.html": "<html><head><title>{{.title}}</title></head><body>Error Details: {{.error}}</body></html>",
+	}
+	router, recorder, _ := setupTestRouterWithHTMLTemplates(t, dummyTemplates)
+	router.GET("/category/:category", CategoryPage)
+
+	req, err := http.NewRequest(http.MethodGet, "/category/Disciplines", nil)
+	if err != nil {
+		t.Fatalf("Couldn't create request: %v\n", err)
+	}
+
+	router.ServeHTTP(recorder, req)
+
+	if recorder.Code != http.StatusOK {
+		t.Errorf("Expected status %d; got %d. Response body: %s", http.StatusNotFound, recorder.Code, recorder.Body.String())
+	}
+}
+
 func TestContactResponse_InvalidFormData(t *testing.T) {
 	silenceLogrus(t)
 	dummyTemplates := map[string]string{

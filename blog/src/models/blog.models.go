@@ -71,15 +71,11 @@ func GetArticlePanels() []Article {
 	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
 	var myCredentials = credentials.NewStaticCredentials(aid, key, "")
 
-	sess, err := session.NewSession(&aws.Config{
+	sess, _ := session.NewSession(&aws.Config{
 		Credentials: myCredentials,
 		Region:      aws.String("us-west-1"),
 		//Endpoint:    aws.String("http://localhost:8000"),
 	})
-	if err != nil {
-		log.Error(err)
-		return nil
-	}
 	dbSvc := dynamodb.New(sess)
 
 	filt := expression.Name("post-id").GreaterThanEqual(expression.Value(0))
@@ -107,7 +103,7 @@ func GetArticlePanels() []Article {
 		item := Item{}
 		article := Article{}
 
-		err = dynamodbattribute.UnmarshalMap(i, &item)
+		err := dynamodbattribute.UnmarshalMap(i, &item)
 
 		if err != nil {
 			log.Error("Got error unmarshalling:")
@@ -144,15 +140,11 @@ func GetCategoryPageArticlePanels(category string) []Article {
 	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
 	var myCredentials = credentials.NewStaticCredentials(aid, key, "")
 
-	sess, err := session.NewSession(&aws.Config{
+	sess, _ := session.NewSession(&aws.Config{
 		Credentials: myCredentials,
 		Region:      aws.String("us-west-1"),
 		//Endpoint:    aws.String("http://localhost:8000"),
 	})
-	if err != nil {
-		log.Error(err)
-		return nil
-	}
 	dbSvc := dynamodb.New(sess)
 
 	unescapedCategory := html.UnescapeString(category)
@@ -182,7 +174,7 @@ func GetCategoryPageArticlePanels(category string) []Article {
 		item := Item{}
 		article := Article{}
 
-		err = dynamodbattribute.UnmarshalMap(i, &item)
+		err := dynamodbattribute.UnmarshalMap(i, &item)
 
 		if err != nil {
 			log.Error("Got error unmarshalling:")
@@ -219,15 +211,11 @@ func GetArticleByID(id int) (*Article, error) {
 	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
 	var myCredentials = credentials.NewStaticCredentials(aid, key, "")
 
-	sess, err := session.NewSession(&aws.Config{
+	sess, _ := session.NewSession(&aws.Config{
 		Credentials: myCredentials,
 		Region:      aws.String("us-west-1"),
 		//Endpoint:    aws.String("http://localhost:8000"),
 	})
-	if err != nil {
-		log.Error(err)
-		return nil, err
-	}
 	dbSvc := dynamodb.New(sess)
 
 	table := os.Getenv("ARTICLES")

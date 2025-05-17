@@ -13,7 +13,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/etzelm/blog-in-golang/src/models"
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -98,26 +97,11 @@ func AuthResponse(c *gin.Context) {
 	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
 	var myCredentials = credentials.NewStaticCredentials(aid, key, "")
 
-	sess, err := session.NewSession(&aws.Config{
+	sess, _ := session.NewSession(&aws.Config{
 		Credentials: myCredentials,
 		Region:      aws.String("us-west-1"),
 		//Endpoint:    aws.String("http://localhost:8000"),
 	})
-	if err != nil {
-		log.Error(err)
-		c.HTML(
-			// Set the HTTP status to 500 (Internal Server Error)
-			http.StatusInternalServerError,
-			// Use the error.html template
-			"error.html",
-			// Pass the data that the page uses
-			gin.H{
-				"title": "500 Internal Server Error",
-				"error": err.Error(),
-			},
-		)
-		return
-	}
 
 	dbSvc := dynamodb.New(sess)
 	result, _ := dbSvc.GetItem(&dynamodb.GetItemInput{
