@@ -169,16 +169,11 @@ func ContactResponse(numOne *int, numTwo *int) gin.HandlerFunc {
 		key := os.Getenv("AWS_SECRET_ACCESS_KEY")
 		var myCredentials = credentials.NewStaticCredentials(aid, key, "")
 
-		sess, err := session.NewSession(&aws.Config{
+		sess, _ := session.NewSession(&aws.Config{
 			Credentials: myCredentials,
 			Region:      aws.String("us-west-1"),
 			//Endpoint:    aws.String("http://localhost:8000"),
 		})
-		if err != nil {
-			log.Error(err)
-			renderErrorPage(c, 500, "500 Internal Server Error", err.Error())
-			return
-		}
 
 		dbSvc := dynamodb.New(sess)
 
