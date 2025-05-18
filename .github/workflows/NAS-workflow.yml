@@ -46,6 +46,18 @@ jobs:
           echo "Golang Build Finished"
           popd
 
+  dependabot:
+    name: 'Dependabot'
+    needs: [NAS-build] 
+    runs-on: [self-hosted, Linux, X64, nas]
+    if: ${{ github.actor == 'dependabot[bot]' && github.event_name == 'pull_request'}} 
+    steps:
+      - name: Enable auto-merge for Dependabot PRs
+        run: gh pr merge --auto --merge "$PR_URL"
+        env:
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GITHUB_TOKEN: ${{secrets.TOKEN}}
+
   NAS-deploy:
     # No specific token permissions needed beyond checkout and changed-files
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop'
