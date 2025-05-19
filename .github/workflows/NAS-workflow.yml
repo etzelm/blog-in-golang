@@ -19,6 +19,9 @@ jobs:
     # No specific token permissions needed beyond checkout
     if: github.ref != 'refs/heads/master' && github.ref != 'refs/heads/develop'
     runs-on: [self-hosted, Linux, X64, nas]
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
