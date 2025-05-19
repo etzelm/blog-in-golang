@@ -30,7 +30,6 @@ func main() {
 	LoadMiddlewares(httpServer)
 	log.WithField("server", httpServer).Info("Default Gin server created.")
 
-	// Separate process from the server for rotating the numbers for Contact validation.
 	go func() {
 		for range time.Tick(time.Hour * 3) {
 			go func() {
@@ -105,14 +104,11 @@ func staticCacheMiddleware() gin.HandlerFunc {
 	}
 	return func(c *gin.Context) {
 		for _, prefix := range staticPrefixes {
-			// Determine if request path is for statically served files
 			if strings.HasPrefix(c.Request.URL.Path, prefix) {
-				// Apply the Cache-Control header to the static files
 				c.Header("Cache-Control", "public, max-age=31536000")
 				break
 			}
 		}
-		// Continue to the next middleware or handler
 		c.Next()
 	}
 }
@@ -124,14 +120,11 @@ func unauthorizedMiddleware() gin.HandlerFunc {
 	}
 	return func(c *gin.Context) {
 		for _, pattern := range blockedPatterns {
-			// Determine if request path is unused pattern common in scans
 			if strings.Contains(c.Request.URL.Path, pattern) {
-				// Abort the gin context while returning 401
 				c.AbortWithStatus(401)
 				return
 			}
 		}
-		// Continue to the next middleware or handler
 		c.Next()
 	}
 }
