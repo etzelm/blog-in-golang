@@ -52,10 +52,12 @@ jobs:
     name: 'Dependabot'
     needs: [NAS-build] 
     runs-on: [self-hosted, Linux, X64, nas]
-    if: ${{ github.actor == 'dependabot[bot]' && github.event_name == 'pull_request'}} 
+    if: ${{ (github.actor == 'dependabot[bot]' || github.actor == 'etzelm') && github.event_name == 'pull_request' }} 
     steps:
       - name: Enable auto-merge for Dependabot PRs
-        run: gh pr merge --auto --merge "$PR_URL"
+        run: |
+          gh pr review "$PR_URL" --approve -b "LGTM! Approved for auto-merge."
+          gh pr merge --auto --merge "$PR_URL"
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
           GITHUB_TOKEN: ${{secrets.TOKEN}}

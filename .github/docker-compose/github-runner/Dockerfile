@@ -9,7 +9,7 @@ RUN apt install -y --no-install-recommends sudo && \
     chmod 0440 /etc/sudoers.d/docker && \
     apt clean
 RUN apt install -y --no-install-recommends \
-    curl unzip jq build-essential libicu70 libssl-dev libffi-dev python3 python3-venv python3-dev python3-pip openssh-client sshpass
+    curl unzip jq build-essential libicu70 libssl-dev libffi-dev python3 python3-venv python3-dev python3-pip openssh-client sshpass gh
 RUN curl -fsSL https://go.dev/dl/go1.24.2.linux-amd64.tar.gz -o go.tar.gz && \
     tar -C /usr/local -xzf go.tar.gz && \
     rm go.tar.gz && \
