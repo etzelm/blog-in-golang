@@ -39,6 +39,8 @@ jobs:
           popd
           pushd blog
           echo "Golang Build Starting"
+          export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+          export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
           go mod download
           go test -v -coverprofile=coverage.out ./...
           go tool cover -func=coverage.out
