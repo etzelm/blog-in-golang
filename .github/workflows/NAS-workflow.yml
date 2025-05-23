@@ -39,8 +39,6 @@ jobs:
           popd
           pushd blog
           echo "Golang Build Starting"
-          export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-          export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
           go mod download
           go test -v -coverprofile=coverage.out ./...
           go tool cover -func=coverage.out
@@ -52,7 +50,7 @@ jobs:
     name: 'Dependabot'
     needs: [NAS-build] 
     runs-on: [self-hosted, Linux, X64, nas]
-    if: ${{ (github.actor == 'dependabot[bot]' || github.actor == 'etzelm') && github.event_name == 'pull_request' }} 
+    if: ${{ github.actor == 'dependabot[bot]' && github.event_name == 'pull_request' }} 
     steps:
       - name: Enable auto-merge for Dependabot PRs
         run: |
