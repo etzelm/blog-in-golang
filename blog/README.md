@@ -66,5 +66,4 @@ This folder contains the Go backend for the blog functionality of the `blog-in-g
 * Handles image uploads to AWS S3.
 * Uses Gin middleware for gzip compression and caching.
 * Includes security middleware to block common malicious request paths.
-* Integrates with AWS services (DynamoDB, S3).
 * Designed for deployment via Docker.
