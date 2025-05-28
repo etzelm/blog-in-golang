@@ -5,7 +5,7 @@ go 1.24.2
 require (
 	github.com/aws/aws-sdk-go v1.55.7
 	github.com/caddyserver/certmagic v0.23.0
-	github.com/gin-contrib/cache v1.3.2
+	github.com/gin-contrib/cache v1.4.0
 	github.com/gin-contrib/static v1.1.5
 	github.com/gin-gonic/gin v1.10.1
 	github.com/sirupsen/logrus v1.9.3
@@ -14,6 +14,7 @@ require (
 )
 
 require (
+	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/mholt/acmez/v3 v3.1.2 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect

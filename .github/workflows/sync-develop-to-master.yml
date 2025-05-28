@@ -1,0 +1,77 @@
+name: Sync develop to master (Fridays)
+
+on:
+  schedule:
+    - cron: '0 2 * * 3' 
+  workflow_dispatch:
+
+jobs:
+  sync-develop-to-master:
+    name: Sync develop to master
+    runs-on: [self-hosted, Linux, X64, nas]
+    if: github.repository == 'etzelm/blog-in-golang' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+    permissions:
+      contents: write 
+      pull-requests: write 
+    env:
+      GITHUB_TOKEN: ${{ secrets.TOKEN }} 
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
+          token: ${{ secrets.TOKEN }}
+
+      - name: Check if develop is ahead of master
+        id: diff_check
+        run: |
+          git fetch origin master develop
+          COUNT=$(git rev-list --count origin/master..origin/develop)
+          echo "Commits in develop not in master: $COUNT"
+          if [ "$COUNT" -gt 0 ]; then
+            echo "DEVELOP_AHEAD=true" >> $GITHUB_OUTPUT
+          else
+            echo "DEVELOP_AHEAD=false" >> $GITHUB_OUTPUT
+            echo "Develop is not ahead of master. No PR needed."
+          fi
+
+      - name: Create or Get Existing Pull Request
+        if: steps.diff_check.outputs.DEVELOP_AHEAD == 'true'
+        id: manage_pr
+        run: |
+          PR_TITLE="Auto-Sync: Merge develop into master ($(date +'%Y-%m-%d'))"
+          PR_BODY="This PR was automatically created to sync changes from the 'develop' branch to the 'master' branch."
+          EXISTING_PR_NUMBER=$(gh pr list --base master --head develop --state open --json number --jq '.[0].number // ""')
+          if [ -n "$EXISTING_PR_NUMBER" ]; then
+            echo "Pull request from develop to master already exists: $EXISTING_PR_NUMBER"
+            echo "PR_NUMBER=$EXISTING_PR_NUMBER" >> $GITHUB_OUTPUT
+            echo "PR_ACTION=existing" >> $GITHUB_OUTPUT 
+          else
+            echo "Creating new pull request..."
+            PR_URL=$(gh pr create --base master --head develop --title "$PR_TITLE" --body "$PR_BODY")
+            if [ $? -ne 0 ]; then
+              echo "Failed to create PR using 'gh pr create'"
+              exit 1
+            fi
+            echo "Pull request created: $PR_URL"
+            NEW_PR_NUMBER=$(echo "$PR_URL" | awk -F'/' '{print $NF}')
+            echo "PR_NUMBER=$NEW_PR_NUMBER" >> $GITHUB_OUTPUT
+            echo "PR_ACTION=created" >> $GITHUB_OUTPUT 
+          fi
+
+      - name: Wait for PR status checks
+        if: steps.manage_pr.outputs.PR_NUMBER != ''
+        run: |
+          echo "Waiting for checks on PR #${{ steps.manage_pr.outputs.PR_NUMBER }}..."
+          gh pr checks "${{ steps.manage_pr.outputs.PR_NUMBER }}" --watch --required --interval 30 --timeout 30m
+          echo "All required checks for PR #${{ steps.manage_pr.outputs.PR_NUMBER }} passed."
+
+      - name: Approve PR and Enable Auto-Merge
+        if: steps.manage_pr.outputs.PR_NUMBER != ''
+        run: |
+          PR_NUMBER="${{ steps.manage_pr.outputs.PR_NUMBER }}"
+          echo "Approving PR #$PR_NUMBER and enabling auto-merge..."
+          gh pr review "$PR_NUMBER" --approve -b "LGTM! All checks passed. Approved for auto-merge."
+          gh pr merge --auto --merge "$PR_NUMBER"
+          echo "PR #$PR_NUMBER approved and set to auto-merge."
