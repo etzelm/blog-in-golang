@@ -65,7 +65,7 @@ jobs:
         timeout-minutes: 3
         run: |
           echo "Waiting for checks on PR #${{ steps.manage_pr.outputs.PR_NUMBER }}..."
-          gh pr checks "${{ steps.manage_pr.outputs.PR_NUMBER }}" --watch --interval 30
+          gh pr checks "${{ steps.manage_pr.outputs.PR_NUMBER }}" --watch --required --interval 30
           echo "All required checks for PR #${{ steps.manage_pr.outputs.PR_NUMBER }} passed."
 
       - name: Approve PR and Enable Auto-Merge
@@ -85,13 +85,13 @@ jobs:
           elapsed_seconds=0
           MERGED=false
           while [ "$elapsed_seconds" -lt "$timeout_seconds" ]; do
-            PR_MERGED_STATUS=$(gh pr view "$PR_NUMBER" --json merged --jq '.merged')
-            if [ "$PR_MERGED_STATUS" == "true" ]; then
+            PR_MERGED_STATUS=$(gh pr view "$PR_NUMBER" --json state --jq '.state')
+            if [ "$PR_MERGED_STATUS" == "MERGED" ]; then
               echo "PR $PR_NUMBER has been successfully merged."
               MERGED=true
               break
             fi
-            echo "PR $PR_NUMBER not merged yet. Current merged status: $PR_MERGED_STATUS. Waiting..."
+            echo "PR $PR_NUMBER not merged yet. Current state: $PR_MERGED_STATUS. Waiting..."
             sleep $interval_seconds
             elapsed_seconds=$((elapsed_seconds + interval_seconds))
           done
