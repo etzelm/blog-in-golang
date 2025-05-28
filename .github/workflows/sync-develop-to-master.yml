@@ -75,3 +75,42 @@ jobs:
           gh pr review "$PR_NUMBER" --approve -b "LGTM! All checks passed. Approved for auto-merge."
           gh pr merge --auto --merge "$PR_NUMBER"
           echo "PR #$PR_NUMBER approved and set to auto-merge."
+
+      - name: Wait for PR Merge & Sync master to develop
+        if: steps.manage_pr.outputs.PR_NUMBER != ''
+        run: |
+          PR_NUMBER="${{ steps.manage_pr.outputs.PR_NUMBER }}"
+          timeout_seconds=600 
+          interval_seconds=20 
+          elapsed_seconds=0
+          MERGED=false
+          while [ "$elapsed_seconds" -lt "$timeout_seconds" ]; do
+            PR_MERGED_STATUS=$(gh pr view "$PR_NUMBER" --json merged --jq '.merged')
+            if [ "$PR_MERGED_STATUS" == "true" ]; then
+              echo "PR $PR_NUMBER has been successfully merged."
+              MERGED=true
+              break
+            fi
+            echo "PR $PR_NUMBER not merged yet. Current merged status: $PR_MERGED_STATUS. Waiting..."
+            sleep $interval_seconds
+            elapsed_seconds=$((elapsed_seconds + interval_seconds))
+          done
+          if [ "$MERGED" != "true" ]; then
+            echo "Error: Timed out waiting for PR $PR_NUMBER to be merged by GitHub."
+            gh pr view "$PR_NUMBER" --json state,statusCheckRollup --jq '{state: .state, checks: .statusCheckRollup}'
+            exit 1 
+          fi
+          echo "Proceeding to merge master into develop..."
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          echo "Fetching latest changes from origin..."
+          git fetch origin
+          echo "Checking out develop branch..."
+          git checkout develop
+          echo "Pulling latest develop branch from origin..."
+          git pull origin develop 
+          echo "Merging origin/master into develop..."
+          git merge origin/master -m "Auto-sync: Merge master into develop"
+          echo "Pushing updated develop branch to origin..."
+          git push origin develop
+          echo "Master has been successfully merged into develop."
