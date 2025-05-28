@@ -29,7 +29,7 @@ jobs:
           git fetch origin master develop
           COUNT=$(git rev-list --count origin/master..origin/develop)
           echo "Commits in develop not in master: $COUNT"
-          if [ "$COUNT" -gt 0 ]; then
+          if [ "$COUNT" -gt 1 ]; then
             echo "DEVELOP_AHEAD=true" >> $GITHUB_OUTPUT
           else
             echo "DEVELOP_AHEAD=false" >> $GITHUB_OUTPUT
