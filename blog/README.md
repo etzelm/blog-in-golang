@@ -1,6 +1,6 @@
 # /blog/
 
-This folder contains the Go backend for the blog functionality of the `blog-in-golang` project.
+This folder contains the Go backend for the `blog-in-golang` project.
 
 ## Code Coverage
 
