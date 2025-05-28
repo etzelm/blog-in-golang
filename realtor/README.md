@@ -1,4 +1,4 @@
-# sample realtor app
+# sample realtor react app
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 

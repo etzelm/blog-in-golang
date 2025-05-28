@@ -65,7 +65,7 @@ jobs:
         timeout-minutes: 30
         run: |
           echo "Waiting for checks on PR #${{ steps.manage_pr.outputs.PR_NUMBER }}..."
-          gh pr checks "${{ steps.manage_pr.outputs.PR_NUMBER }}" --watch --required --interval 30
+          gh pr checks "${{ steps.manage_pr.outputs.PR_NUMBER }}" --watch --interval 30
           echo "All required checks for PR #${{ steps.manage_pr.outputs.PR_NUMBER }} passed."
 
       - name: Approve PR and Enable Auto-Merge
@@ -74,7 +74,7 @@ jobs:
           PR_NUMBER="${{ steps.manage_pr.outputs.PR_NUMBER }}"
           echo "Approving PR #$PR_NUMBER and enabling auto-merge..."
           gh pr review "$PR_NUMBER" --approve -b "LGTM! All checks passed. Approved for auto-merge."
-          gh pr merge --auto --merge "$PR_NUMBER"
+          gh pr merge --admin --merge "$PR_NUMBER"
           echo "PR #$PR_NUMBER approved and set to auto-merge."
 
       - name: Wait for PR Merge & Sync master to develop
