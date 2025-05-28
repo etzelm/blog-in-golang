@@ -9,7 +9,12 @@ RUN apt install -y --no-install-recommends sudo && \
     chmod 0440 /etc/sudoers.d/docker && \
     apt clean
 RUN apt install -y --no-install-recommends \
-    curl unzip jq build-essential libicu70 libssl-dev libffi-dev python3 python3-venv python3-dev python3-pip openssh-client sshpass gh
+    curl unzip jq build-essential libicu70 libssl-dev libffi-dev python3 python3-venv python3-dev python3-pip openssh-client sshpass wget
+RUN curl -sL https://api.github.com/repos/cli/cli/releases/latest \
+        | grep "browser_download_url.*_linux_amd64.deb" \
+        | cut -d '"' -f 4 \
+        | wget -qi - -O gh_latest.deb
+RUN dpkg -i gh_latest.deb
 RUN curl -fsSL https://go.dev/dl/go1.24.2.linux-amd64.tar.gz -o go.tar.gz && \
     tar -C /usr/local -xzf go.tar.gz && \
     rm go.tar.gz && \
