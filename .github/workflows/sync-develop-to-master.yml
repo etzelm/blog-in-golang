@@ -72,10 +72,9 @@ jobs:
         if: steps.manage_pr.outputs.PR_NUMBER != ''
         run: |
           PR_NUMBER="${{ steps.manage_pr.outputs.PR_NUMBER }}"
-          echo "Approving PR #$PR_NUMBER and enabling auto-merge..."
-          gh pr review "$PR_NUMBER" --approve -b "LGTM! All checks passed. Approved for auto-merge."
+          echo "Merging PR #$PR_NUMBER with admin rights..."
           gh pr merge --admin --merge "$PR_NUMBER"
-          echo "PR #$PR_NUMBER approved and set to auto-merge."
+          echo "PR #$PR_NUMBER merged."
 
       - name: Wait for PR Merge & Sync master to develop
         if: steps.manage_pr.outputs.PR_NUMBER != ''
