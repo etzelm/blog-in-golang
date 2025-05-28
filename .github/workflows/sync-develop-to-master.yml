@@ -62,7 +62,7 @@ jobs:
 
       - name: Wait for PR status checks
         if: steps.manage_pr.outputs.PR_NUMBER != ''
-        timeout-minutes: 30
+        timeout-minutes: 3
         run: |
           echo "Waiting for checks on PR #${{ steps.manage_pr.outputs.PR_NUMBER }}..."
           gh pr checks "${{ steps.manage_pr.outputs.PR_NUMBER }}" --watch --interval 30
@@ -81,7 +81,7 @@ jobs:
         if: steps.manage_pr.outputs.PR_NUMBER != ''
         run: |
           PR_NUMBER="${{ steps.manage_pr.outputs.PR_NUMBER }}"
-          timeout_seconds=600 
+          timeout_seconds=300 
           interval_seconds=20 
           elapsed_seconds=0
           MERGED=false
