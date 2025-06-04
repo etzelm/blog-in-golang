@@ -2613,14 +2613,15 @@
     "@types/babel__core" "^7.20.5"
     react-refresh "^0.17.0"
 
-"@vitest/coverage-v8@3.1.4":
-  version "3.1.4"
-  resolved "https://registry.yarnpkg.com/@vitest/coverage-v8/-/coverage-v8-3.1.4.tgz#faffd0d22795938b69aa4fedc78622bce299ec26"
-  integrity sha512-G4p6OtioySL+hPV7Y6JHlhpsODbJzt1ndwHAFkyk6vVjpK03PFsKnauZIzcd0PrK4zAbc5lc+jeZ+eNGiMA+iw==
+"@vitest/coverage-v8@3.2.1":
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/@vitest/coverage-v8/-/coverage-v8-3.2.1.tgz#462f9529564619ff5dfefb43a7b612ef89e0664c"
+  integrity sha512-6dy0uF/0BE3jpUW9bFzg0V2S4F7XVaZHL/7qma1XANvHPQGoJuc3wtx911zSoAgUnpfvcLVK1vancNJ95d+uxQ==
   dependencies:
     "@ampproject/remapping" "^2.3.0"
     "@bcoe/v8-coverage" "^1.0.2"
-    debug "^4.4.0"
+    ast-v8-to-istanbul "^0.3.3"
+    debug "^4.4.1"
     istanbul-lib-coverage "^3.2.2"
     istanbul-lib-report "^3.0.1"
     istanbul-lib-source-maps "^5.0.6"
@@ -3154,6 +3155,15 @@ ast-types-flow@^0.0.8:
   version "0.0.8"
   resolved "https://registry.yarnpkg.com/ast-types-flow/-/ast-types-flow-0.0.8.tgz#0a85e1c92695769ac13a428bb653e7538bea27d6"
   integrity sha512-OH/2E5Fg20h2aPrbe+QL8JZQFko0YZaF+j4mnQ7BGhfavO7OpSLa8a0y9sBwomHdSbkhTS8TQNayBfnW5DwbvQ==
+
+ast-v8-to-istanbul@^0.3.3:
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/ast-v8-to-istanbul/-/ast-v8-to-istanbul-0.3.3.tgz#697101c116cff6b51c0e668ba6352e7e41fe8dd5"
+  integrity sha512-MuXMrSLVVoA6sYN/6Hke18vMzrT4TZNbZIj/hvh0fnYFpO+/kFXcLIaiPwXXWaQUPg4yJD8fj+lfJ7/1EBconw==
+  dependencies:
+    "@jridgewell/trace-mapping" "^0.3.25"
+    estree-walker "^3.0.3"
+    js-tokens "^9.0.1"
 
 async-function@^1.0.0:
   version "1.0.0"
@@ -4145,7 +4155,7 @@ debug@2.6.9, debug@^2.6.0:
   dependencies:
     ms "2.0.0"
 
-debug@4, debug@^4.1.0, debug@^4.1.1, debug@^4.3.1, debug@^4.3.2, debug@^4.3.4, debug@^4.4.0, debug@^4.4.1:
+debug@4, debug@^4.1.0, debug@^4.1.1, debug@^4.3.1, debug@^4.3.2, debug@^4.3.4, debug@^4.4.1:
   version "4.4.1"
   resolved "https://registry.yarnpkg.com/debug/-/debug-4.4.1.tgz#e5a8bc6cbc4c6cd3e64308b0693a3d4fa550189b"
   integrity sha512-KcKCqiftBJcZr++7ykoDIEwSa3XWowTfNPo92BYxjXiyYEVrUQh2aLyhxBCwww+heortUFxEJYcRzosstTEBYQ==
@@ -6717,6 +6727,11 @@ jiti@^1.21.6:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
   integrity sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==
+
+js-tokens@^9.0.1:
+  version "9.0.1"
+  resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-9.0.1.tgz#2ec43964658435296f6761b34e10671c2d9527f4"
+  integrity sha512-mxa9E9ITFOt0ban3j6L5MpjwegGz6lBQmM1IJkWeBZGcMxto50+eWdjC/52xDbS2vy0k7vIMK0Fe2wfL9OQSpQ==
 
 js-yaml@^3.13.1:
   version "3.14.1"
