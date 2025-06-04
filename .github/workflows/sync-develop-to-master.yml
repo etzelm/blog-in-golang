@@ -1,4 +1,4 @@
-name: Sync develop to master (Fridays)
+name: Sync develop to master (Tuesdays)
 
 on:
   schedule:
