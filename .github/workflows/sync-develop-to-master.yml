@@ -1,4 +1,4 @@
-name: Sync develop to master (Fridays)
+name: Sync develop to master (Tuesdays)
 
 on:
   schedule:
@@ -65,7 +65,7 @@ jobs:
         timeout-minutes: 3
         run: |
           echo "Waiting for checks on PR #${{ steps.manage_pr.outputs.PR_NUMBER }}..."
-          gh pr checks "${{ steps.manage_pr.outputs.PR_NUMBER }}" --watch --required --interval 30
+          gh pr checks "${{ steps.manage_pr.outputs.PR_NUMBER }}" --watch --interval 30
           echo "All required checks for PR #${{ steps.manage_pr.outputs.PR_NUMBER }} passed."
 
       - name: Approve PR and Enable Auto-Merge
