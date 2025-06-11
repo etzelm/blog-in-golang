@@ -69,6 +69,8 @@ jobs:
     needs: [dependabot]
     runs-on: [self-hosted, Linux, X64, nas]
     if: github.event_name == 'pull_request' && github.base_ref == 'master' && github.head_ref == 'develop'
+    env:
+      GITHUB_TOKEN: ${{ secrets.TOKEN }} 
     permissions:
       contents: write
     steps:
