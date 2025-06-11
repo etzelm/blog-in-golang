@@ -46,6 +46,9 @@ Ensure these are configured appropriately in your local environment and/or in yo
 
 ## Sample Commands
 
+- **Prerequisites**:
+  - Go, Node.js/Yarn, Docker
+
 - **Local Development & Testing**:
   - Install frontend dependencies: `cd realtor && yarn install`
   - Test frontend (using Vitest): `yarn test`
