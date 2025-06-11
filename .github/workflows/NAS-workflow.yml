@@ -48,17 +48,21 @@ jobs:
 
   dependabot:
     name: 'Dependabot'
-    needs: [NAS-build] 
+    needs: [NAS-build]
     runs-on: [self-hosted, Linux, X64, nas]
-    if: ${{ (github.actor == 'dependabot[bot]' || github.actor == 'etzelm') && github.event_name == 'pull_request' }} 
+    if: ${{ (github.actor == 'dependabot[bot]' || github.actor == 'etzelm') && github.event_name == 'pull_request' }}
+    env:
+      PR_URL: ${{github.event.pull_request.html_url}}
+      GITHUB_TOKEN: ${{secrets.TOKEN}}
     steps:
       - name: Enable auto-merge for Dependabot PRs
+        if: github.actor == 'dependabot[bot]'
         run: |
           gh pr review "$PR_URL" --approve -b "LGTM! Approved for auto-merge."
           gh pr merge --auto --merge "$PR_URL"
-        env:
-          PR_URL: ${{github.event.pull_request.html_url}}
-          GITHUB_TOKEN: ${{secrets.TOKEN}}
+      - name: Merge PR for etzelm with admin rights
+        if: github.actor == 'etzelm'
+        run: gh pr merge --admin --merge "$PR_URL"
 
   sync_master_after_merge:
     name: Sync Master to Develop
