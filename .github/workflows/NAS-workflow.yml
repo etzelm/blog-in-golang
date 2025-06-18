@@ -89,7 +89,7 @@ jobs:
           echo "Merging origin/master into develop..."
           git merge origin/master -m "Auto-sync: Merge master into develop after PR merge"
           echo "Pushing updated develop branch to origin..."
-          git push origin develop
+          git push --force origin develop
           echo "Master has been successfully merged into develop."
 
   NAS-deploy:
