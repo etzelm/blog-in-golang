@@ -64,34 +64,6 @@ jobs:
         if: github.actor == 'etzelm'
         run: gh pr merge --admin --merge "$PR_URL"
 
-  sync_master_after_merge:
-    name: Sync Master to Develop
-    needs: [dependabot]
-    runs-on: [self-hosted, Linux, X64, nas]
-    if: github.event_name == 'pull_request' && github.base_ref == 'master' && github.head_ref == 'develop'
-    env:
-      GITHUB_TOKEN: ${{ secrets.TOKEN }} 
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Sync master back to develop
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          echo "Fetching latest changes from origin..."
-          git fetch origin
-          echo "Checking out develop branch..."
-          git checkout develop
-          echo "Pulling latest develop branch from origin..."
-          git pull origin develop
-          echo "Merging origin/master into develop..."
-          git merge origin/master -m "Auto-sync: Merge master into develop after PR merge"
-          echo "Pushing updated develop branch to origin..."
-          git push --force origin develop
-          echo "Master has been successfully merged into develop."
-
   NAS-deploy:
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop'
     runs-on: [self-hosted, Linux, X64, nas]
