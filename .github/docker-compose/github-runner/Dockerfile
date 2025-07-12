@@ -1,6 +1,6 @@
 FROM ubuntu:22.04
 
-ARG RUNNER_VERSION="2.323.0"
+ARG RUNNER_VERSION="2.326.0"
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt update -y && apt upgrade -y && useradd -m docker
@@ -9,7 +9,7 @@ RUN apt install -y --no-install-recommends sudo && \
     chmod 0440 /etc/sudoers.d/docker && \
     apt clean
 RUN apt install -y --no-install-recommends \
-    curl unzip jq build-essential libicu70 libssl-dev libffi-dev python3 python3-venv python3-dev python3-pip openssh-client sshpass wget
+    curl unzip jq build-essential libicu70 libssl-dev libffi-dev python3 python3-venv python3-dev python3-pip openssh-client sshpass wget git
 RUN curl -sL https://api.github.com/repos/cli/cli/releases/latest \
         | grep "browser_download_url.*_linux_amd64.deb" \
         | cut -d '"' -f 4 \
