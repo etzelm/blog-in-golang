@@ -4,7 +4,7 @@ go 1.24.2
 
 require (
 	github.com/aws/aws-sdk-go v1.55.8
-	github.com/caddyserver/certmagic v0.23.0
+	github.com/caddyserver/certmagic v0.24.0
 	github.com/gin-contrib/cache v1.4.1
 	github.com/gin-contrib/static v1.1.5
 	github.com/gin-gonic/gin v1.10.1
