@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@babel/core": "^7.28.3",
+    "@babel/core": "^7.28.4",
     "@babel/plugin-syntax-flow": "^7.27.1",
     "@babel/plugin-transform-private-property-in-object": "^7.27.1",
     "@babel/plugin-transform-react-jsx": "^7.27.1",
@@ -24,8 +24,8 @@
     "react-scripts": "^5.0.1",
     "react-toastify": "^11.0.5",
     "typescript": "^5.9.2",
-    "uuid": "^11.1.0",
-    "vite": "^7.1.4",
+    "uuid": "^13.0.0",
+    "vite": "^7.1.5",
     "vitest": "^3.1.2"
   },
   "devDependencies": {
