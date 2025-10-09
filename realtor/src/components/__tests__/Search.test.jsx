@@ -402,4 +402,98 @@ describe('Search.jsx', () => {
      expect(console.log).toHaveBeenCalledWith('Filtered cards:', expect.arrayContaining([expect.objectContaining({ MLS: 'valid-1' })]));
   });
   // --- END OF NEW TEST ---
+
+  it('should show "No listings match your criteria" when no results are found', async () => {
+    const { listings } = await import('../../../test-data');
+    // Mock fetch to return listings
+    fetchMock.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(listings),
+    });
+
+    render(
+      <MemoryRouter>
+        <Search loggedIn={false} user={null} />
+      </MemoryRouter>
+    );
+
+    // Wait for initial data to load
+    await waitFor(() => {
+      expect(screen.getByTestId('tile-1234567890')).toBeInTheDocument();
+    });
+
+    // Find inputs and submit button
+    const cityInput = screen.getByLabelText('City');
+    const submitButton = screen.getByRole('button', { name: /submit/i });
+
+    // Enter criteria that won't match any listings
+    fireEvent.change(cityInput, { target: { value: 'NonExistentCity' } });
+
+    // Submit the form
+    fireEvent.click(submitButton);
+
+    // Wait for filtering and assert no results message appears
+    await waitFor(() => {
+      expect(screen.getByText('No listings match your criteria.')).toBeInTheDocument();
+      // Verify no tiles are present
+      expect(screen.queryAllByTestId(/tile-\d+/).length).toBe(0);
+    });
+
+    // Verify state.noResults was set to true by checking the UI
+    expect(screen.getByText('No listings match your criteria.')).toBeVisible();
+  });
+
+  it('should log filter mismatches for debugging', async () => {
+    const mockListings = [
+      {
+        MLS: 'test-1',
+        Street1: '1 Test St',
+        City: 'Portland', // This will NOT match our filter
+        State: 'OR',
+        Bedrooms: '2', // This will NOT match our filter
+        deleted: 'false',
+        'List Photo': 'https://example.com/photo.jpg'
+      }
+    ];
+
+    fetchMock.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(mockListings),
+    });
+
+    render(
+      <MemoryRouter>
+        <Search loggedIn={false} user={null} />
+      </MemoryRouter>
+    );
+
+    // Wait for initial data to load
+    await waitFor(() => {
+      expect(screen.getByTestId('tile-test-1')).toBeInTheDocument();
+    });
+
+    // Find inputs and submit button
+    const cityInput = screen.getByLabelText('City');
+    const bedroomsInput = screen.getByLabelText('Bedrooms');
+    const submitButton = screen.getByRole('button', { name: /submit/i });
+
+    // Enter criteria that will cause mismatches (for debugging logs)
+    fireEvent.change(cityInput, { target: { value: 'Seattle' } }); // Won't match Portland
+    fireEvent.change(bedroomsInput, { target: { value: '3' } }); // Won't match 2
+
+    // Submit the form
+    fireEvent.click(submitButton);
+
+    // Wait for filtering and verify debug logs were called
+    await waitFor(() => {
+      // Check that the mismatch logging occurred (covers lines 83-85)
+      // The City filter fails first, so that's what we should see in the logs
+      expect(console.log).toHaveBeenCalledWith(
+        "Card 0 failed filter: City (card: portland, filter: seattle)"
+      );
+    });
+
+    // Verify no results message appears
+    expect(screen.getByText('No listings match your criteria.')).toBeInTheDocument();
+  });
 });
