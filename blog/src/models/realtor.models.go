@@ -13,26 +13,26 @@ import (
 
 // Listing : structure used to make DynamoDB data functional
 type Listing struct {
-	MLS          string   `json:"MLS"`
-	Street1      string   `json:"Street1"`
-	Street2      string   `json:"Street2"`
-	City         string   `json:"City"`
-	State        string   `json:"State"`
-	ZipCode      string   `json:"Zip Code"`
-	Neighborhood string   `json:"Neighborhood"`
-	SalesPrice   string   `json:"Sales Price"`
-	DateListed   string   `json:"Date Listed"`
-	LastModified string   `json:"Last Modified"`
-	Bedrooms     string   `json:"Bedrooms"`
-	ListPhoto    string   `json:"List Photo"`
-	PhotoArray   []string `json:"Photo Array"`
-	Bathrooms    string   `json:"Bathrooms"`
-	GarageSize   string   `json:"Garage Size"`
-	SquareFeet   string   `json:"Square Feet"`
-	LotSize      string   `json:"Lot Size"`
-	Description  string   `json:"Description"`
-	User         string   `json:"User"`
-	Deleted      string   `json:"deleted"`
+	MLS          string   `json:"MLS" dynamodbav:"MLS"`
+	Street1      string   `json:"Street1" dynamodbav:"Street1"`
+	Street2      string   `json:"Street2" dynamodbav:"Street2"`
+	City         string   `json:"City" dynamodbav:"City"`
+	State        string   `json:"State" dynamodbav:"State"`
+	ZipCode      string   `json:"Zip Code" dynamodbav:"Zip Code"`
+	Neighborhood string   `json:"Neighborhood" dynamodbav:"Neighborhood"`
+	SalesPrice   string   `json:"Sales Price" dynamodbav:"Sales Price"`
+	DateListed   string   `json:"Date Listed" dynamodbav:"Date Listed"`
+	LastModified string   `json:"Last Modified" dynamodbav:"Last Modified"`
+	Bedrooms     string   `json:"Bedrooms" dynamodbav:"Bedrooms"`
+	ListPhoto    string   `json:"List Photo" dynamodbav:"List Photo"`
+	PhotoArray   []string `json:"Photo Array" dynamodbav:"Photo Array"`
+	Bathrooms    string   `json:"Bathrooms" dynamodbav:"Bathrooms"`
+	GarageSize   string   `json:"Garage Size" dynamodbav:"Garage Size"`
+	SquareFeet   string   `json:"Square Feet" dynamodbav:"Square Feet"`
+	LotSize      string   `json:"Lot Size" dynamodbav:"Lot Size"`
+	Description  string   `json:"Description" dynamodbav:"Description"`
+	User         string   `json:"User" dynamodbav:"User"`
+	Deleted      string   `json:"deleted" dynamodbav:"deleted"`
 }
 
 // GetRealtorListings Get a list of all the current realtor listings
@@ -77,7 +77,9 @@ func GetRealtorListings() []Listing {
 	for _, i := range result.Items {
 		listing := Listing{}
 
-		err := attributevalue.UnmarshalMap(i, &listing)
+		err := attributevalue.UnmarshalMapWithOptions(i, &listing, func(o *attributevalue.DecoderOptions) {
+			o.TagKey = "dynamodbav"
+		})
 
 		if err != nil {
 			log.Error("Got error unmarshalling:")
@@ -137,7 +139,9 @@ func GetRealtorListing(listing string) []Listing {
 	for _, i := range result.Items {
 		listing := Listing{}
 
-		err := attributevalue.UnmarshalMap(i, &listing)
+		err := attributevalue.UnmarshalMapWithOptions(i, &listing, func(o *attributevalue.DecoderOptions) {
+			o.TagKey = "dynamodbav"
+		})
 
 		if err != nil {
 			log.Error("Got error unmarshalling:")
