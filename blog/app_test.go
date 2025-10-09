@@ -318,3 +318,45 @@ func TestMainExecutionPathWithCertMagic(t *testing.T) {
 		t.Log("main() with DEPLOYMENT=NAS timed out (certmagic.HTTPS likely blocking, as expected in test).")
 	}
 }
+
+func TestMainExecutionPathWithGCPDeployment(t *testing.T) {
+	silenceLogrus(t)
+	gin.SetMode(gin.TestMode)
+
+	originalDeployment, deploymentSet := os.LookupEnv("DEPLOYMENT")
+	originalDomain, domainSet := os.LookupEnv("DOMAIN")
+	originalCertmagicLogger := certmagic.Default.Logger
+	os.Setenv("DEPLOYMENT", "GCP")
+	os.Setenv("DOMAIN", "testdomain.com")
+	certmagic.Default.Logger = zap.NewNop()
+	defer func() {
+		if deploymentSet {
+			os.Setenv("DEPLOYMENT", originalDeployment)
+		} else {
+			os.Unsetenv("DEPLOYMENT")
+		}
+		if domainSet {
+			os.Setenv("DOMAIN", originalDomain)
+		} else {
+			os.Unsetenv("DOMAIN")
+		}
+		certmagic.Default.Logger = originalCertmagicLogger
+	}()
+
+	finished := make(chan struct{})
+	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				t.Logf("main() with DEPLOYMENT=GCP panicked (possibly expected due to certmagic in test env): %v", r)
+			}
+			close(finished)
+		}()
+		main()
+	}()
+
+	select {
+	case <-finished:
+	case <-time.After(1 * time.Second):
+		t.Log("main() with DEPLOYMENT=GCP timed out (certmagic.HTTPS likely blocking, as expected in test).")
+	}
+}

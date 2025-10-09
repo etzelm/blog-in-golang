@@ -200,6 +200,17 @@ func TestAuthResponse(t *testing.T) {
 			expectedBodySub: "<title>500 Internal Server Error</title>",
 			mockDynamoDB:    func(email string) {},
 		},
+		{
+			name: "CreateDynamoDBClientError",
+			formData: url.Values{
+				"email":    {"test@example.com"},
+				"password": {"password123"},
+			},
+			expectedStatus:  http.StatusInternalServerError,
+			expectRedirect:  false,
+			expectedBodySub: "<title>500 Internal Server Error</title>",
+			mockDynamoDB:    func(email string) {},
+		},
 	}
 
 	for _, tc := range testCases {

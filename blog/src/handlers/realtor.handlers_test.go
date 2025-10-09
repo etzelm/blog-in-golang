@@ -216,3 +216,30 @@ func TestListingGETAPI(t *testing.T) {
 		assert.Equal(t, http.StatusNotFound, w.Code)
 	})
 }
+
+func TestUploadImagePOSTAPI_EmptyUserParam(t *testing.T) {
+	silenceLogrus(t)
+	router := setupTestRouter()
+	// Add a route that captures empty user parameter to test the else branch
+	router.POST("/upload/image/", UploadImagePOSTAPI)
+
+	w := httptest.NewRecorder()
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	part, err := writer.CreateFormFile("file", "test.jpg")
+	assert.NoError(t, err)
+	_, err = io.WriteString(part, "fake image data")
+	assert.NoError(t, err)
+	err = writer.Close()
+	assert.NoError(t, err)
+
+	// Create a request with empty user parameter to test the else branch
+	req, _ := http.NewRequest(http.MethodPost, "/upload/image/", body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+
+	router.ServeHTTP(w, req)
+
+	// Should return 404 when user parameter is empty
+	assert.Equal(t, http.StatusNotFound, w.Code)
+	assert.Equal(t, "no-cache", w.Header().Get("Cache-Control"))
+}
