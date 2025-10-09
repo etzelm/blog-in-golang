@@ -1,21 +1,53 @@
 package handlers
 
 import (
+	"context"
 	"html/template"
 	"net/http"
 	"os"
 	"regexp"
 	"strconv"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/credentials"
+	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/etzelm/blog-in-golang/src/models"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )
+
+// createAWSConfig creates AWS configuration with proper credentials
+func createAWSConfig(ctx context.Context) (aws.Config, error) {
+	aid := os.Getenv("AWS_ACCESS_KEY_ID")
+	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
+
+	var cfg aws.Config
+	var err error
+
+	if aid != "" && key != "" {
+		cfg, err = config.LoadDefaultConfig(ctx,
+			config.WithRegion("us-west-1"),
+			config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(aid, key, "")),
+		)
+	} else {
+		cfg, err = config.LoadDefaultConfig(ctx,
+			config.WithRegion("us-west-1"),
+		)
+	}
+
+	return cfg, err
+}
+
+// createDynamoDBClient creates a DynamoDB client with proper configuration
+func createDynamoDBClient(ctx context.Context) (*dynamodb.Client, error) {
+	cfg, err := createAWSConfig(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return dynamodb.NewFromConfig(cfg), nil
+}
 
 // PostPage : Gets All Article Panels and Dynamically Displays index.html Template
 func PostPage(c *gin.Context) {
@@ -165,26 +197,27 @@ func ContactResponse(numOne *int, numTwo *int) gin.HandlerFunc {
 			return
 		}
 
-		aid := os.Getenv("AWS_ACCESS_KEY_ID")
-		key := os.Getenv("AWS_SECRET_ACCESS_KEY")
-		var myCredentials = credentials.NewStaticCredentials(aid, key, "")
+		ctx := context.TODO()
+		dbSvc, err := createDynamoDBClient(ctx)
+		if err != nil {
+			log.Error("Unable to create DynamoDB client:", err)
+			renderErrorPage(c, 500, "500 Internal Server Error", err.Error())
+			return
+		}
 
-		sess, _ := session.NewSession(&aws.Config{
-			Credentials: myCredentials,
-			Region:      aws.String("us-west-1"),
-			//Endpoint:    aws.String("http://localhost:8000"),
-		})
-
-		dbSvc := dynamodb.New(sess)
-
-		av, _ := dynamodbattribute.MarshalMap(form)
+		av, err := attributevalue.MarshalMap(form)
+		if err != nil {
+			log.Error("Error marshalling form:", err)
+			renderErrorPage(c, 500, "500 Internal Server Error", err.Error())
+			return
+		}
 
 		input := &dynamodb.PutItemInput{
 			Item:      av,
 			TableName: aws.String("Contact"),
 		}
 
-		_, err = dbSvc.PutItem(input)
+		_, err = dbSvc.PutItem(ctx, input)
 
 		if err != nil {
 			log.Error("Got error calling PutItem:")

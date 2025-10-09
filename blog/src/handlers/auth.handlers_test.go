@@ -195,9 +195,9 @@ func TestAuthResponse(t *testing.T) {
 				"email":    {"nonexistent@example.com"},
 				"password": {"password123"},
 			},
-			expectedStatus:  http.StatusBadRequest,
+			expectedStatus:  http.StatusInternalServerError,
 			expectRedirect:  false,
-			expectedBodySub: "<title>400 Client Error</title>",
+			expectedBodySub: "<title>500 Internal Server Error</title>",
 			mockDynamoDB:    func(email string) {},
 		},
 	}

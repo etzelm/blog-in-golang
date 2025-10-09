@@ -72,7 +72,7 @@ func TestListingPOSTAPI(t *testing.T) {
 		router.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusInternalServerError, w.Code)
-		assert.Contains(t, w.Body.String(), "Error: UnrecognizedClientException")
+		assert.Contains(t, w.Body.String(), "UnrecognizedClientException")
 		assert.Equal(t, "no-cache", w.Header().Get("Cache-Control"))
 	})
 

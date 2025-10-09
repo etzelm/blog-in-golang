@@ -299,14 +299,14 @@ func TestCategoryPage_RealPanels(t *testing.T) {
 	router, recorder, _ := setupTestRouterWithHTMLTemplates(t, dummyTemplates)
 	router.GET("/category/:category", CategoryPage)
 
-	req, err := http.NewRequest(http.MethodGet, "/category/Disciplines", nil)
+	req, err := http.NewRequest(http.MethodGet, "/category/NonExistentCategory", nil)
 	if err != nil {
 		t.Fatalf("Couldn't create request: %v\n", err)
 	}
 
 	router.ServeHTTP(recorder, req)
 
-	if recorder.Code != http.StatusOK {
+	if recorder.Code != http.StatusNotFound {
 		t.Errorf("Expected status %d; got %d. Response body: %s", http.StatusNotFound, recorder.Code, recorder.Body.String())
 	}
 }

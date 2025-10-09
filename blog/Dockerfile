@@ -1,5 +1,5 @@
 # Stage 1: Go Builder
-FROM golang:1.24.2-alpine3.21 AS golang-builder
+FROM golang:1.24.4-alpine3.21 AS golang-builder
 
 # Install git for dependency management
 RUN apk add --no-cache git
@@ -18,9 +18,10 @@ COPY blog/ .
 # Declare ARGs for AWS creds
 ARG AWS_ACCESS_KEY_ID
 ARG AWS_SECRET_ACCESS_KEY
-RUN export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-RUN export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-RUN go test -v -coverprofile=coverage.out ./...
+# Set environment variables and run tests in the same RUN command
+RUN export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID && \
+    export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY && \
+    go test -v -coverprofile=coverage.out ./...
 RUN go tool cover -func=coverage.out
 
 # Build the Go application

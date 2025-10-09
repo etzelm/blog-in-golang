@@ -1,15 +1,13 @@
 package models
 
 import (
-	"os"
+	"context"
 	"sort"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
-	"github.com/aws/aws-sdk-go/service/dynamodb/expression"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
+	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -39,16 +37,13 @@ type Listing struct {
 
 // GetRealtorListings Get a list of all the current realtor listings
 func GetRealtorListings() []Listing {
-	aid := os.Getenv("AWS_ACCESS_KEY_ID")
-	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
-	var myCredentials = credentials.NewStaticCredentials(aid, key, "")
+	ctx := context.TODO()
 
-	sess, _ := session.NewSession(&aws.Config{
-		Credentials: myCredentials,
-		Region:      aws.String("us-west-1"),
-		//Endpoint:    aws.String("http://localhost:8000"),
-	})
-	dbSvc := dynamodb.New(sess)
+	dbSvc, err := createDynamoDBClient(ctx)
+	if err != nil {
+		log.Error("Unable to create DynamoDB client:", err)
+		return []Listing{}
+	}
 
 	filt := expression.Name("deleted").NotEqual(expression.Value("anything"))
 
@@ -71,19 +66,23 @@ func GetRealtorListings() []Listing {
 	}
 
 	// Make the DynamoDB Query API call
-	result, _ := dbSvc.Scan(params)
+	result, err := dbSvc.Scan(ctx, params)
+	if err != nil {
+		log.Error("Failed to scan DynamoDB:", err)
+		return []Listing{}
+	}
 
 	listings := []Listing{}
 
 	for _, i := range result.Items {
 		listing := Listing{}
 
-		err := dynamodbattribute.UnmarshalMap(i, &listing)
+		err := attributevalue.UnmarshalMap(i, &listing)
 
 		if err != nil {
 			log.Error("Got error unmarshalling:")
 			log.Error(err.Error())
-			return nil
+			return []Listing{}
 		}
 
 		listings = append(listings, listing)
@@ -98,16 +97,13 @@ func GetRealtorListings() []Listing {
 
 // GetRealtorListing Get a current realtor listing
 func GetRealtorListing(listing string) []Listing {
-	aid := os.Getenv("AWS_ACCESS_KEY_ID")
-	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
-	var myCredentials = credentials.NewStaticCredentials(aid, key, "")
+	ctx := context.TODO()
 
-	sess, _ := session.NewSession(&aws.Config{
-		Credentials: myCredentials,
-		Region:      aws.String("us-west-1"),
-		//Endpoint:    aws.String("http://localhost:8000"),
-	})
-	dbSvc := dynamodb.New(sess)
+	dbSvc, err := createDynamoDBClient(ctx)
+	if err != nil {
+		log.Error("Unable to create DynamoDB client:", err)
+		return []Listing{}
+	}
 
 	filt := expression.Name("MLS").Equal(expression.Value(listing))
 
@@ -130,19 +126,23 @@ func GetRealtorListing(listing string) []Listing {
 	}
 
 	// Make the DynamoDB Query API call
-	result, _ := dbSvc.Scan(params)
+	result, err := dbSvc.Scan(ctx, params)
+	if err != nil {
+		log.Error("Failed to scan DynamoDB:", err)
+		return []Listing{}
+	}
 
 	listings := []Listing{}
 
 	for _, i := range result.Items {
 		listing := Listing{}
 
-		err := dynamodbattribute.UnmarshalMap(i, &listing)
+		err := attributevalue.UnmarshalMap(i, &listing)
 
 		if err != nil {
 			log.Error("Got error unmarshalling:")
 			log.Error(err.Error())
-			return nil
+			return []Listing{}
 		}
 
 		listings = append(listings, listing)

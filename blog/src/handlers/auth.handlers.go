@@ -1,16 +1,15 @@
 package handlers
 
 import (
+	"context"
 	"html/template"
 	"net/http"
-	"os"
 	"regexp"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/etzelm/blog-in-golang/src/models"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -93,28 +92,53 @@ func AuthResponse(c *gin.Context) {
 		return
 	}
 
-	aid := os.Getenv("AWS_ACCESS_KEY_ID")
-	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
-	var myCredentials = credentials.NewStaticCredentials(aid, key, "")
+	ctx := context.TODO()
+	dbSvc, err := createDynamoDBClient(ctx)
+	if err != nil {
+		c.HTML(
+			http.StatusInternalServerError,
+			"error.html",
+			gin.H{
+				"title": "500 Internal Server Error",
+				"error": err.Error(),
+			},
+		)
+		return
+	}
 
-	sess, _ := session.NewSession(&aws.Config{
-		Credentials: myCredentials,
-		Region:      aws.String("us-west-1"),
-		//Endpoint:    aws.String("http://localhost:8000"),
-	})
-
-	dbSvc := dynamodb.New(sess)
-	result, _ := dbSvc.GetItem(&dynamodb.GetItemInput{
+	result, err := dbSvc.GetItem(ctx, &dynamodb.GetItemInput{
 		TableName: aws.String("Auth"),
-		Key: map[string]*dynamodb.AttributeValue{
-			"email": {
-				S: aws.String(form.Email),
+		Key: map[string]types.AttributeValue{
+			"email": &types.AttributeValueMemberS{
+				Value: form.Email,
 			},
 		},
 	})
+	if err != nil {
+		c.HTML(
+			http.StatusInternalServerError,
+			"error.html",
+			gin.H{
+				"title": "500 Internal Server Error",
+				"error": err.Error(),
+			},
+		)
+		return
+	}
 
 	authForm := models.AuthForm{}
-	dynamodbattribute.UnmarshalMap(result.Item, &authForm)
+	err = attributevalue.UnmarshalMap(result.Item, &authForm)
+	if err != nil {
+		c.HTML(
+			http.StatusInternalServerError,
+			"error.html",
+			gin.H{
+				"title": "500 Internal Server Error",
+				"error": err.Error(),
+			},
+		)
+		return
+	}
 
 	if CheckPasswordHash(form.Password, authForm.Password) {
 		cipher, _ := HashPassword(form.Email)

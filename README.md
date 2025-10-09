@@ -1,6 +1,6 @@
 # blog-in-golang
 
-![Go](https://img.shields.io/badge/Go-1.24+-00ADD8.svg?style=flat&logo=go)
+![Go](https://img.shields.io/badge/Go-1.24.4+-00ADD8.svg?style=flat&logo=go)
 ![React](https://img.shields.io/badge/React-19.1+-61DAFB.svg?style=flat&logo=react)
 ![Testing](https://img.shields.io/badge/Testing-Vitest-green.svg?style=flat&logo=vitest)
 ![Code Coverage](https://img.shields.io/badge/Code%20Coverage-%3E90%25-green.svg?style=flat&logo=vitest)
