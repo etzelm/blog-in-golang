@@ -1,5 +1,8 @@
 # Stage 1: Go Builder
-FROM golang:1.24.4-alpine3.21 AS golang-builder
+FROM golang:1.24.6-alpine3.22 AS golang-builder
+
+# Update package index and upgrade all packages to latest versions
+RUN apk update && apk upgrade
 
 # Install git for dependency management
 RUN apk add --no-cache git
@@ -57,7 +60,10 @@ RUN yarn test --coverage
 RUN yarn build
 
 # Stage 3: Final Runtime Image
-FROM alpine:3.21 AS runtime
+FROM alpine:3.22 AS runtime
+
+# Update package index and upgrade all packages to latest versions for security
+RUN apk update && apk upgrade
 
 # Install ca-certificates for HTTPS
 RUN apk --no-cache add ca-certificates
