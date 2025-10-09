@@ -7,18 +7,18 @@ import { render, screen, cleanup, fireEvent, waitFor, within } from '@testing-li
 import { BrowserRouter, MemoryRouter, Route, Routes } from 'react-router'; // Added MemoryRouter, Route, Routes, updated react-router import
 import MyListing from '../MyListing';
 import '@testing-library/jest-dom';
-import { NotificationManager } from 'react-notifications'; // Added NotificationManager
+import { toast } from 'react-toastify';
 
 // --- Mocks ---
-// Mock react-notifications (at top level)
-vi.mock('react-notifications', () => ({
-  NotificationManager: {
+// Mock react-toastify (at top level)
+vi.mock('react-toastify', () => ({
+  toast: {
     success: vi.fn(),
     warning: vi.fn(),
-    error: vi.fn(),
     info: vi.fn(),
+    error: vi.fn(),
   },
-  NotificationContainer: () => <div data-testid="notification-container" />, // Mock Container rendering
+  ToastContainer: () => <div data-testid="toast-container" />,
 }));
 
 // Mock react-dropzone (basic mock at top level to avoid errors)
@@ -99,7 +99,7 @@ describe('MyListing Component - Edit Mode', () => {
   beforeEach(() => {
     // Clear mocks specifically for this block
     fetchMock.mockClear();
-    vi.clearAllMocks(); // Clears mocks like NotificationManager too
+    vi.clearAllMocks(); // Clears mocks like toast too
 
     // Mock fetch for getting the listing data for THIS block
     fetchMock.mockImplementation((url) => {
@@ -177,7 +177,7 @@ describe('MyListing Component - Edit Mode', () => {
 
     // 5. Check for success notification
     await waitFor(() => {
-       expect(NotificationManager.success).toHaveBeenCalledWith('Success', 'Listing submitted', 3000);
+       expect(toast.success).toHaveBeenCalledWith('Success: Listing submitted');
     });
 
      // 6. Check that dropzone is rendered (since user is logged in)

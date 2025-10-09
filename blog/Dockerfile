@@ -47,7 +47,7 @@ COPY realtor/ ./
 # Replace placeholder with actual Google API Key using the build argument
 # Ensure GAPI is set during docker build (e.g., --build-arg GAPI=$GAPI)
 RUN sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" src/App.jsx
-RUN sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" public/index.html
+RUN sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" index.html
 
 # Run the JS-level Unit Tests
 RUN yarn test --coverage
