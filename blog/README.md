@@ -7,34 +7,38 @@ This folder contains the Go backend for the `blog-in-golang` project.
 | File Path                                                 | Function                     | Coverage |
 | :-------------------------------------------------------- | :--------------------------- | :------- |
 | `github.com/etzelm/blog-in-golang/app.go:22`              | `main`                       | `85.0%`  |
-| `github.com/etzelm/blog-in-golang/app.go:56`              | `LoadStaticFileRoutes`       | `100.0%` |
-| `github.com/etzelm/blog-in-golang/app.go:72`              | `LoadServerRoutes`           | `100.0%` |
-| `github.com/etzelm/blog-in-golang/app.go:92`              | `LoadMiddlewares`            | `100.0%` |
-| `github.com/etzelm/blog-in-golang/app.go:101`             | `staticCacheMiddleware`      | `100.0%` |
-| `github.com/etzelm/blog-in-golang/app.go:121`             | `unauthorizedMiddleware`     | `100.0%` |
-| `github.com/etzelm/blog-in-golang/app.go:140`             | `randRange`                  | `100.0%` |
-| `github.com/etzelm/blog-in-golang/src/handlers/auth.handlers.go:20` | `AuthPage`                   | `100.0%` |
-| `github.com/etzelm/blog-in-golang/src/handlers/auth.handlers.go:37` | `SecurePage`                 | `100.0%` |
-| `github.com/etzelm/blog-in-golang/src/handlers/auth.handlers.go:75` | `AuthResponse`               | `81.8%`  |
-| `github.com/etzelm/blog-in-golang/src/handlers/auth.handlers.go:143`| `HashPassword`               | `100.0%` |
-| `github.com/etzelm/blog-in-golang/src/handlers/auth.handlers.go:148`| `CheckPasswordHash`          | `100.0%` |
-| `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:21` | `PostPage`                   | `100.0%` |
-| `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:41` | `CategoryPage`               | `87.5%`  |
-| `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:75` | `ArticlePage`                | `87.5%`  |
-| `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:110`| `AboutPage`                  | `100.0%` |
-| `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:126`| `ContactPage`                | `100.0%` |
-| `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:147`| `ContactResponse`            | `96.6%`  |
-| `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:211`| `renderErrorPage`            | `100.0%` |
-| `github.com/etzelm/blog-in-golang/src/handlers/realtor.handlers.go:21`| `ListingsGETAPI`           | `100.0%` |
-| `github.com/etzelm/blog-in-golang/src/handlers/realtor.handlers.go:31`| `ListingGETAPI`            | `66.7%`  |
-| `github.com/etzelm/blog-in-golang/src/handlers/realtor.handlers.go:53`| `ListingPOSTAPI`           | `90.5%`  |
-| `github.com/etzelm/blog-in-golang/src/handlers/realtor.handlers.go:116`| `UploadImagePOSTAPI`       | `88.9%`  |
-| `github.com/etzelm/blog-in-golang/src/models/blog.models.go:69`     | `GetArticlePanels`           | `91.2%`  |
-| `github.com/etzelm/blog-in-golang/src/models/blog.models.go:138`    | `GetCategoryPageArticlePanels` | `91.4%`  |
-| `github.com/etzelm/blog-in-golang/src/models/blog.models.go:209`    | `GetArticleByID`             | `96.6%`  |
-| `github.com/etzelm/blog-in-golang/src/models/realtor.models.go:41`  | `GetRealtorListings`         | `86.4%`  |
-| `github.com/etzelm/blog-in-golang/src/models/realtor.models.go:100` | `GetRealtorListing`          | `81.8%`  |
-| **Total** |                              | **`91.2%`** |
+| `github.com/etzelm/blog-in-golang/app.go:55`              | `LoadStaticFileRoutes`       | `100.0%` |
+| `github.com/etzelm/blog-in-golang/app.go:71`              | `LoadServerRoutes`           | `100.0%` |
+| `github.com/etzelm/blog-in-golang/app.go:91`              | `LoadMiddlewares`            | `100.0%` |
+| `github.com/etzelm/blog-in-golang/app.go:100`             | `staticCacheMiddleware`      | `100.0%` |
+| `github.com/etzelm/blog-in-golang/app.go:117`             | `unauthorizedMiddleware`     | `100.0%` |
+| `github.com/etzelm/blog-in-golang/app.go:133`             | `randRange`                  | `100.0%` |
+| `github.com/etzelm/blog-in-golang/src/handlers/auth.handlers.go:19` | `AuthPage`                   | `100.0%` |
+| `github.com/etzelm/blog-in-golang/src/handlers/auth.handlers.go:36` | `SecurePage`                 | `100.0%` |
+| `github.com/etzelm/blog-in-golang/src/handlers/auth.handlers.go:74` | `AuthResponse`               | `50.0%`  |
+| `github.com/etzelm/blog-in-golang/src/handlers/auth.handlers.go:167`| `HashPassword`               | `100.0%` |
+| `github.com/etzelm/blog-in-golang/src/handlers/auth.handlers.go:172`| `CheckPasswordHash`          | `100.0%` |
+| `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:22` | `createAWSConfig`            | `100.0%` |
+| `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:44` | `createDynamoDBClient`       | `75.0%`  |
+| `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:53` | `PostPage`                   | `100.0%` |
+| `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:73` | `CategoryPage`               | `75.0%`  |
+| `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:107`| `ArticlePage`                | `62.5%`  |
+| `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:142`| `AboutPage`                  | `100.0%` |
+| `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:158`| `ContactPage`                | `100.0%` |
+| `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:179`| `ContactResponse`            | `79.4%`  |
+| `github.com/etzelm/blog-in-golang/src/handlers/blog.handlers.go:244`| `renderErrorPage`            | `100.0%` |
+| `github.com/etzelm/blog-in-golang/src/handlers/realtor.handlers.go:18`| `createS3Client`           | `75.0%`  |
+| `github.com/etzelm/blog-in-golang/src/handlers/realtor.handlers.go:27`| `ListingsGETAPI`           | `100.0%` |
+| `github.com/etzelm/blog-in-golang/src/handlers/realtor.handlers.go:37`| `ListingGETAPI`            | `100.0%` |
+| `github.com/etzelm/blog-in-golang/src/handlers/realtor.handlers.go:59`| `ListingPOSTAPI`           | `69.2%`  |
+| `github.com/etzelm/blog-in-golang/src/handlers/realtor.handlers.go:137`| `UploadImagePOSTAPI`       | `83.3%`  |
+| `github.com/etzelm/blog-in-golang/src/models/blog.models.go:71`     | `createDynamoDBClient`       | `80.0%`  |
+| `github.com/etzelm/blog-in-golang/src/models/blog.models.go:97`     | `GetArticlePanels`           | `87.5%`  |
+| `github.com/etzelm/blog-in-golang/src/models/blog.models.go:172`    | `GetCategoryPageArticlePanels` | `85.4%`  |
+| `github.com/etzelm/blog-in-golang/src/models/blog.models.go:249`    | `GetArticleByID`             | `85.3%`  |
+| `github.com/etzelm/blog-in-golang/src/models/realtor.models.go:39`  | `GetRealtorListings`         | `80.8%`  |
+| `github.com/etzelm/blog-in-golang/src/models/realtor.models.go:101` | `GetRealtorListing`          | `76.9%`  |
+| **Total** |                              | **`82.7%`** |
 
 ## Key Components
 
