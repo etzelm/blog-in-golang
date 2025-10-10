@@ -1,19 +1,20 @@
 # blog-in-golang
 
-![Go](https://img.shields.io/badge/Go-1.24.4+-00ADD8.svg?style=flat&logo=go)
-![React](https://img.shields.io/badge/React-19.1+-61DAFB.svg?style=flat&logo=react)
+![Go](https://img.shields.io/badge/Go-1.24.6+-00ADD8.svg?style=flat&logo=go)
+![React](https://img.shields.io/badge/React-19.2+-61DAFB.svg?style=flat&logo=react)
+![Vite](https://img.shields.io/badge/Vite-7.1+-646CFF.svg?style=flat&logo=vite)
 ![Testing](https://img.shields.io/badge/Testing-Vitest-green.svg?style=flat&logo=vitest)
 ![Code Coverage](https://img.shields.io/badge/Code%20Coverage-%3E90%25-green.svg?style=flat&logo=vitest)
 ![AWS](https://img.shields.io/badge/AWS-ACM%20%7C%20CloudFront%20%7C%20DynamoDB%20%7C%20Route53%20%7C%20S3-FF9900.svg?style=flat&logo=amazonaws)
 ![GCP Compute Engine](https://img.shields.io/badge/GCP-Compute%20Engine-4285F4.svg?style=flat&logo=google-cloud)
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
 
-A full-stack web application featuring a blog and realtor listing service. Built with **Go** (Gin) for the blog/backend, **React** for the sample frontend application, and **AWS DynamoDB/S3** for storage. Supports user authentication, blog post management, and real estate CRUD/search.
+A full-stack web application featuring a blog and realtor listing service. Built with **Go** (Gin) for the blog/backend, **React with Vite** for the sample frontend application, and **AWS DynamoDB/S3** for storage. Supports user authentication, blog post management, and real estate CRUD/search.
 
 ## Features
 
 - **Blog**: Create and categorize posts using Go templates, stored in DynamoDB.
-- **Realtor**: React-based SPA to manage listings with image uploads and multi-parameter searches.
+- **Realtor**: Vite-powered React SPA to manage listings with image uploads and multi-parameter searches.
 - **Auth**: Google OAuth2 integration in React frontend as well as a custom Go auth API implementation.
 - **Performance**: Gin middleware for Gzip compression and caching (in-memory and HTTP headers).
 - **Security**: Middleware to block malicious request paths. Automatic HTTPS via CertMagic in prod envs.
@@ -51,6 +52,7 @@ Ensure these are configured appropriately in your local environment and/or in yo
 
 - **Local Development & Testing**:
   - Install frontend dependencies: `cd realtor && yarn install`
+  - Start frontend dev server (Vite): `yarn dev` or `yarn start`
   - Test frontend (using Vitest): `yarn test`
   - Build frontend: `yarn build`
   - Install backend dependencies: `cd ../blog && go mod download`
@@ -60,7 +62,9 @@ Ensure these are configured appropriately in your local environment and/or in yo
 - **Docker Helper Commands**:
   - Stop all containers: `docker stop $(docker ps -aq)`
   - Build image: `docker build --build-arg GAPI=$GAPI --build-arg AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID --build-arg  AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY -t blog:<branch-name> -f blog/Dockerfile .`
+  - Build test image: `docker build --build-arg AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID" --build-arg AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY" --build-arg GAPI="$GAPI" --target development -t blog:develop-test -f blog/Dockerfile .`
   - Run container: `docker run -d -p 80:8080 blog:<tag>`
+  - Run tests in Docker: `docker compose -f blog/docker-compose.yml run --rm blog-test`
   - Start with compose: `docker compose --file blog/docker-compose.yml up --force-recreate -d`
   - Stop with compose: `docker compose down`
   - Clean up unused Docker resources: `docker system prune -a -f`
