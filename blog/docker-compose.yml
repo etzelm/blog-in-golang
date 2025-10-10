@@ -15,7 +15,7 @@ services:
       ARTICLES: "Test-Articles"
 
   blog-test:
-    image: blog:develop-test
+    image: blog:develop
     container_name: blog-test
     working_dir: /app
     environment:
