@@ -207,6 +207,25 @@ func TestListingGETAPI(t *testing.T) {
 		assert.Equal(t, `[]`, w.Body.String())
 	})
 
+	t.Run("EmptyListingParam", func(t *testing.T) {
+		// Test the else branch in ListingGETAPI when listing parameter is empty
+		router := setupTestRouter()
+		// Use a route pattern that allows empty listing parameter to reach our handler
+		router.GET("/listing-test", func(c *gin.Context) {
+			// Simulate empty listing parameter by not setting it
+			ListingGETAPI(c)
+		})
+
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest(http.MethodGet, "/listing-test", nil)
+
+		router.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusNotFound, w.Code)
+		assert.Equal(t, "no-cache", w.Header().Get("Cache-Control"))
+		assert.Equal(t, `""`, w.Body.String())
+	})
+
 	t.Run("MissingListingParam", func(t *testing.T) {
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest(http.MethodGet, "/listing/", nil)

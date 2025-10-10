@@ -13,3 +13,13 @@ services:
       AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
       AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
       ARTICLES: "Test-Articles"
+
+  blog-test:
+    image: blog:develop-test
+    container_name: blog-test
+    working_dir: /app
+    environment:
+      AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
+      AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
+      ARTICLES: "Test-Articles"
+    command: ["sh", "-c", "go test -v -coverprofile=coverage.out ./... && go tool cover -func=coverage.out"]

@@ -30,6 +30,10 @@ RUN go tool cover -func=coverage.out
 # Build the Go application
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o blog-in-golang .
 
+# Development stage - keeps source code for testing
+FROM golang-builder AS development
+# This stage has all the source code and dependencies for running tests
+
 # Stage 2: React Builder
 FROM node:20-alpine AS react-builder
 
