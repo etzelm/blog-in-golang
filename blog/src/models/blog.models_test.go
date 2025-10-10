@@ -34,6 +34,44 @@ func TestGetArticlePanels_Simple(t *testing.T) {
 	assert.NotNil(t, panels, "GetArticlePanels should return a non-nil slice")
 }
 
+func TestGetArticlePanels_DataProcessingAndSorting(t *testing.T) {
+	silenceLogrus(t)
+	originalArticlesEnv, articlesEnvIsSet := os.LookupEnv("ARTICLES")
+	tableName := "Test-Articles"
+	os.Setenv("ARTICLES", tableName)
+	defer func() {
+		if articlesEnvIsSet {
+			os.Setenv("ARTICLES", originalArticlesEnv)
+		} else {
+			os.Unsetenv("ARTICLES")
+		}
+	}()
+
+	panels := GetArticlePanels()
+
+	assert.NotNil(t, panels, "GetArticlePanels returned nil, expected a slice of articles.")
+
+	if len(panels) > 0 {
+		// Test sorting - articles should be sorted by PostID in descending order
+		for i := 0; i < len(panels)-1; i++ {
+			assert.GreaterOrEqual(t, panels[i].PostID, panels[i+1].PostID,
+				"Articles should be sorted by PostID in descending order. Article at index %d has PostID %d, next has %d",
+				i, panels[i].PostID, panels[i+1].PostID)
+		}
+
+		// Test data processing - verify first article has expected fields populated
+		firstArticle := panels[0]
+		assert.NotEmpty(t, firstArticle.PostTitle, "PostTitle should be populated")
+		assert.NotEmpty(t, firstArticle.PostType, "PostType should be populated")
+		assert.NotEmpty(t, string(firstArticle.Author), "Author should be populated")
+		assert.NotEmpty(t, firstArticle.Categories, "Categories should be populated")
+		assert.NotEmpty(t, string(firstArticle.Excerpt), "Excerpt should be populated")
+		assert.NotEmpty(t, firstArticle.ModifiedDate, "ModifiedDate should be populated")
+		assert.NotEmpty(t, string(firstArticle.PanelPicture), "PanelPicture should be populated")
+		assert.GreaterOrEqual(t, firstArticle.PostID, 0, "PostID should be non-negative")
+	}
+}
+
 func TestGetCategoryPageArticlePanels_Simple(t *testing.T) {
 	silenceLogrus(t)
 	originalArticlesEnv, articlesEnvIsSet := os.LookupEnv("ARTICLES")
@@ -151,4 +189,66 @@ func TestGetArticleByID_SuccessfulFetchAndMap(t *testing.T) {
 		assert.NotEmpty(t, string(article.HTMLHold), "HTMLHold should be populated.")
 		assert.NotEmpty(t, string(article.ArticlePicture), "ArticlePicture should be populated.")
 	}
+}
+
+func TestGetArticlePanels_ErrorHandling(t *testing.T) {
+	silenceLogrus(t)
+	originalArticlesEnv, articlesEnvIsSet := os.LookupEnv("ARTICLES")
+	// Set to a non-existent table to trigger DynamoDB scan error
+	os.Setenv("ARTICLES", "non-existent-table-that-should-cause-error")
+	defer func() {
+		if articlesEnvIsSet {
+			os.Setenv("ARTICLES", originalArticlesEnv)
+		} else {
+			os.Unsetenv("ARTICLES")
+		}
+	}()
+
+	panels := GetArticlePanels()
+
+	// When DynamoDB scan fails, function should return empty slice
+	assert.NotNil(t, panels, "GetArticlePanels should return a non-nil slice even when scan fails")
+	assert.Len(t, panels, 0, "GetArticlePanels should return empty slice when scan fails")
+}
+
+func TestGetArticlePanels_DefaultTableName(t *testing.T) {
+	silenceLogrus(t)
+	originalArticlesEnv, articlesEnvIsSet := os.LookupEnv("ARTICLES")
+	// Unset the ARTICLES environment variable to test default table name path
+	os.Unsetenv("ARTICLES")
+	defer func() {
+		if articlesEnvIsSet {
+			os.Setenv("ARTICLES", originalArticlesEnv)
+		} else {
+			os.Unsetenv("ARTICLES")
+		}
+	}()
+
+	panels := GetArticlePanels()
+
+	// Should use default table name "Test-Articles" when env var not set
+	assert.NotNil(t, panels, "GetArticlePanels should return a non-nil slice when using default table name")
+}
+
+func TestGetArticleByID_ArticleNotFound(t *testing.T) {
+	silenceLogrus(t)
+	originalArticlesEnv, articlesEnvIsSet := os.LookupEnv("ARTICLES")
+	tableName := "Test-Articles"
+	os.Setenv("ARTICLES", tableName)
+	defer func() {
+		if articlesEnvIsSet {
+			os.Setenv("ARTICLES", originalArticlesEnv)
+		} else {
+			os.Unsetenv("ARTICLES")
+		}
+	}()
+
+	// Use a non-existent article ID that should not be found
+	nonExistentID := 99999
+	article, err := GetArticleByID(nonExistentID)
+
+	// Should return nil article and error when article not found
+	assert.Nil(t, article, "Article should be nil when not found")
+	assert.Error(t, err, "Error should be returned when article not found")
+	assert.Contains(t, err.Error(), "not found", "Error message should indicate article was not found")
 }

@@ -1,5 +1,8 @@
 # Stage 1: Go Builder
-FROM golang:1.24.2-alpine3.21 AS golang-builder
+FROM golang:1.24.6-alpine3.22 AS golang-builder
+
+# Update package index and upgrade all packages to latest versions
+RUN apk update && apk upgrade
 
 # Install git for dependency management
 RUN apk add --no-cache git
@@ -18,13 +21,18 @@ COPY blog/ .
 # Declare ARGs for AWS creds
 ARG AWS_ACCESS_KEY_ID
 ARG AWS_SECRET_ACCESS_KEY
-RUN export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-RUN export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-RUN go test -v -coverprofile=coverage.out ./...
+# Set environment variables and run tests in the same RUN command
+RUN export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID && \
+    export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY && \
+    go test -v -coverprofile=coverage.out ./...
 RUN go tool cover -func=coverage.out
 
 # Build the Go application
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o blog-in-golang .
+
+# Development stage - keeps source code for testing
+FROM golang-builder AS development
+# This stage has all the source code and dependencies for running tests
 
 # Stage 2: React Builder
 FROM node:20-alpine AS react-builder
@@ -47,7 +55,7 @@ COPY realtor/ ./
 # Replace placeholder with actual Google API Key using the build argument
 # Ensure GAPI is set during docker build (e.g., --build-arg GAPI=$GAPI)
 RUN sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" src/App.jsx
-RUN sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" public/index.html
+RUN sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" index.html
 
 # Run the JS-level Unit Tests
 RUN yarn test --coverage
@@ -56,7 +64,10 @@ RUN yarn test --coverage
 RUN yarn build
 
 # Stage 3: Final Runtime Image
-FROM alpine:3.21 AS runtime
+FROM alpine:3.22 AS runtime
+
+# Update package index and upgrade all packages to latest versions for security
+RUN apk update && apk upgrade
 
 # Install ca-certificates for HTTPS
 RUN apk --no-cache add ca-certificates

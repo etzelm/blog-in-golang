@@ -6,9 +6,13 @@ export default class Tile extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      card: this.props.card || null
+      card: this.props.card || null,
+      imageError: false,
+      imageLoaded: false
     };
     this.onStateChange = this.onStateChange.bind(this);
+    this.onImageError = this.onImageError.bind(this);
+    this.onImageLoad = this.onImageLoad.bind(this);
   }
 
   static timeDifference(current, previous) {
@@ -62,6 +66,15 @@ export default class Tile extends React.Component {
     });
   }
 
+  onImageError(event) {
+    console.error("Image failed to load:", event.target.src);
+    this.setState({ imageError: true });
+  }
+
+  onImageLoad(event) {
+    console.log("Image loaded successfully:", event.target.src);
+  }
+
   render() {
     const imgStyle = {
       width: '100%', 
@@ -89,7 +102,20 @@ export default class Tile extends React.Component {
     return (
       <a style={linkStyle} href={"/realtor/listing?MLS=" + this.props.card['MLS']} data-testid={`tile-${this.props.card['MLS']}`}>
         <Card>
-          <Card.Img style={imgStyle} variant="top" src={this.props.card['List Photo']} />
+          {this.state.imageError ? (
+            <div style={{...imgStyle, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f8f9fa', color: '#6c757d'}}>
+              Image failed to load
+            </div>
+          ) : (
+            <Card.Img 
+              style={imgStyle} 
+              variant="top" 
+              src={this.props.card['List Photo']} 
+              onError={this.onImageError}
+              onLoad={this.onImageLoad}
+              alt={`Property at ${this.props.card['Street1']}`}
+            />
+          )}
           <Card.Body>
             <Card.Title>{addr}</Card.Title>
             <Card.Text>{price}</Card.Text>

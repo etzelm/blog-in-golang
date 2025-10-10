@@ -162,4 +162,44 @@ describe('Listing Component', () => {
     window.location = originalLocation;
     // --- End restore window.location ---
   });
+
+  it('renders address with Street2 when Street2 is not "*"', async () => {
+    const { listings } = await import('../../../test-data');
+    const mockListing = { 
+      ...listings[0], 
+      Street2: 'Apt 101' // Set Street2 to something other than "*"
+    };
+    const mlsId = mockListing.MLS;
+
+    // Mock the fetch call
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve([mockListing]),
+    });
+
+    // Mock window.location
+    const originalLocation = window.location;
+    delete window.location;
+    window.location = {
+      ...originalLocation,
+      search: `?MLS=${mlsId}`,
+    };
+
+    render(
+      <MemoryRouter initialEntries={[`/realtor/listing?MLS=${mlsId}`]}>
+        <Routes>
+          <Route path="/realtor/listing" element={<Listing />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    // Wait for the component to render with Street2 included in address
+    await waitFor(() => {
+      // Should show Street2 in the address since it's not "*"
+      expect(screen.getByText(/123 Real Avenue, Apt 101/)).toBeInTheDocument();
+    });
+
+    // Restore window.location
+    window.location = originalLocation;
+  });
 });

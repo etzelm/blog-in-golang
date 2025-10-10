@@ -1,54 +1,49 @@
 package models
 
 import (
-	"os"
+	"context"
 	"sort"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
-	"github.com/aws/aws-sdk-go/service/dynamodb/expression"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
+	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	log "github.com/sirupsen/logrus"
 )
 
 // Listing : structure used to make DynamoDB data functional
 type Listing struct {
-	MLS          string   `json:"MLS"`
-	Street1      string   `json:"Street1"`
-	Street2      string   `json:"Street2"`
-	City         string   `json:"City"`
-	State        string   `json:"State"`
-	ZipCode      string   `json:"Zip Code"`
-	Neighborhood string   `json:"Neighborhood"`
-	SalesPrice   string   `json:"Sales Price"`
-	DateListed   string   `json:"Date Listed"`
-	LastModified string   `json:"Last Modified"`
-	Bedrooms     string   `json:"Bedrooms"`
-	ListPhoto    string   `json:"List Photo"`
-	PhotoArray   []string `json:"Photo Array"`
-	Bathrooms    string   `json:"Bathrooms"`
-	GarageSize   string   `json:"Garage Size"`
-	SquareFeet   string   `json:"Square Feet"`
-	LotSize      string   `json:"Lot Size"`
-	Description  string   `json:"Description"`
-	User         string   `json:"User"`
-	Deleted      string   `json:"deleted"`
+	MLS          string   `json:"MLS" dynamodbav:"MLS"`
+	Street1      string   `json:"Street1" dynamodbav:"Street1"`
+	Street2      string   `json:"Street2" dynamodbav:"Street2"`
+	City         string   `json:"City" dynamodbav:"City"`
+	State        string   `json:"State" dynamodbav:"State"`
+	ZipCode      string   `json:"Zip Code" dynamodbav:"Zip Code"`
+	Neighborhood string   `json:"Neighborhood" dynamodbav:"Neighborhood"`
+	SalesPrice   string   `json:"Sales Price" dynamodbav:"Sales Price"`
+	DateListed   string   `json:"Date Listed" dynamodbav:"Date Listed"`
+	LastModified string   `json:"Last Modified" dynamodbav:"Last Modified"`
+	Bedrooms     string   `json:"Bedrooms" dynamodbav:"Bedrooms"`
+	ListPhoto    string   `json:"List Photo" dynamodbav:"List Photo"`
+	PhotoArray   []string `json:"Photo Array" dynamodbav:"Photo Array"`
+	Bathrooms    string   `json:"Bathrooms" dynamodbav:"Bathrooms"`
+	GarageSize   string   `json:"Garage Size" dynamodbav:"Garage Size"`
+	SquareFeet   string   `json:"Square Feet" dynamodbav:"Square Feet"`
+	LotSize      string   `json:"Lot Size" dynamodbav:"Lot Size"`
+	Description  string   `json:"Description" dynamodbav:"Description"`
+	User         string   `json:"User" dynamodbav:"User"`
+	Deleted      string   `json:"deleted" dynamodbav:"deleted"`
 }
 
 // GetRealtorListings Get a list of all the current realtor listings
 func GetRealtorListings() []Listing {
-	aid := os.Getenv("AWS_ACCESS_KEY_ID")
-	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
-	var myCredentials = credentials.NewStaticCredentials(aid, key, "")
+	ctx := context.TODO()
 
-	sess, _ := session.NewSession(&aws.Config{
-		Credentials: myCredentials,
-		Region:      aws.String("us-west-1"),
-		//Endpoint:    aws.String("http://localhost:8000"),
-	})
-	dbSvc := dynamodb.New(sess)
+	dbSvc, err := createDynamoDBClient(ctx)
+	if err != nil {
+		log.Error("Unable to create DynamoDB client:", err)
+		return []Listing{}
+	}
 
 	filt := expression.Name("deleted").NotEqual(expression.Value("anything"))
 
@@ -71,19 +66,25 @@ func GetRealtorListings() []Listing {
 	}
 
 	// Make the DynamoDB Query API call
-	result, _ := dbSvc.Scan(params)
+	result, err := dbSvc.Scan(ctx, params)
+	if err != nil {
+		log.Error("Failed to scan DynamoDB:", err)
+		return []Listing{}
+	}
 
 	listings := []Listing{}
 
 	for _, i := range result.Items {
 		listing := Listing{}
 
-		err := dynamodbattribute.UnmarshalMap(i, &listing)
+		err := attributevalue.UnmarshalMapWithOptions(i, &listing, func(o *attributevalue.DecoderOptions) {
+			o.TagKey = "dynamodbav"
+		})
 
 		if err != nil {
 			log.Error("Got error unmarshalling:")
 			log.Error(err.Error())
-			return nil
+			return []Listing{}
 		}
 
 		listings = append(listings, listing)
@@ -98,16 +99,13 @@ func GetRealtorListings() []Listing {
 
 // GetRealtorListing Get a current realtor listing
 func GetRealtorListing(listing string) []Listing {
-	aid := os.Getenv("AWS_ACCESS_KEY_ID")
-	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
-	var myCredentials = credentials.NewStaticCredentials(aid, key, "")
+	ctx := context.TODO()
 
-	sess, _ := session.NewSession(&aws.Config{
-		Credentials: myCredentials,
-		Region:      aws.String("us-west-1"),
-		//Endpoint:    aws.String("http://localhost:8000"),
-	})
-	dbSvc := dynamodb.New(sess)
+	dbSvc, err := createDynamoDBClient(ctx)
+	if err != nil {
+		log.Error("Unable to create DynamoDB client:", err)
+		return []Listing{}
+	}
 
 	filt := expression.Name("MLS").Equal(expression.Value(listing))
 
@@ -130,19 +128,25 @@ func GetRealtorListing(listing string) []Listing {
 	}
 
 	// Make the DynamoDB Query API call
-	result, _ := dbSvc.Scan(params)
+	result, err := dbSvc.Scan(ctx, params)
+	if err != nil {
+		log.Error("Failed to scan DynamoDB:", err)
+		return []Listing{}
+	}
 
 	listings := []Listing{}
 
 	for _, i := range result.Items {
 		listing := Listing{}
 
-		err := dynamodbattribute.UnmarshalMap(i, &listing)
+		err := attributevalue.UnmarshalMapWithOptions(i, &listing, func(o *attributevalue.DecoderOptions) {
+			o.TagKey = "dynamodbav"
+		})
 
 		if err != nil {
 			log.Error("Got error unmarshalling:")
 			log.Error(err.Error())
-			return nil
+			return []Listing{}
 		}
 
 		listings = append(listings, listing)

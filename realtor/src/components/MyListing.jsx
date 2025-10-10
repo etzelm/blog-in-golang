@@ -8,7 +8,8 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { useDropzone } from 'react-dropzone';
 import { v4 as uuid } from 'uuid';
-import { NotificationContainer, NotificationManager } from 'react-notifications';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // Error Boundary Component
 class MyListingErrorBoundary extends React.Component {
@@ -161,7 +162,7 @@ const MyListing = ({ loggedIn, user }) => {
     const elements = formRef.current?.elements;
     if (!elements) {
       log('Form elements missing', { instanceId });
-      NotificationManager.warning('Form error', 'Please try again', 3000);
+      toast.warning('Form error: Please try again');
       return;
     }
 
@@ -211,7 +212,7 @@ const MyListing = ({ loggedIn, user }) => {
     for (const field of requiredFields) {
       if (!json[field]) {
         log('Missing required field', { instanceId, field });
-        NotificationManager.warning('Missing required field', `Please fill in ${field}`, 3000);
+        toast.warning(`Missing required field: Please fill in ${field}`);
         return;
       }
     }
@@ -229,14 +230,14 @@ const MyListing = ({ loggedIn, user }) => {
       const responseData = await rawResponse.json();
       log('Submission response', { instanceId, responseData, status: rawResponse.status, ok: rawResponse.ok });
       if (rawResponse.ok) {
-        NotificationManager.success('Success', 'Listing submitted', 3000);
+        toast.success('Success: Listing submitted');
         log('Submission successful', { instanceId, mls: newUuid });
       } else {
         throw new Error(`Failed to submit listing: ${rawResponse.status}`);
       }
     } catch (error) {
       log('Submission error', { instanceId, error: error.message });
-      NotificationManager.warning('Submission failed', 'Please try again', 3000);
+      toast.warning('Submission failed: Please try again');
     }
   };
 
@@ -557,7 +558,7 @@ const MyListing = ({ loggedIn, user }) => {
               </Button>
               <br />
               <br />
-              {isClient && <NotificationContainer />}
+              {isClient && <ToastContainer />}
               <br />
               <br />
             </Form>

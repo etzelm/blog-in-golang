@@ -2,20 +2,26 @@ package handlers
 
 import (
 	"bytes"
+	"context"
 	"net/http"
-	"os"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/awsutil"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
-	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/etzelm/blog-in-golang/src/models"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )
+
+// createS3Client creates an S3 client with proper configuration
+func createS3Client(ctx context.Context) (*s3.Client, error) {
+	cfg, err := createAWSConfig(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return s3.NewFromConfig(cfg), nil
+}
 
 // ListingsGETAPI : Gets All Realtor Listings
 func ListingsGETAPI(c *gin.Context) {
@@ -58,26 +64,41 @@ func ListingPOSTAPI(c *gin.Context) {
 		var listing models.Listing
 		c.BindJSON(&listing)
 
-		aid := os.Getenv("AWS_ACCESS_KEY_ID")
-		key := os.Getenv("AWS_SECRET_ACCESS_KEY")
-		var myCredentials = credentials.NewStaticCredentials(aid, key, "")
+		ctx := context.TODO()
+		dbSvc, err := createDynamoDBClient(ctx)
+		if err != nil {
+			log.Error("Unable to create DynamoDB client:", err)
+			c.HTML(
+				http.StatusInternalServerError,
+				"error.html",
+				gin.H{
+					"title": "500 Internal Server Error",
+					"error": err.Error(),
+				},
+			)
+			return
+		}
 
-		sess, _ := session.NewSession(&aws.Config{
-			Credentials: myCredentials,
-			Region:      aws.String("us-west-1"),
-			//Endpoint:    aws.String("http://localhost:8000"),
-		})
-
-		dbSvc := dynamodb.New(sess)
-
-		av, _ := dynamodbattribute.MarshalMap(listing)
+		av, err := attributevalue.MarshalMap(listing)
+		if err != nil {
+			log.Error("Error marshalling listing:", err)
+			c.HTML(
+				http.StatusInternalServerError,
+				"error.html",
+				gin.H{
+					"title": "500 Internal Server Error",
+					"error": err.Error(),
+				},
+			)
+			return
+		}
 
 		input := &dynamodb.PutItemInput{
 			Item:      av,
 			TableName: aws.String("Listings"),
 		}
 
-		_, err := dbSvc.PutItem(input)
+		_, err = dbSvc.PutItem(ctx, input)
 
 		if err != nil {
 			log.Error("Got error calling PutItem:")
@@ -118,12 +139,13 @@ func UploadImagePOSTAPI(c *gin.Context) {
 
 	if user := c.Param("user"); user != "" {
 
-		aid := os.Getenv("AWS_ACCESS_KEY_ID")
-		key := os.Getenv("AWS_SECRET_ACCESS_KEY")
-		creds := credentials.NewStaticCredentials(aid, key, "")
-
-		cfg := aws.NewConfig().WithRegion("us-west-1").WithCredentials(creds)
-		svc := s3.New(session.New(), cfg)
+		ctx := context.TODO()
+		svc, err := createS3Client(ctx)
+		if err != nil {
+			log.Error("Unable to create S3 client:", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 
 		form, _ := c.MultipartForm()
 
@@ -147,15 +169,17 @@ func UploadImagePOSTAPI(c *gin.Context) {
 			fileType := http.DetectContentType(buffer)
 			path := "/media/" + user + "/" + file.Filename
 			params := &s3.PutObjectInput{
-				Bucket:        aws.String("blog-in-golang"),
-				Key:           aws.String(path),
-				Body:          fileBytes,
-				ContentLength: aws.Int64(size),
-				ContentType:   aws.String(fileType),
+				Bucket:      aws.String("blog-in-golang"),
+				Key:         aws.String(path),
+				Body:        fileBytes,
+				ContentType: aws.String(fileType),
 			}
-			resp, _ := svc.PutObject(params)
-
-			log.Debug("response: ", awsutil.StringValue(resp))
+			resp, err := svc.PutObject(ctx, params)
+			if err != nil {
+				log.Error("Error uploading to S3:", err)
+			} else {
+				log.Debug("S3 upload response:", resp)
+			}
 		}
 
 		empty := []byte(``)

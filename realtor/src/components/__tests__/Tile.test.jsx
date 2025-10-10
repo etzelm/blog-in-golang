@@ -125,4 +125,45 @@ describe('Tile Component', () => {
       expect(screen.queryByText('Publish Listing')).not.toBeInTheDocument();
     });
   });
+
+  it('should display error message when image fails to load', async () => {
+    render(
+      <BrowserRouter>
+        <Tile card={mockListing} />
+      </BrowserRouter>
+    );
+
+    // Find the image element
+    const image = screen.getByRole('img');
+    expect(image).toBeInTheDocument();
+
+    // Simulate image load error
+    fireEvent.error(image);
+
+    // Wait for error state to be set and component to re-render
+    await waitFor(() => {
+      expect(screen.getByText('Image failed to load')).toBeInTheDocument();
+    });
+
+    // Verify the image is no longer in the DOM
+    expect(screen.queryByRole('img')).not.toBeInTheDocument();
+  });
+
+  it('should calculate time differences correctly', () => {
+    const now = new Date().getTime();
+    const oneSecondAgo = now - 1000;
+    const oneMinuteAgo = now - 60000;
+    const oneHourAgo = now - 3600000;
+    const oneDayAgo = now - 86400000;
+    const oneMonthAgo = now - 2592000000; // 30 days
+    const oneYearAgo = now - 31536000000; // 365 days
+
+    // Test different time differences
+    expect(Tile.timeDifference(now, oneSecondAgo)).toMatch(/seconds ago/);
+    expect(Tile.timeDifference(now, oneMinuteAgo)).toMatch(/minutes ago/);
+    expect(Tile.timeDifference(now, oneHourAgo)).toMatch(/hours ago/);
+    expect(Tile.timeDifference(now, oneDayAgo)).toMatch(/days ago/);
+    expect(Tile.timeDifference(now, oneMonthAgo)).toMatch(/months ago/);
+    expect(Tile.timeDifference(now, oneYearAgo)).toMatch(/years ago/);
+  });
 });
