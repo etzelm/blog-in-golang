@@ -21,12 +21,8 @@ export default defineConfig(({ mode }) => {
 function setEnv(mode) {
     Object.assign(process.env, loadEnv(mode, ".", ["REACT_APP_", "NODE_ENV", "PUBLIC_URL"]));
     process.env.NODE_ENV ||= mode;
-    const { homepage } = JSON.parse(readFileSync("package.json", "utf-8"));
-    process.env.PUBLIC_URL ||= homepage
-        ? `${homepage.startsWith("http") || homepage.startsWith("/")
-            ? homepage
-            : `/${homepage}`}`.replace(/\/$/, "")
-        : "";
+    // Set PUBLIC_URL for realtor app
+    process.env.PUBLIC_URL ||= "/realtor";
 }
 // Expose `process.env` environment variables to your client code
 // Migration guide: Follow the guide below to replace process.env with import.meta.env in your app, you may also need to rename your environment variable to a name that begins with VITE_ instead of REACT_APP_
