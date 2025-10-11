@@ -66,10 +66,10 @@ RUN yarn build
 FROM alpine:3.22 AS runtime
 
 # Update package index and upgrade all packages to latest versions for security
-RUN apk update && apk upgrade
-
-# Install ca-certificates for HTTPS
-RUN apk --no-cache add ca-certificates
+# Combine RUN commands to reduce layers and improve build cache efficiency
+RUN apk update && apk upgrade && \
+    apk --no-cache add ca-certificates tzdata && \
+    rm -rf /var/cache/apk/*
 
 # Create a non-root user and group for security
 RUN addgroup -g 101 -S blog && adduser -u 101 -S blog -G blog
