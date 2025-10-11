@@ -1,7 +1,7 @@
-import React from "react";
+import { GoogleLogin } from '@react-oauth/google';
 import { Nav, Navbar, NavDropdown, Container } from 'react-bootstrap';
 
-const NavBar = ({ loggedIn, user, onSignIn, onSignOut, authLoading }) => {
+const NavBar = ({ loggedIn, user, onLoginSuccess, onLoginError, onSignOut, authLoading }) => {
   return (
     <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark" fixed="top">
       <Container>
@@ -21,14 +21,16 @@ const NavBar = ({ loggedIn, user, onSignIn, onSignOut, authLoading }) => {
                 </NavDropdown.Item>
               </NavDropdown>
             ) : (
-              <button
-                id="loginButton"
-                onClick={onSignIn}
-                className="btn btn-light"
-                disabled={authLoading}
-              >
-                {authLoading ? 'Signing In...' : 'Sign In'}
-              </button>
+              <div id="loginButton">
+                <GoogleLogin
+                  onSuccess={onLoginSuccess}
+                  onError={onLoginError}
+                  text="signin"
+                  shape="rectangular"
+                  theme="filled_blue"
+                  size="medium"
+                />
+              </div>
             )}
           </Nav>
         </Navbar.Collapse>

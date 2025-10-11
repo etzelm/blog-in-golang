@@ -166,4 +166,23 @@ describe('Tile Component', () => {
     expect(Tile.timeDifference(now, oneMonthAgo)).toMatch(/months ago/);
     expect(Tile.timeDifference(now, oneYearAgo)).toMatch(/years ago/);
   });
+
+  it('should handle image load event', () => {
+    render(
+      <BrowserRouter>
+        <Tile card={mockListing} />
+      </BrowserRouter>
+    );
+
+    // Find the image element
+    const image = screen.getByRole('img');
+    expect(image).toBeInTheDocument();
+
+    // Simulate image load success
+    fireEvent.load(image);
+
+    // The onImageLoad method should be called (console.log should be triggered)
+    // Since we mocked console.log, we can verify it was called
+    expect(console.log).toHaveBeenCalled();
+  });
 });

@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import NavBar from './components/NavBar';
 import Main from './components/Main';
 import { toast, ToastContainer } from 'react-toastify';
@@ -12,135 +13,73 @@ const log = (message, data = {}) => {
   }, null, 2));
 };
 
+// Replace with your actual Google OAuth client ID
+const GOOGLE_CLIENT_ID = 'ThisIsSupposedToBeAnId';
+
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
-  const [loaded, setLoaded] = useState(false);
+  const [loaded, setLoaded] = useState(true); // No async loading needed with new library
   const [authLoading, setAuthLoading] = useState(false);
 
-  // Initialize Google Auth
+  // Check for existing session on component mount
   useEffect(() => {
-    const initGoogleAuth = async () => {
-      try {
-        log('Starting Google Auth initialization');
-        if (!window.gapi) {
-          log('Loading gapi library');
-          const response = await fetch('https://apis.google.com/js/platform.js');
-          if (!response.ok) throw new Error('Failed to load Google Auth library');
-        }
-
-        await window.gapi.load('auth2', () => {
-          log('gapi.auth2 loaded');
-          const clientId = 'ThisIsSupposedToBeAnId'; // Replace with actual client ID
-          log('Initializing Google Auth with client ID', { clientId });
-
-          window.gapi.auth2.init({
-            client_id: clientId,
-            scope: 'email',
-            prompt: 'select_account',
-            fetch_basic_profile: true,
-          }).then(() => {
-            log('Google Auth initialized');
-            const auth2 = window.gapi.auth2.getAuthInstance();
-            if (!auth2) {
-              log('Failed to get auth2 instance');
-              toast.error('Authentication setup failed.', { autoClose: 5000 });
-              setLoaded(true);
-              return;
-            }
-
-            // Check if user manually signed out
-            const isSignedOut = localStorage.getItem('signedOut') === 'true';
-            if (!isSignedOut && auth2.isSignedIn.get()) {
-              const email = auth2.currentUser.get().getBasicProfile().getEmail();
-              setUser(email);
-              setLoggedIn(true);
-              log('Session restored', { email });
-            }
-
-            // Listen for sign-in state changes
-            auth2.isSignedIn.listen((isSignedIn) => {
-              if (isSignedIn) {
-                const email = auth2.currentUser.get().getBasicProfile().getEmail();
-                setUser(email);
-                setLoggedIn(true);
-                localStorage.removeItem('signedOut');
-                log('User signed in via listener', { email });
-              } else {
-                setUser(null);
-                setLoggedIn(false);
-                localStorage.setItem('signedOut', 'true');
-                log('User signed out via listener');
-              }
-            });
-
-            setLoaded(true);
-          }).catch(error => {
-            log('Google Auth initialization failed', { error: error.message || 'Unknown error' });
-            toast.error('Failed to initialize authentication.', { autoClose: 5000 });
-            setLoaded(true);
-          });
-        });
-      } catch (error) {
-        log('Error loading Google Auth', { error: error.message || 'Unknown error' });
-        toast.error('Failed to load authentication library.', { autoClose: 5000 });
-        setLoaded(true);
-      }
-    };
-
-    initGoogleAuth();
+    const storedUser = localStorage.getItem('user');
+    const isSignedOut = localStorage.getItem('signedOut') === 'true';
+    
+    if (storedUser && !isSignedOut) {
+      setUser(storedUser);
+      setLoggedIn(true);
+      log('Session restored', { email: storedUser });
+    }
   }, []);
 
-  // Handle sign-in
-  const handleSignIn = async () => {
-    if (authLoading) {
-      log('Sign-in attempt ignored: authLoading is true');
-      return;
-    }
-    setAuthLoading(true);
+  // Handle successful login
+  const handleLoginSuccess = (credentialResponse) => {
     try {
-      const auth2 = window.gapi.auth2.getAuthInstance();
-      if (!auth2) throw new Error('Authentication instance not available');
-      log('Initiating sign-in');
-      await auth2.signIn();
-      const email = auth2.currentUser.get().getBasicProfile().getEmail();
+      log('Login successful, processing credential response');
+      
+      // Decode the JWT token to get user info
+      const payload = JSON.parse(atob(credentialResponse.credential.split('.')[1]));
+      const email = payload.email;
+      
       setUser(email);
       setLoggedIn(true);
+      localStorage.setItem('user', email);
       localStorage.removeItem('signedOut');
+      
       log('User signed in', { email });
       toast.success('Successfully signed in!', { autoClose: 3000, toastId: 'sign-in' });
     } catch (error) {
-      log('Sign-in failed', { error: error.message || (error.error ? error.error : 'Unknown error') });
-      const displayMessage = error.error === 'popup_closed_by_user'
-        ? 'Sign-in canceled.'
-        : error.error === 'access_denied'
-        ? 'Permission denied.'
-        : 'Failed to sign in.';
-      toast.error(displayMessage, { autoClose: 5000 });
-    } finally {
-      setAuthLoading(false);
+      log('Login processing failed', { error: error.message || 'Unknown error' });
+      toast.error('Failed to process login.', { autoClose: 5000 });
     }
   };
 
+  // Handle login error
+  const handleLoginError = (error) => {
+    log('Login failed', { error });
+    toast.error('Failed to sign in.', { autoClose: 5000 });
+  };
+
   // Handle sign-out
-  const handleSignOut = async () => {
+  const handleSignOut = () => {
     if (authLoading) {
       log('Sign-out attempt ignored: authLoading is true');
       return;
     }
+    
     setAuthLoading(true);
     try {
-      const auth2 = window.gapi.auth2.getAuthInstance();
-      if (!auth2) throw new Error('Authentication instance not available');
-      log('Initiating sign-out');
-      await auth2.signOut();
       setUser(null);
       setLoggedIn(false);
+      localStorage.removeItem('user');
       localStorage.setItem('signedOut', 'true');
+      
       log('Sign-out successful');
       toast.success('Successfully signed out.', { autoClose: 3000, toastId: 'sign-out' });
     } catch (error) {
-      log('Sign-out failed', { error: error.message || (error.error ? error.error : 'Unknown error') });
+      log('Sign-out failed', { error: error.message || 'Unknown error' });
       toast.error('Failed to sign out.', { autoClose: 5000 });
     } finally {
       setAuthLoading(false);
@@ -159,20 +98,23 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <NavBar 
-        loggedIn={loggedIn} 
-        user={user} 
-        onSignIn={handleSignIn}
-        onSignOut={handleSignOut}
-        authLoading={authLoading}
-      />
-      <Main 
-        loggedIn={loggedIn} 
-        user={user}
-      />
-      <ToastContainer />
-    </div>
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <div className="App">
+        <NavBar 
+          loggedIn={loggedIn} 
+          user={user} 
+          onLoginSuccess={handleLoginSuccess}
+          onLoginError={handleLoginError}
+          onSignOut={handleSignOut}
+          authLoading={authLoading}
+        />
+        <Main 
+          loggedIn={loggedIn} 
+          user={user}
+        />
+        <ToastContainer />
+      </div>
+    </GoogleOAuthProvider>
   );
 }
 
