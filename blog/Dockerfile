@@ -30,10 +30,6 @@ RUN go tool cover -func=coverage.out
 # Build the Go application
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o blog-in-golang .
 
-# Development stage - keeps source code for testing
-FROM golang-builder AS development
-# This stage has all the source code and dependencies for running tests
-
 # Stage 2: React Builder
 FROM node:20-alpine AS react-builder
 
@@ -56,11 +52,20 @@ COPY realtor/ ./
 # Ensure GAPI is set during docker build (e.g., --build-arg GAPI=$GAPI)
 RUN sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" src/App.jsx
 
-# Run the JS-level Unit Tests
-RUN yarn test --coverage
+# Save the coverage report for later extraction
+RUN cp coverage/lcov-report/index.html coverage-report.html || echo "Coverage HTML not found"
+RUN yarn test --coverage --reporter=verbose --silent > test-results.txt 2>&1
+RUN cat test-results.txt
 
 # Build the React application
 RUN yarn build
+
+# Development stage - keeps source code for testing
+FROM golang-builder AS development
+# This stage has all the source code and dependencies for running tests
+# Copy React test results from react-builder stage
+COPY --from=react-builder /app/realtor/test-results.txt /app/react-test-results.txt
+COPY --from=react-builder /app/realtor/coverage/ /app/react-coverage/
 
 # Stage 3: Final Runtime Image
 FROM alpine:3.22 AS runtime
