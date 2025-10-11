@@ -360,3 +360,108 @@ func TestMainExecutionPathWithGCPDeployment(t *testing.T) {
 		t.Log("main() with DEPLOYMENT=GCP timed out (certmagic.HTTPS likely blocking, as expected in test).")
 	}
 }
+
+func TestSecurityHeadersMiddleware(t *testing.T) {
+	silenceLogrus(t)
+	gin.SetMode(gin.TestMode)
+	router := gin.New()
+	router.Use(securityHeadersMiddleware())
+	router.GET("/test", func(c *gin.Context) { c.String(http.StatusOK, "test") })
+
+	req, _ := http.NewRequest(http.MethodGet, "/test", nil)
+	rr := httptest.NewRecorder()
+	router.ServeHTTP(rr, req)
+
+	// Check that all security headers are set
+	expectedHeaders := map[string]string{
+		"X-Frame-Options":        "DENY",
+		"X-Content-Type-Options": "nosniff",
+		"X-XSS-Protection":       "1; mode=block",
+		"Referrer-Policy":        "strict-origin-when-cross-origin",
+		"Permissions-Policy":     "geolocation=(), microphone=(), camera=()",
+	}
+
+	for header, expectedValue := range expectedHeaders {
+		actualValue := rr.Header().Get(header)
+		if actualValue != expectedValue {
+			t.Errorf("Expected %s header to be %q, got %q", header, expectedValue, actualValue)
+		}
+	}
+
+	// Check Content Security Policy header
+	cspHeader := rr.Header().Get("Content-Security-Policy")
+	expectedCSPParts := []string{
+		"default-src 'self'",
+		"script-src 'self' 'unsafe-inline' https://files.mitchelletzel.com",
+		"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+		"img-src 'self' data: https: blob:",
+		"font-src 'self' https://fonts.gstatic.com",
+		"connect-src 'self' https://files.mitchelletzel.com",
+		"frame-ancestors 'none'",
+	}
+
+	for _, part := range expectedCSPParts {
+		if !contains(cspHeader, part) {
+			t.Errorf("Expected CSP header to contain %q, but got %q", part, cspHeader)
+		}
+	}
+
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
+	}
+}
+
+func TestSecurityHeadersMiddleware_MultipleRequests(t *testing.T) {
+	silenceLogrus(t)
+	gin.SetMode(gin.TestMode)
+	router := gin.New()
+	router.Use(securityHeadersMiddleware())
+	router.GET("/api/data", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"data": "test"}) })
+	router.POST("/api/submit", func(c *gin.Context) { c.String(http.StatusCreated, "created") })
+
+	testCases := []struct {
+		name   string
+		method string
+		path   string
+	}{
+		{"GET_Request", http.MethodGet, "/api/data"},
+		{"POST_Request", http.MethodPost, "/api/submit"},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			req, _ := http.NewRequest(tc.method, tc.path, nil)
+			rr := httptest.NewRecorder()
+			router.ServeHTTP(rr, req)
+
+			// Verify security headers are present on all types of requests
+			if rr.Header().Get("X-Frame-Options") != "DENY" {
+				t.Errorf("X-Frame-Options header missing on %s %s", tc.method, tc.path)
+			}
+			if rr.Header().Get("X-Content-Type-Options") != "nosniff" {
+				t.Errorf("X-Content-Type-Options header missing on %s %s", tc.method, tc.path)
+			}
+			if rr.Header().Get("Content-Security-Policy") == "" {
+				t.Errorf("Content-Security-Policy header missing on %s %s", tc.method, tc.path)
+			}
+		})
+	}
+}
+
+// Helper function to check if a string contains a substring
+func contains(str, substr string) bool {
+	return len(str) >= len(substr) &&
+		(str == substr ||
+			str[:len(substr)] == substr ||
+			str[len(str)-len(substr):] == substr ||
+			containsSubstring(str, substr))
+}
+
+func containsSubstring(str, substr string) bool {
+	for i := 0; i <= len(str)-len(substr); i++ {
+		if str[i:i+len(substr)] == substr {
+			return true
+		}
+	}
+	return false
+}

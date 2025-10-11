@@ -357,3 +357,227 @@ func TestAuthResponse_BadPassword(t *testing.T) {
 		t.Errorf("Expected status %d; got %d. Response body: %s", http.StatusInternalServerError, recorder.Code, recorder.Body.String())
 	}
 }
+
+func TestSecurePage_InvalidTokenFormats(t *testing.T) {
+	silenceLogrus(t)
+	dummyTemplates := map[string]string{
+		"error.html":  "<html><head><title>{{.title}}</title></head><body>Error: {{.error}}</body></html>",
+		"secure.html": "<html><head><title>Secure</title></head><body>Welcome</body></html>",
+	}
+	router, _, _ := setupTestRouterWithHTMLTemplates(t, dummyTemplates)
+
+	router.GET("/secure", SecurePage)
+
+	testCases := []struct {
+		name             string
+		user             string
+		userToken        string
+		expectedStatus   int
+		expectsErrorPage bool
+	}{
+		{
+			name:             "EmptyUserEmptyToken",
+			user:             "",
+			userToken:        "",
+			expectedStatus:   http.StatusUnauthorized,
+			expectsErrorPage: true,
+		},
+		{
+			name:             "ValidUserInvalidToken",
+			user:             "test@example.com",
+			userToken:        "invalid_bcrypt_hash",
+			expectedStatus:   http.StatusUnauthorized,
+			expectsErrorPage: true,
+		},
+		{
+			name:             "ValidUserEmptyToken",
+			user:             "test@example.com",
+			userToken:        "",
+			expectedStatus:   http.StatusUnauthorized,
+			expectsErrorPage: true,
+		},
+		{
+			name:             "EmptyUserValidToken",
+			user:             "",
+			userToken:        "$2a$14$something", // Valid bcrypt format but wrong content
+			expectedStatus:   http.StatusUnauthorized,
+			expectsErrorPage: true,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			req, err := http.NewRequest(http.MethodGet, "/secure", nil)
+			if err != nil {
+				t.Fatalf("Couldn't create request: %v", err)
+			}
+
+			if tc.user != "" {
+				req.AddCookie(&http.Cookie{Name: "user", Value: tc.user})
+			}
+			if tc.userToken != "" {
+				req.AddCookie(&http.Cookie{Name: "userToken", Value: tc.userToken})
+			}
+
+			recorder := httptest.NewRecorder()
+			router.ServeHTTP(recorder, req)
+
+			if recorder.Code != tc.expectedStatus {
+				t.Errorf("Expected status %d; got %d. Response body: %s", tc.expectedStatus, recorder.Code, recorder.Body.String())
+			}
+
+			if tc.expectsErrorPage {
+				if !strings.Contains(recorder.Body.String(), "<title>401 (Unauthorized)</title>") {
+					t.Errorf("Expected 401 error page title, got: %s", recorder.Body.String())
+				}
+			}
+
+			// Check cache control header
+			expectedCacheControl := "no-cache"
+			actualCacheControl := recorder.Header().Get("Cache-Control")
+			if actualCacheControl != expectedCacheControl {
+				t.Errorf("Expected Cache-Control header %q, got %q", expectedCacheControl, actualCacheControl)
+			}
+		})
+	}
+}
+
+func TestSecurePage_ValidTokenFlow(t *testing.T) {
+	silenceLogrus(t)
+	dummyTemplates := map[string]string{
+		"secure.html": "<html><head><title>Secure</title></head><body>User: {{.payload}}, IP: {{.ip}}</body></html>",
+	}
+	router, _, _ := setupTestRouterWithHTMLTemplates(t, dummyTemplates)
+
+	router.GET("/secure", SecurePage)
+
+	testUser := "test@example.com"
+	hashedUser, err := HashPassword(testUser)
+	if err != nil {
+		t.Fatalf("Failed to hash user for test: %v", err)
+	}
+
+	req, err := http.NewRequest(http.MethodGet, "/secure", nil)
+	if err != nil {
+		t.Fatalf("Couldn't create request: %v", err)
+	}
+
+	// Set specific remote address to test IP extraction
+	req.RemoteAddr = "203.0.113.42:12345"
+	req.AddCookie(&http.Cookie{Name: "user", Value: testUser})
+	req.AddCookie(&http.Cookie{Name: "userToken", Value: hashedUser})
+
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, req)
+
+	if recorder.Code != http.StatusOK {
+		t.Errorf("Expected status %d; got %d. Response body: %s", http.StatusOK, recorder.Code, recorder.Body.String())
+	}
+
+	if !strings.Contains(recorder.Body.String(), "User: "+testUser) {
+		t.Errorf("Expected user %s in response, got: %s", testUser, recorder.Body.String())
+	}
+
+	if !strings.Contains(recorder.Body.String(), "IP: 203.0.113.42") {
+		t.Errorf("Expected IP address in response, got: %s", recorder.Body.String())
+	}
+}
+
+func TestHashPassword_Consistency(t *testing.T) {
+	silenceLogrus(t)
+
+	password := "testpassword123"
+
+	// Hash the same password multiple times
+	hash1, err1 := HashPassword(password)
+	hash2, err2 := HashPassword(password)
+
+	if err1 != nil {
+		t.Errorf("First hash failed: %v", err1)
+	}
+	if err2 != nil {
+		t.Errorf("Second hash failed: %v", err2)
+	}
+
+	// Hashes should be different (bcrypt uses salt)
+	if hash1 == hash2 {
+		t.Error("Two hashes of the same password should be different due to salt")
+	}
+
+	// But both should validate against the original password
+	if !CheckPasswordHash(password, hash1) {
+		t.Error("First hash should validate against original password")
+	}
+	if !CheckPasswordHash(password, hash2) {
+		t.Error("Second hash should validate against original password")
+	}
+}
+
+func TestCheckPasswordHash_EdgeCases(t *testing.T) {
+	silenceLogrus(t)
+
+	validPassword := "validpassword"
+	validHash, err := HashPassword(validPassword)
+	if err != nil {
+		t.Fatalf("Failed to create valid hash: %v", err)
+	}
+
+	testCases := []struct {
+		name     string
+		password string
+		hash     string
+		expected bool
+	}{
+		{
+			name:     "EmptyPasswordEmptyHash",
+			password: "",
+			hash:     "",
+			expected: false,
+		},
+		{
+			name:     "EmptyPasswordValidHash",
+			password: "",
+			hash:     validHash,
+			expected: false,
+		},
+		{
+			name:     "ValidPasswordEmptyHash",
+			password: validPassword,
+			hash:     "",
+			expected: false,
+		},
+		{
+			name:     "ValidPasswordValidHash",
+			password: validPassword,
+			hash:     validHash,
+			expected: true,
+		},
+		{
+			name:     "IncorrectPasswordValidHash",
+			password: "wrongpassword",
+			hash:     validHash,
+			expected: false,
+		},
+		{
+			name:     "ValidPasswordMalformedHash",
+			password: validPassword,
+			hash:     "not_a_bcrypt_hash",
+			expected: false,
+		},
+		{
+			name:     "ValidPasswordTruncatedHash",
+			password: validPassword,
+			hash:     validHash[:10], // Truncated hash
+			expected: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result := CheckPasswordHash(tc.password, tc.hash)
+			if result != tc.expected {
+				t.Errorf("CheckPasswordHash(%q, %q) = %v; expected %v", tc.password, tc.hash, result, tc.expected)
+			}
+		})
+	}
+}
