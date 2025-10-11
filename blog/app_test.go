@@ -68,7 +68,7 @@ func TestStaticCacheMiddleware(t *testing.T) {
 	if status := rrStatic.Code; status != http.StatusOK {
 		t.Errorf("static path status: got %v want %v", status, http.StatusOK)
 	}
-	expectedCacheControl := "public, max-age=31536000"
+	expectedCacheControl := "public, max-age=31536000, immutable"
 	if rrStatic.Header().Get("Cache-Control") != expectedCacheControl {
 		t.Errorf("static path Cache-Control: got %v want %v", rrStatic.Header().Get("Cache-Control"), expectedCacheControl)
 	}

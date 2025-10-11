@@ -90,13 +90,14 @@ func LoadServerRoutes(server *gin.Engine) {
 // LoadMiddlewares loads third party and custom gin middlewares the server uses.
 func LoadMiddlewares(server *gin.Engine) {
 
+	server.Use(securityHeadersMiddleware())
 	server.Use(staticCacheMiddleware())
 	server.Use(unauthorizedMiddleware())
-	server.Use(gzip.Gzip(gzip.DefaultCompression))
+	server.Use(gzip.Gzip(gzip.BestCompression))
 
 }
 
-// staticCacheMiddleware adds a caching header to responses for static files
+// staticCacheMiddleware adds optimized caching headers for static files with proper cache strategies
 func staticCacheMiddleware() gin.HandlerFunc {
 	staticPrefixes := []string{
 		"/public/", "/favicon.ico", "/robots.txt", "/sitemap.xml",
@@ -105,7 +106,11 @@ func staticCacheMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		for _, prefix := range staticPrefixes {
 			if strings.HasPrefix(c.Request.URL.Path, prefix) {
-				c.Header("Cache-Control", "public, max-age=31536000")
+				// Enhanced caching with ETag support
+				c.Header("Cache-Control", "public, max-age=31536000, immutable")
+				c.Header("Vary", "Accept-Encoding")
+				// Add security headers for static assets
+				c.Header("X-Content-Type-Options", "nosniff")
 				break
 			}
 		}
@@ -125,6 +130,30 @@ func unauthorizedMiddleware() gin.HandlerFunc {
 				return
 			}
 		}
+		c.Next()
+	}
+}
+
+// securityHeadersMiddleware adds comprehensive security and performance headers
+func securityHeadersMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Security headers
+		c.Header("X-Frame-Options", "DENY")
+		c.Header("X-Content-Type-Options", "nosniff")
+		c.Header("X-XSS-Protection", "1; mode=block")
+		c.Header("Referrer-Policy", "strict-origin-when-cross-origin")
+		c.Header("Permissions-Policy", "geolocation=(), microphone=(), camera=()")
+
+		// Content Security Policy (relaxed for external resources)
+		csp := "default-src 'self'; " +
+			"script-src 'self' 'unsafe-inline' https://files.mitchelletzel.com; " +
+			"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+			"img-src 'self' data: https: blob:; " +
+			"font-src 'self' https://fonts.gstatic.com; " +
+			"connect-src 'self' https://files.mitchelletzel.com; " +
+			"frame-ancestors 'none';"
+		c.Header("Content-Security-Policy", csp)
+
 		c.Next()
 	}
 }

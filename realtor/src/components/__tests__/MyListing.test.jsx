@@ -925,6 +925,83 @@ describe('MyListing Component - Edit Mode', () => {
     });
   });
 
+  // --- TEST FOR SINGLE OBJECT RESPONSE (THE SPECIFIC FIX) ---
+  it('should handle API response as single object instead of array', async () => {
+    const userEmail = 'test@example.com';
+    const consoleLogSpy = vi.spyOn(console, 'log');
+
+    // Mock data as a single object (not wrapped in array)
+    const mockSingleObjectData = {
+      MLS: 'single-obj-123',
+      Street1: '456 Single Object St',
+      Street2: '*',
+      City: 'Object City',
+      State: 'OC',
+      'Zip Code': '54321',
+      Neighborhood: 'Object Hood',
+      'Sales Price': '500000',
+      Bedrooms: '3',
+      Bathrooms: '2',
+      'Square Feet': '1500',
+      'Lot Size': '3000',
+      'Garage Size': '2 car',
+      Description: 'Single object response description',
+      'Date Listed': String(new Date().getTime() - 86400000),
+      'Last Modified': String(new Date().getTime()),
+      'List Photo': 'https://example.com/single-obj.jpg',
+      'Photo Array': ['https://example.com/single-obj1.jpg'],
+      User: 'test@example.com',
+      deleted: 'false',
+    };
+
+    // Mock fetch to return a single object (not an array)
+    fetchMock.mockImplementationOnce((url) => {
+      if (url.startsWith('/listing/single-obj-123')) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve(mockSingleObjectData), // Return single object, not array
+        });
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
+    });
+
+    render(
+      <MemoryRouter initialEntries={['/realtor/my-listing?MLS=single-obj-123']}>
+        <Routes>
+          <Route
+            path="/realtor/my-listing"
+            element={<MyListing loggedIn={true} user={userEmail} />}
+          />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    // Wait for fetch to complete and form to populate with single object data
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith('/listing/single-obj-123', expect.any(Object));
+      
+      // Verify the form is populated with data from the single object
+      expect(screen.getByLabelText('Address')).toHaveValue(mockSingleObjectData.Street1);
+      expect(screen.getByLabelText('City')).toHaveValue(mockSingleObjectData.City);
+      expect(screen.getByLabelText('Description')).toHaveValue(mockSingleObjectData.Description);
+      
+      // Should be in edit mode since data was found
+      expect(screen.getByRole('heading', { name: /edit your listing/i })).toBeInTheDocument();
+    });
+
+    // Verify the fix's logging - the component should log that it found data
+    expect(consoleLogSpy).toHaveBeenCalledWith(
+      expect.stringContaining('"dataLength": 1')
+    );
+
+    // The key part of our fix - verify it doesn't log "No listing data found"
+    expect(consoleLogSpy).not.toHaveBeenCalledWith(
+      expect.stringContaining('"message": "No listing data found"')
+    );
+
+    consoleLogSpy.mockRestore();
+  });
+
 
 
 });

@@ -15,16 +15,25 @@
     ================================================== -->
     <meta name="viewport" content="width=1024">
 
-    <!-- CSS
+    <!-- Resource Hints for Performance
     ================================================== -->
-    <link rel="stylesheet" href="/public/css/base-min.css">
-    <link rel="stylesheet" href="/public/css/fonts-min.css">
+    <link rel="preconnect" href="https://files.mitchelletzel.com">
+    <link rel="dns-prefetch" href="https://files.mitchelletzel.com">
+    
+    <!-- CSS with Performance Optimizations
+    ================================================== -->
+    <link rel="preload" href="/public/css/base-min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/public/css/base-min.css"></noscript>
+    <link rel="preload" href="/public/css/fonts-min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/public/css/fonts-min.css"></noscript>
     <link rel="stylesheet" href="/public/css/vendor-min.css">
     <link rel="stylesheet" href="/public/css/main-min.css">
 
-    <!-- script
+    <!-- script with performance optimization
     ================================================== -->
     <script src="https://files.mitchelletzel.com/public/js/modernizr.js"></script>
+    <!-- Preload critical JavaScript -->
+    <link rel="preload" href="/public/js/main.js" as="script">
 
     <!-- favicons
     ================================================== -->
