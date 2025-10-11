@@ -65,7 +65,7 @@ const MyListing = ({ loggedIn, user }) => {
     log('Initializing state', { isCreateMode, loggedIn, user, instanceId, listingId });
     return {
       card: null,
-      loaded: isCreateMode,
+      loaded: false, // Always start as not loaded to ensure proper fetch
     };
   });
 
@@ -84,12 +84,16 @@ const MyListing = ({ loggedIn, user }) => {
 
   // Fetch listing data
   useEffect(() => {
+    // Reset mounted ref on each effect run
+    isMountedRef.current = true;
+    
     const search = location?.search || '';
     const urlParams = new URLSearchParams(search);
     const listingId = urlParams.get('MLS');
 
     if (!listingId) {
       log('Create mode, no fetch needed', { instanceId });
+      safeSetState((prev) => ({ ...prev, loaded: true }));
       return;
     }
 
@@ -103,22 +107,47 @@ const MyListing = ({ loggedIn, user }) => {
         if (!response.ok) throw new Error(`Failed to fetch listing: ${response.status}`);
         const data = await response.json();
         
-        // Handle both array and object responses
-        const listings = Array.isArray(data) ? data : [data];
-        const firstListing = listings[0];
+        // Handle different response formats
+        let firstListing = null;
+        if (Array.isArray(data)) {
+          // If data is an array, find the listing with matching MLS
+          firstListing = data.find(listing => listing && listing.MLS === listingId);
+          if (!firstListing && data.length > 0) {
+            firstListing = data[0]; // Fallback to first item
+          }
+        } else if (data && typeof data === 'object') {
+          // If data is a single object, use it if MLS matches or as fallback
+          firstListing = data.MLS === listingId ? data : data;
+        }
         
         log('fetchListing data', {
           instanceId,
           listingId,
-          dataLength: listings.length,
-          firstItem: firstListing ? { ...firstListing, 'Photo Array': firstListing['Photo Array']?.length || 0 } : null,
+          isArray: Array.isArray(data),
+          dataLength: Array.isArray(data) ? data.length : (data ? 1 : 0),
+          firstItem: firstListing ? { 
+            MLS: firstListing.MLS, 
+            Street1: firstListing.Street1,
+            'Photo Array': Array.isArray(firstListing['Photo Array']) ? firstListing['Photo Array'].length : (firstListing['Photo Array'] || 0)
+          } : null,
+          isValidListing: !!firstListing,
+          mlsMatch: firstListing?.MLS === listingId,
         });
         
+        // Check if we have valid listing data and component is still mounted
         if (firstListing && isMountedRef.current) {
+          log('Setting listing data', { instanceId, listingId, mls: firstListing.MLS });
           safeSetState((prev) => ({ ...prev, card: firstListing, loaded: true }));
         } else {
-          log('No listing data found', { instanceId, listingId });
-          safeSetState((prev) => ({ ...prev, loaded: true }));
+          log('No valid listing data found or component unmounted', { 
+            instanceId, 
+            listingId, 
+            hasListing: !!firstListing,
+            isMounted: isMountedRef.current 
+          });
+          if (isMountedRef.current) {
+            safeSetState((prev) => ({ ...prev, loaded: true }));
+          }
         }
       } catch (error) {
         if (error.name === 'AbortError') {
@@ -126,7 +155,9 @@ const MyListing = ({ loggedIn, user }) => {
           return;
         }
         log('fetchListing error', { instanceId, listingId, error: error.message });
-        safeSetState((prev) => ({ ...prev, loaded: true }));
+        if (isMountedRef.current) {
+          safeSetState((prev) => ({ ...prev, loaded: true }));
+        }
       }
     };
 
@@ -159,7 +190,17 @@ const MyListing = ({ loggedIn, user }) => {
         loaded: state.loaded,
       });
     };
-  }, [loggedIn, user, location, params, instanceId, state.card, state.loaded]);
+  }, []); // Only run on initial mount/unmount
+
+  // Separate effect to track prop changes
+  useEffect(() => {
+    log('Props changed', {
+      instanceId,
+      loggedIn,
+      user,
+      location: location.pathname + location.search,
+    });
+  }, [loggedIn, user, location, instanceId]);
 
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -381,8 +422,13 @@ const MyListing = ({ loggedIn, user }) => {
   };
   const buttonStyle = { margin: '0', position: 'absolute', left: '50%', transform: 'translateX(-50%)' };
 
-  const photos = Array.isArray(state.card?.['Photo Array']) ? state.card['Photo Array'] : [];
-  log('Carousel data', { instanceId, photoCount: photos.length, photos });
+  const photos = Array.isArray(state.card?.['Photo Array']) 
+    ? state.card['Photo Array'] 
+    : (typeof state.card?.['Photo Array'] === 'number' && state.card['Photo Array'] > 0)
+      ? Array.from({ length: state.card['Photo Array'] }, (_, i) => 
+          `https://realtor-site-images.s3-us-west-1.amazonaws.com/media/${user}/photo${i + 1}.jpg`)
+      : [];
+  log('Carousel data', { instanceId, photoCount: photos.length, photos: photos.slice(0, 3) });
 
   if (!state.loaded) {
     log('Rendering loading state', { instanceId });

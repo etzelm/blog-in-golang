@@ -202,4 +202,115 @@ describe('Listing Component', () => {
     // Restore window.location
     window.location = originalLocation;
   });
+
+  // TEST FOR ERROR HANDLING BRANCHES
+  it('should handle fetch error when API request fails', async () => {
+    const mlsId = '1234567890';
+    
+    // Mock fetch to return an error response
+    fetchMock.mockRejectedValueOnce(new Error('Network error'));
+
+    // Mock window.location
+    const originalLocation = window.location;
+    delete window.location;
+    window.location = {
+      ...originalLocation,
+      search: `?MLS=${mlsId}`,
+    };
+
+    render(
+      <MemoryRouter initialEntries={[`/realtor/listing?MLS=${mlsId}`]}>
+        <Routes>
+          <Route path="/realtor/listing" element={<Listing />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    // Wait for fetch to be called and error to be handled
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(`/listing/${mlsId}`);
+    });
+
+    // Should still render basic structure despite error
+    expect(screen.getByText(/last updated/i)).toBeInTheDocument();
+
+    // Restore window.location
+    window.location = originalLocation;
+  });
+
+  it('should handle fetch response with non-ok status', async () => {
+    const mlsId = '1234567890';
+    
+    // Mock fetch to return non-ok response
+    fetchMock.mockResolvedValueOnce({
+      ok: false,
+      status: 404,
+      statusText: 'Not Found'
+    });
+
+    // Mock window.location
+    const originalLocation = window.location;
+    delete window.location;
+    window.location = {
+      ...originalLocation,
+      search: `?MLS=${mlsId}`,
+    };
+
+    render(
+      <MemoryRouter initialEntries={[`/realtor/listing?MLS=${mlsId}`]}>
+        <Routes>
+          <Route path="/realtor/listing" element={<Listing />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    // Wait for fetch to be called and error to be handled
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(`/listing/${mlsId}`);
+    });
+
+    // Should still render basic structure despite error
+    expect(screen.getByText(/last updated/i)).toBeInTheDocument();
+
+    // Restore window.location
+    window.location = originalLocation;
+  });
+
+  it('should handle API response with empty data array', async () => {
+    const mlsId = '1234567890';
+    
+    // Mock fetch to return empty array
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve([]) // Empty array
+    });
+
+    // Mock window.location
+    const originalLocation = window.location;
+    delete window.location;
+    window.location = {
+      ...originalLocation,
+      search: `?MLS=${mlsId}`,
+    };
+
+    render(
+      <MemoryRouter initialEntries={[`/realtor/listing?MLS=${mlsId}`]}>
+        <Routes>
+          <Route path="/realtor/listing" element={<Listing />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    // Wait for fetch to be called
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(`/listing/${mlsId}`);
+    });
+
+    // Should still render basic structure but no listing details
+    expect(screen.getByText(/last updated/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Price:/)).not.toBeInTheDocument();
+
+    // Restore window.location
+    window.location = originalLocation;
+  });
 });

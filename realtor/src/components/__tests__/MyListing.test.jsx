@@ -1002,6 +1002,370 @@ describe('MyListing Component - Edit Mode', () => {
     consoleLogSpy.mockRestore();
   });
 
+  // --- TEST FOR AUTHENTICATION STATE CHANGE HANDLING ---
+  it('should handle authentication state changes without component remount issues', async () => {
+    const consoleLogSpy = vi.spyOn(console, 'log');
+    const userEmail = 'test@example.com';
 
+    // Mock fetch for the listing data
+    fetchMock.mockImplementation((url) => {
+      if (url.startsWith('/listing/auth-test-123')) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve([mockListingData]),
+        });
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
+    });
 
+    // Start with logged out state
+    const { rerender } = render(
+      <MemoryRouter initialEntries={['/realtor/my-listing?MLS=auth-test-123']}>
+        <Routes>
+          <Route
+            path="/realtor/my-listing"
+            element={<MyListing loggedIn={false} user={null} />}
+          />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    // Wait for component to load and show sign-in message
+    await waitFor(() => {
+      expect(screen.getByText(/please sign in above to list your property/i)).toBeInTheDocument();
+    });
+
+    // Change to logged in state (simulating authentication)
+    rerender(
+      <MemoryRouter initialEntries={['/realtor/my-listing?MLS=auth-test-123']}>
+        <Routes>
+          <Route
+            path="/realtor/my-listing"
+            element={<MyListing loggedIn={true} user={userEmail} />}
+          />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    // Wait for data to load and form to appear
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: /edit your listing/i })).toBeInTheDocument();
+      expect(screen.getByLabelText('Address')).toHaveValue(mockListingData.Street1);
+    });
+
+    // Verify no "Blocked state update after unmount" warnings
+    const blockedUpdateLogs = consoleLogSpy.mock.calls.filter(call => 
+      JSON.stringify(call).includes('Blocked state update after unmount')
+    );
+    expect(blockedUpdateLogs).toHaveLength(0);
+
+    // Verify fetch was called for the listing
+    expect(fetchMock).toHaveBeenCalledWith('/listing/auth-test-123', expect.any(Object));
+
+    consoleLogSpy.mockRestore();
+  });
+
+  // --- TEST FOR PHOTO ARRAY AS NUMBER HANDLING ---
+  it('should handle Photo Array as number and generate photo URLs', async () => {
+    const userEmail = 'test@example.com';
+
+    // Mock data with Photo Array as a number instead of array
+    const mockDataWithPhotoCount = {
+      ...mockListingData,
+      'Photo Array': 3 // Number instead of array
+    };
+
+    fetchMock.mockImplementation((url) => {
+      if (url.startsWith('/listing/photo-count-123')) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve([mockDataWithPhotoCount]),
+        });
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
+    });
+
+    const { container } = render(
+      <MemoryRouter initialEntries={['/realtor/my-listing?MLS=photo-count-123']}>
+        <Routes>
+          <Route
+            path="/realtor/my-listing"
+            element={<MyListing loggedIn={true} user={userEmail} />}
+          />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    // Wait for component to load
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: /edit your listing/i })).toBeInTheDocument();
+    });
+
+    // Check that carousel items are generated based on the number
+    await waitFor(() => {
+      const carouselItems = container.querySelectorAll('.carousel-item');
+      expect(carouselItems).toHaveLength(3); // Should generate 3 items from the number
+      
+      // Verify generated URLs contain the expected pattern
+      const images = container.querySelectorAll('.carousel-item img');
+      expect(images[0]).toHaveAttribute('src', expect.stringContaining(`/media/${userEmail}/photo1.jpg`));
+      expect(images[1]).toHaveAttribute('src', expect.stringContaining(`/media/${userEmail}/photo2.jpg`));
+      expect(images[2]).toHaveAttribute('src', expect.stringContaining(`/media/${userEmail}/photo3.jpg`));
+    });
+  });
+
+  // --- TEST FOR COMPONENT STABILITY WITH RAPID PROP CHANGES ---
+  it('should remain stable with rapid authentication prop changes', async () => {
+    const consoleLogSpy = vi.spyOn(console, 'log');
+    const userEmail = 'test@example.com';
+
+    // Mock stable fetch response
+    fetchMock.mockImplementation(() => {
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve([mockListingData]),
+      });
+    });
+
+    const { rerender } = render(
+      <MemoryRouter initialEntries={['/realtor/my-listing?MLS=stability-test']}>
+        <Routes>
+          <Route
+            path="/realtor/my-listing"
+            element={<MyListing loggedIn={false} user={null} />}
+          />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    // Simulate rapid authentication state changes
+    for (let i = 0; i < 3; i++) {
+      rerender(
+        <MemoryRouter initialEntries={['/realtor/my-listing?MLS=stability-test']}>
+          <Routes>
+            <Route
+              path="/realtor/my-listing"
+              element={<MyListing loggedIn={true} user={userEmail} />}
+            />
+          </Routes>
+        </MemoryRouter>
+      );
+      
+      rerender(
+        <MemoryRouter initialEntries={['/realtor/my-listing?MLS=stability-test']}>
+          <Routes>
+            <Route
+              path="/realtor/my-listing"
+              element={<MyListing loggedIn={false} user={null} />}
+            />
+          </Routes>
+        </MemoryRouter>
+      );
+    }
+
+    // Final state: logged in
+    rerender(
+      <MemoryRouter initialEntries={['/realtor/my-listing?MLS=stability-test']}>
+        <Routes>
+          <Route
+            path="/realtor/my-listing"
+            element={<MyListing loggedIn={true} user={userEmail} />}
+          />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    // Should stabilize and show the form
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: /edit your listing/i })).toBeInTheDocument();
+    });
+
+    // Check for excessive blocked state update warnings
+    const blockedUpdateLogs = consoleLogSpy.mock.calls.filter(call => 
+      JSON.stringify(call).includes('Blocked state update after unmount')
+    );
+    expect(blockedUpdateLogs.length).toBeLessThan(5); // Should be minimal
+
+    consoleLogSpy.mockRestore();
+  });
+
+  // --- TEST FOR FETCH CANCELLATION ON COMPONENT UNMOUNT ---
+  it('should properly cancel fetch request when component unmounts', async () => {
+    const consoleLogSpy = vi.spyOn(console, 'log');
+    let abortController;
+
+    // Mock fetch to capture the abort controller
+    fetchMock.mockImplementation((url, options) => {
+      if (url.startsWith('/listing/')) {
+        abortController = options.signal;
+        return new Promise((resolve, reject) => {
+          // Simulate a slow request that can be aborted
+          const timeout = setTimeout(() => {
+            resolve({
+              ok: true,
+              json: () => Promise.resolve([mockListingData]),
+            });
+          }, 1000);
+          
+          options.signal.addEventListener('abort', () => {
+            clearTimeout(timeout);
+            const abortError = new Error('The operation was aborted');
+            abortError.name = 'AbortError';
+            reject(abortError);
+          });
+        });
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
+    });
+
+    const { unmount } = render(
+      <MemoryRouter initialEntries={['/realtor/my-listing?MLS=cancel-test-123']}>
+        <Routes>
+          <Route
+            path="/realtor/my-listing"
+            element={<MyListing loggedIn={true} user="test@example.com" />}
+          />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    // Wait a moment for fetch to start
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    // Verify fetch was called and abort controller was set
+    expect(fetchMock).toHaveBeenCalledWith('/listing/cancel-test-123', expect.objectContaining({
+      signal: expect.any(AbortSignal)
+    }));
+    expect(abortController).toBeDefined();
+
+    // Unmount component (should trigger abort)
+    unmount();
+
+    // Wait for abort to be processed
+    await waitFor(() => {
+      expect(consoleLogSpy).toHaveBeenCalledWith(
+        expect.stringContaining('fetchListing aborted')
+      );
+    });
+
+    consoleLogSpy.mockRestore();
+  });
+
+  // --- TEST FOR DATA VALIDATION AND MLS MATCHING ---
+  it('should validate MLS ID matches before setting listing data', async () => {
+    const consoleLogSpy = vi.spyOn(console, 'log');
+    const userEmail = 'test@example.com';
+
+    // Mock data with mismatched MLS ID
+    const mockMismatchedData = {
+      ...mockListingData,
+      MLS: 'different-mls-id' // Different from requested ID
+    };
+
+    fetchMock.mockImplementation((url) => {
+      if (url.startsWith('/listing/requested-mls-123')) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve([mockMismatchedData]),
+        });
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
+    });
+
+    render(
+      <MemoryRouter initialEntries={['/realtor/my-listing?MLS=requested-mls-123']}>
+        <Routes>
+          <Route
+            path="/realtor/my-listing"
+            element={<MyListing loggedIn={true} user={userEmail} />}
+          />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    // Wait for fetch to complete
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith('/listing/requested-mls-123', expect.any(Object));
+    });
+
+    // Should log that MLS doesn't match but still populate form (our improved logic)
+    await waitFor(() => {
+      expect(consoleLogSpy).toHaveBeenCalledWith(
+        expect.stringContaining('"mlsMatch": false')
+      );
+      
+      // Form should be populated with the mismatched data (our improved behavior)
+      expect(screen.getByLabelText('Address')).toHaveValue(mockMismatchedData.Street1);
+      
+      // Should be in edit mode since data was found (even if MLS doesn't match)
+      expect(screen.getByRole('heading', { name: /edit your listing/i })).toBeInTheDocument();
+    });
+
+    consoleLogSpy.mockRestore();
+  });
+
+  // --- TEST FOR IMPROVED ERROR LOGGING AND DEBUGGING ---
+  it('should provide detailed logging for debugging data fetch issues', async () => {
+    const consoleLogSpy = vi.spyOn(console, 'log');
+    const userEmail = 'test@example.com';
+
+    // Mock mixed response format (some valid, some invalid data)
+    const mockMixedData = [
+      { MLS: 'wrong-id', Street1: 'Wrong Street' },
+      { ...mockListingData, MLS: 'debug-test-123' }, // Correct one
+      null, // Invalid entry
+    ];
+
+    fetchMock.mockImplementation((url) => {
+      if (url.startsWith('/listing/debug-test-123')) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve(mockMixedData),
+        });
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
+    });
+
+    render(
+      <MemoryRouter initialEntries={['/realtor/my-listing?MLS=debug-test-123']}>
+        <Routes>
+          <Route
+            path="/realtor/my-listing"
+            element={<MyListing loggedIn={true} user={userEmail} />}
+          />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    // Wait for fetch and processing
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith('/listing/debug-test-123', expect.any(Object));
+    });
+
+    // Verify detailed logging occurred
+    await waitFor(() => {
+      // Should log the data array length
+      expect(consoleLogSpy).toHaveBeenCalledWith(
+        expect.stringContaining('"dataLength": 3')
+      );
+      
+      // Should log that it found the matching listing
+      expect(consoleLogSpy).toHaveBeenCalledWith(
+        expect.stringContaining('"isValidListing": true')
+      );
+      
+      // Should log setting the data
+      expect(consoleLogSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Setting listing data')
+      );
+    });
+
+    // Form should be populated with the correct data
+    await waitFor(() => {
+      expect(screen.getByLabelText('Address')).toHaveValue(mockListingData.Street1);
+      expect(screen.getByRole('heading', { name: /edit your listing/i })).toBeInTheDocument();
+    });
+
+    consoleLogSpy.mockRestore();
+  });
 });

@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Routes, Route } from 'react-router';
+import { Routes, Route, useLocation } from 'react-router';
 import Home from './Home';
 import Listing from './Listing';
 import Search from './Search';
@@ -15,7 +15,16 @@ const log = (message, data = {}) => {
 };
 
 const Main = memo(({ loggedIn, user }) => {
+  const location = useLocation();
   log('Main rendered', { loggedIn, user });
+  
+  // Create a stable key for MyListing to prevent unnecessary re-mounts
+  const getMyListingKey = () => {
+    const urlParams = new URLSearchParams(location.search);
+    const mlsId = urlParams.get('MLS') || 'new';
+    return `${user || 'anonymous'}-${mlsId}`;
+  };
+  
   return (
     <main>
       <Routes>
@@ -29,7 +38,7 @@ const Main = memo(({ loggedIn, user }) => {
         />
         <Route 
           path='/realtor/new' 
-          element={<MyListing loggedIn={loggedIn} user={user} />}
+          element={<MyListing key={getMyListingKey()} loggedIn={loggedIn} user={user} />}
         />
         <Route 
           path='/realtor/listing' 
@@ -41,7 +50,7 @@ const Main = memo(({ loggedIn, user }) => {
         />
         <Route 
           path='/realtor/my-listing' 
-          element={<MyListing loggedIn={loggedIn} user={user} />}
+          element={<MyListing key={getMyListingKey()} loggedIn={loggedIn} user={user} />}
         />
       </Routes>
     </main>
