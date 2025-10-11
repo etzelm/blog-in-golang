@@ -102,14 +102,20 @@ const MyListing = ({ loggedIn, user }) => {
         log('fetchListing response', { instanceId, listingId, status: response.status, ok: response.ok });
         if (!response.ok) throw new Error(`Failed to fetch listing: ${response.status}`);
         const data = await response.json();
+        
+        // Handle both array and object responses
+        const listings = Array.isArray(data) ? data : [data];
+        const firstListing = listings[0];
+        
         log('fetchListing data', {
           instanceId,
           listingId,
-          dataLength: data.length,
-          firstItem: data[0] ? { ...data[0], 'Photo Array': data[0]['Photo Array']?.length || 0 } : null,
+          dataLength: listings.length,
+          firstItem: firstListing ? { ...firstListing, 'Photo Array': firstListing['Photo Array']?.length || 0 } : null,
         });
-        if (data.length > 0 && isMountedRef.current) {
-          safeSetState((prev) => ({ ...prev, card: data[0], loaded: true }));
+        
+        if (firstListing && isMountedRef.current) {
+          safeSetState((prev) => ({ ...prev, card: firstListing, loaded: true }));
         } else {
           log('No listing data found', { instanceId, listingId });
           safeSetState((prev) => ({ ...prev, loaded: true }));
