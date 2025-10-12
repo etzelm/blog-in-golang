@@ -289,6 +289,39 @@ func TestCategoryPage_ErrorOnNoPanels(t *testing.T) {
 	}
 }
 
+// TestCategoryPage_MissingCategoryParam covers the else branch where c.Param("category") is empty
+// This increases coverage for the CategoryPage handler by exercising the explicit empty parameter path.
+func TestCategoryPage_MissingCategoryParam(t *testing.T) {
+	silenceLogrus(t)
+	dummyTemplates := map[string]string{
+		"index.html": "<html><head><title>{{.title}}</title></head><body>Category: {{.category}}</body></html>",
+		"error.html": "<html><head><title>{{.title}}</title></head><body>Error Details: {{.error}}</body></html>",
+	}
+	router, recorder, _ := setupTestRouterWithHTMLTemplates(t, dummyTemplates)
+
+	// Mount the handler on a route without the :category param so c.Param("category") returns ""
+	router.GET("/category", CategoryPage)
+
+	req, err := http.NewRequest(http.MethodGet, "/category", nil)
+	if err != nil {
+		t.Fatalf("Couldn't create request: %v", err)
+	}
+
+	router.ServeHTTP(recorder, req)
+
+	if recorder.Code != http.StatusNotFound {
+		t.Errorf("Expected status %d for missing category param; got %d. Body: %s", http.StatusNotFound, recorder.Code, recorder.Body.String())
+	}
+
+	if !strings.Contains(recorder.Body.String(), "Error Details: Please provide a valid category") {
+		t.Errorf("Expected error message for missing category param, got: %s", recorder.Body.String())
+	}
+
+	if !strings.Contains(recorder.Body.String(), "<title>404 (Not Found)</title>") {
+		t.Errorf("Expected 404 title for missing category param, got: %s", recorder.Body.String())
+	}
+}
+
 func TestCategoryPage_RealPanels(t *testing.T) {
 	silenceLogrus(t)
 	os.Setenv("ARTICLES", "Test-Articles")

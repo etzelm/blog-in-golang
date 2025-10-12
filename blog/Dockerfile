@@ -53,7 +53,6 @@ COPY realtor/ ./
 RUN sed -i "s/ThisIsSupposedToBeAnId/$GAPI/g" src/App.jsx
 
 # Save the coverage report for later extraction
-RUN cp coverage/lcov-report/index.html coverage-report.html || echo "Coverage HTML not found"
 RUN yarn test --coverage --reporter=verbose --silent > test-results.txt 2>&1
 RUN cat test-results.txt
 
