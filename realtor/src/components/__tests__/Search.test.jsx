@@ -496,4 +496,71 @@ describe('Search.jsx', () => {
     // Verify no results message appears
     expect(screen.getByText('No listings match your criteria.')).toBeInTheDocument();
   });
+
+  it('should handle listings with null/missing numeric field values during filtering', async () => {
+    // Mock listings with missing/null numeric values
+    const mockListingsWithNulls = [
+      {
+        MLS: 'test-1',
+        Street1: '123 Test St',
+        Street2: '*',
+        City: 'portland',
+        State: 'OR',
+        'Zip Code': '97201',
+        Neighborhood: 'Test Hood',
+        'Sales Price': '500000',
+        Bedrooms: null, // Missing/null value
+        Bathrooms: '', // Empty value 
+        'Square Feet': undefined, // Undefined value
+        'Lot Size': '5000',
+        'Garage Size': '2 car',
+        Description: 'Test listing',
+        'Date Listed': '1589161257428',
+        'Last Modified': '1589161257428',
+        'List Photo': 'https://example.com/photo.jpg',
+        'Photo Array': ['https://example.com/photo1.jpg'],
+        User: 'test@example.com',
+        deleted: 'false',
+      }
+    ];
+
+    fetchMock.mockResolvedValueOnce({
+      json: () => Promise.resolve(mockListingsWithNulls),
+      ok: true,
+    });
+
+    render(
+      <MemoryRouter initialEntries={['/realtor/search']}>
+        <Search />
+      </MemoryRouter>
+    );
+
+    // Wait for initial data to load
+    await waitFor(() => {
+      expect(screen.getByTestId('tile-test-1')).toBeInTheDocument();
+    });
+
+    // Find numeric field inputs and submit button
+    const bedroomsInput = screen.getByLabelText('Bedrooms');
+    const bathroomsInput = screen.getByLabelText('Bathrooms');
+    const squareFeetInput = screen.getByLabelText('Square Feet');
+    const submitButton = screen.getByRole('button', { name: /submit/i });
+
+    // Enter criteria for numeric fields
+    fireEvent.change(bedroomsInput, { target: { value: '3' } }); // Won't match null
+    fireEvent.change(bathroomsInput, { target: { value: '2' } }); // Won't match empty string
+    fireEvent.change(squareFeetInput, { target: { value: '1500' } }); // Won't match undefined
+
+    // Submit the form
+    fireEvent.click(submitButton);
+
+    // Wait for filtering to complete
+    await waitFor(() => {
+      // Verify no results message appears (all filters failed due to null/empty/undefined values)
+      expect(screen.getByText('No listings match your criteria.')).toBeInTheDocument();
+    });
+
+    // This test covers the branch where cardValue is falsy for numeric fields (line ~89 in Search.jsx)
+    // The cardValue ? Number(cardValue) : null branch is exercised for null, empty, and undefined values
+  });
 });

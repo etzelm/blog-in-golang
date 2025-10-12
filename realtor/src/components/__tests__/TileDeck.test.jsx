@@ -91,4 +91,40 @@ describe('TileDeck Component', () => {
     // The valid date should be sorted first, invalid dates should be at the end
     // This tests both the isNaN(dateA.getTime()) and isNaN(dateB.getTime()) branches
   });
+
+  it('should render empty div when cards is null', () => {
+    render(
+      <BrowserRouter>
+        <TileDeck cards={null} user="test@example.com" />
+      </BrowserRouter>
+    );
+
+    const tileDeck = screen.getByTestId('tile-deck');
+    expect(tileDeck).toBeInTheDocument();
+    expect(tileDeck).toBeEmptyDOMElement();
+  });
+
+  it('should render empty div when cards is undefined', () => {
+    render(
+      <BrowserRouter>
+        <TileDeck cards={undefined} user="test@example.com" />
+      </BrowserRouter>
+    );
+
+    const tileDeck = screen.getByTestId('tile-deck');
+    expect(tileDeck).toBeInTheDocument();
+    expect(tileDeck).toBeEmptyDOMElement();
+  });
+
+  it('should render empty div when cards is not an array', () => {
+    render(
+      <BrowserRouter>
+        <TileDeck cards="not an array" user="test@example.com" />
+      </BrowserRouter>
+    );
+
+    const tileDeck = screen.getByTestId('tile-deck');
+    expect(tileDeck).toBeInTheDocument();
+    expect(tileDeck).toBeEmptyDOMElement();
+  });
 });
