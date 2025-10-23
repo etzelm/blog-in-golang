@@ -8,7 +8,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/credentials v1.18.17
 	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.20.16
 	github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression v1.8.16
-	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.52.0
+	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.52.1
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.88.5
 	github.com/caddyserver/certmagic v0.25.0
 	github.com/gin-contrib/cache v1.4.1
