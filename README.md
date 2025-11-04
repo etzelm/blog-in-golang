@@ -26,7 +26,7 @@ A modern full-stack web application featuring a blog platform and realtor listin
 │   Frontend(User)  │    │    Go Backend     │    │   AWS Services  │
 │                   │    │   (NAS/GCP VMs)   │    │                 │
 │ ┌───────────────┐ │    │ ┌───────────────┐ │    │ ┌─────────────┐ │
-│ │   CloudFront  │ │    │ │               │ │    │ │ DynamoDB    │ │
+│ │   CloudFront  │ │    │ │               │ │    │ │  DynamoDB   │ │
 │ │     (CDN)     │◄┼────┼►│  Gin Server   │◄┼────┼►│ • Articles  │ │
 │ └───────────────┘ │    │ │               │ │    │ │ • Listings  │ │
 │                   │    │ │ • Blog API    │ │    │ │ • Sessions  │ │
