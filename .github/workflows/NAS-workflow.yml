@@ -27,22 +27,45 @@ jobs:
         run: |
           set -e
           set -o pipefail
+          
+          # Retry function
+          retry() {
+            local max_attempts=$1
+            local delay=$2
+            local cmd="${@:3}"
+            for i in $(seq 1 $max_attempts); do
+              echo "Attempt $i: $cmd"
+              if eval "$cmd"; then
+                echo "✓ Success on attempt $i"
+                return 0
+              fi
+              if [ $i -lt $max_attempts ]; then
+                echo "✗ Failed, retrying in ${delay}s..."
+                sleep $delay
+              fi
+            done
+            echo "✗ Failed after $max_attempts attempts"
+            return 1
+          }
+          
           echo STARTING BUILD
           BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
           echo "BRANCH: $BRANCH"
+          
           pushd realtor
           echo "React Build Starting"
-          yarn install || (echo "Retrying yarn install after 5s..." && sleep 5 && yarn install)
-          yarn test --coverage
-          yarn build
+          retry 3 5 "yarn install"
+          retry 2 5 "yarn test --coverage"
+          retry 2 5 "yarn build"
           echo "React Build Finished"
           popd
+          
           pushd blog
           echo "Golang Build Starting"
-          go mod download
-          go test -v -coverprofile=coverage.out ./...
+          retry 3 5 "go mod download"
+          retry 2 5 "go test -v -coverprofile=coverage.out ./..."
           go tool cover -func=coverage.out
-          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o blog-in-golang .
+          retry 2 5 "CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o blog-in-golang ."
           echo "Golang Build Finished"
           popd
 
