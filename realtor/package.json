@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@react-oauth/google": "^0.12.2",
+    "@react-oauth/google": "^0.13.0",
     "@types/react": "^19.2.7",
     "prop-types": "^15.8.1",
     "react": "^19.2.3",
