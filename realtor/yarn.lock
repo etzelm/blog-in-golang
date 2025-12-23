@@ -446,10 +446,10 @@
   dependencies:
     "@swc/helpers" "^0.5.0"
 
-"@react-oauth/google@^0.13.0":
-  version "0.13.0"
-  resolved "https://registry.yarnpkg.com/@react-oauth/google/-/google-0.13.0.tgz#c24dbf8222f495280d10343c1d24ae7c3e439e30"
-  integrity sha512-ukoKALR0VX9TmEGVHTDcRiCtJuNp+Zm8zxR+hm5KN+yON/lGHVzFlUIW1go0L8qHQZobbVZbDv40Eg+MVrWtnQ==
+"@react-oauth/google@^0.13.4":
+  version "0.13.4"
+  resolved "https://registry.yarnpkg.com/@react-oauth/google/-/google-0.13.4.tgz#c462a651880162d43fd899ef91526a515ef60a78"
+  integrity sha512-hGKyNEH+/PK8M0sFEuo3MAEk0txtHpgs94tDQit+s2LXg7b6z53NtzHfqDvoB2X8O6lGB+FRg80hY//X6hfD+w==
 
 "@restart/hooks@^0.4.9":
   version "0.4.16"
