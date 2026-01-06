@@ -10,7 +10,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression v1.8.29
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.53.5
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.95.0
-	github.com/caddyserver/certmagic v0.25.0
+	github.com/caddyserver/certmagic v0.25.1
 	github.com/gin-contrib/cache v1.4.1
 	github.com/gin-contrib/static v1.1.5
 	github.com/gin-gonic/gin v1.11.0
@@ -52,7 +52,7 @@ require (
 	github.com/bradfitz/gomemcache v0.0.0-20250403215159-8d39553ac7cf // indirect
 	github.com/bytedance/sonic v1.14.2 // indirect
 	github.com/bytedance/sonic/loader v0.4.0 // indirect
-	github.com/caddyserver/zerossl v0.1.3 // indirect
+	github.com/caddyserver/zerossl v0.1.4 // indirect
 	github.com/cloudwego/base64x v0.1.6 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.11 // indirect
 	github.com/gin-contrib/gzip v1.2.5
@@ -68,7 +68,7 @@ require (
 	github.com/libdns/libdns v1.1.1 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/memcachier/mc/v3 v3.0.3 // indirect
-	github.com/miekg/dns v1.1.68 // indirect
+	github.com/miekg/dns v1.1.69 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
@@ -80,7 +80,7 @@ require (
 	go.uber.org/zap v1.27.1
 	golang.org/x/arch v0.23.0 // indirect
 	golang.org/x/mod v0.30.0 // indirect
-	golang.org/x/net v0.47.0 // indirect
+	golang.org/x/net v0.48.0 // indirect
 	golang.org/x/sync v0.19.0 // indirect
 	golang.org/x/sys v0.39.0 // indirect
 	golang.org/x/text v0.32.0 // indirect
