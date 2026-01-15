@@ -14,7 +14,7 @@ require (
 	github.com/gin-contrib/cache v1.4.1
 	github.com/gin-contrib/static v1.1.5
 	github.com/gin-gonic/gin v1.11.0
-	github.com/sirupsen/logrus v1.9.3
+	github.com/sirupsen/logrus v1.9.4
 	github.com/stretchr/testify v1.11.1
 	golang.org/x/crypto v0.47.0
 )
