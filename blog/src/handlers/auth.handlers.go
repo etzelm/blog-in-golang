@@ -142,8 +142,11 @@ func AuthResponse(c *gin.Context) {
 
 	if CheckPasswordHash(form.Password, authForm.Password) {
 		cipher, _ := HashPassword(form.Email)
-		c.SetCookie("user", form.Email, 60*60*24, "/", "mitchelletzel.com", false, false)
-		c.SetCookie("userToken", cipher, 60*60*24, "/", "mitchelletzel.com", false, false)
+		// Secure: HTTPS-only (prod and Traefik-fronted dev are both HTTPS).
+		// HttpOnly: blocks JS access; /secure reads these server-side via
+		// c.Cookie(), unaffected. Fixes CodeQL alerts #27-30.
+		c.SetCookie("user", form.Email, 60*60*24, "/", "mitchelletzel.com", true, true)
+		c.SetCookie("userToken", cipher, 60*60*24, "/", "mitchelletzel.com", true, true)
 	} else {
 		c.HTML(
 			// Set the HTTP status to 400 (Bad Request)
