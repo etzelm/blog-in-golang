@@ -169,6 +169,10 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      # Studio host the deploy job dials for the post-deploy smoke-test
+      # (`Test` step expands $STUDIO_ADDR via eval against local-urls.txt).
+      # Sourced from a repo secret to keep the LAN IP out of the public repo.
+      STUDIO_ADDR: ${{ secrets.STUDIO_ADDR }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
