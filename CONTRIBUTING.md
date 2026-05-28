@@ -18,8 +18,8 @@ Thank you for your interest in contributing! This document provides guidelines f
 
 Ensure you have the following installed:
 
-- Go 1.24.6+
-- Node.js 18+ and Yarn
+- Go 1.26.3+
+- Node.js 26+ and Yarn
 - Docker and Docker Compose
 - Git
 

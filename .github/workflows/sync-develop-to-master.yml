@@ -7,7 +7,7 @@ on:
 jobs:
   sync-develop-to-master:
     name: Sync develop to master
-    runs-on: [self-hosted, Linux, X64, nas]
+    runs-on: [self-hosted, Linux, ARM64, studio]
     if: github.repository == 'etzelm/blog-in-golang' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
     permissions:
       contents: write 

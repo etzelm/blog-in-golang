@@ -1,6 +1,6 @@
 # blog-in-golang
 
-![Go](https://img.shields.io/badge/Go-1.24.6+-00ADD8.svg?style=flat&logo=go)
+![Go](https://img.shields.io/badge/Go-1.26.3+-00ADD8.svg?style=flat&logo=go)
 ![React](https://img.shields.io/badge/React-19.2+-61DAFB.svg?style=flat&logo=react)
 ![Vite](https://img.shields.io/badge/Vite-7.1+-646CFF.svg?style=flat&logo=vite)
 ![Testing](https://img.shields.io/badge/Testing-Vitest-green.svg?style=flat&logo=vitest)
@@ -51,7 +51,7 @@ A modern full-stack web application featuring a blog platform and realtor listin
 
 ## Quick Start
 
-**Prerequisites:** Go 1.24.6+, Node.js 18+, Docker, AWS Account
+**Prerequisites:** Go 1.26.3+, Node.js 26+, Docker, AWS Account
 
 ### Local Development
 
@@ -197,7 +197,7 @@ docker compose -f blog/docker-compose.yml run --rm blog-test
 docker run --rm -v $(pwd)/blog:/app -w /app \
   -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
   -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}" \
-  golang:1.24.6-alpine3.22 go test -run TestSpecificFunction -v ./src/handlers/
+  golang:1.26.3-alpine3.22 go test -run TestSpecificFunction -v ./src/handlers/
 ```
 
 ### Current Test Coverage

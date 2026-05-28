@@ -1,5 +1,7 @@
 # Stage 1: Go Builder
-FROM golang:1.24.6-alpine3.22 AS golang-builder
+# Pin the builder to the native build platform and cross-compile to the target
+# arch (see the build RUN below) — fast, vs. emulating the whole toolchain.
+FROM --platform=$BUILDPLATFORM golang:1.26.3-alpine3.22 AS golang-builder
 
 # Update package index and upgrade all packages to latest versions
 RUN apk update && apk upgrade
@@ -17,21 +19,35 @@ RUN go mod download
 # Copy the rest of the Go source code
 COPY blog/ .
 
-# Test the Go application
-# Declare ARGs for AWS creds
-ARG AWS_ACCESS_KEY_ID
-ARG AWS_SECRET_ACCESS_KEY
-# Set environment variables and run tests in the same RUN command
-RUN export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID && \
-    export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY && \
+# Test the Go application. The tests hit DynamoDB, so they need AWS creds —
+# but those creds must not persist in the image's layer history. Mount them as
+# BuildKit secrets (only visible during this single RUN, never written into a
+# layer). Replaces the prior ARG/ENV approach, which fired the docker buildx
+# `SecretsUsedInArgOrEnv` warnings on every CI build.
+# CLI side (studio-workflow.yml):
+#   --secret id=aws_access_key_id,env=AWS_ACCESS_KEY_ID
+#   --secret id=aws_secret_access_key,env=AWS_SECRET_ACCESS_KEY
+RUN --mount=type=secret,id=aws_access_key_id,env=AWS_ACCESS_KEY_ID,required=true \
+    --mount=type=secret,id=aws_secret_access_key,env=AWS_SECRET_ACCESS_KEY,required=true \
     go test -v -coverprofile=coverage.out ./...
 RUN go tool cover -func=coverage.out
 
-# Build the Go application
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o blog-in-golang .
+# Build the Go application for the target platform. BuildKit populates
+# TARGETOS/TARGETARCH automatically: linux/arm64 on the Studio's native build,
+# linux/amd64 under `docker buildx build --platform linux/amd64` for the GCP
+# tarball. CGO is disabled so this is a pure cross-compile.
+ARG TARGETOS
+ARG TARGETARCH
+RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH:-amd64} go build -a -installsuffix cgo -o blog-in-golang .
 
 # Stage 2: React Builder
-FROM node:20-alpine AS react-builder
+# JS build is arch-independent; keep it on the native platform for speed.
+FROM --platform=$BUILDPLATFORM node:26-alpine AS react-builder
+
+# node:N-alpine dropped the pre-bundled yarn around v22+; install yarn 1.x
+# explicitly (matches the yarn 1.x lockfile format) so the existing yarn-based
+# build commands still work without migrating to corepack/yarn 4.
+RUN npm install -g corepack@latest && corepack enable
 
 # Declare ARG for Google API Key
 ARG GAPI
@@ -40,10 +56,10 @@ ARG GAPI
 WORKDIR /app/realtor
 
 # Copy package.json and yarn.lock to leverage Docker cache
-COPY realtor/package.json realtor/yarn.lock ./
+COPY realtor/package.json realtor/yarn.lock realtor/.yarnrc.yml ./
 
 # Install dependencies using yarn
-RUN yarn install --frozen-lockfile
+RUN yarn install --immutable
 
 # Copy the rest of the React app source code
 COPY realtor/ ./

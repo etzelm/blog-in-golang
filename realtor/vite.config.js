@@ -16,6 +16,24 @@ export default defineConfig(({ mode }) => {
             importPrefixPlugin(),
             htmlPlugin(mode),
         ],
+        // Strip console.* and debugger statements from the production bundle.
+        // The realtor SPA had verbose render telemetry leaking to the browser
+        // console — per-render dumps of {loggedIn, user, authLoading}, raw vs
+        // filtered listing array counts, and per-image "loaded successfully"
+        // lines. Vite 8's default `esbuild` minifier doesn't honor `drop` at
+        // the minify step, so we switch to terser for production builds and
+        // use compress.drop_console / drop_debugger. Dev (`yarn dev`) is
+        // unaffected — minify only runs on build.
+        // Keeping console.error + console.warn (pure_funcs allow-list).
+        build: {
+            minify: "terser",
+            terserOptions: {
+                compress: {
+                    drop_console: ["log", "debug", "info", "trace"],
+                    drop_debugger: true,
+                },
+            },
+        },
     };
 });
 function setEnv(mode) {

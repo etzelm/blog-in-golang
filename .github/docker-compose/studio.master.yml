@@ -1,0 +1,48 @@
+# Production blog container — runs on the Mac Studio (arm64).
+#
+# Image is pulled from the NAS push registry (nas.home.arpa:5001), built and
+# pushed by the master path of `build-push` in studio-workflow.yml. The
+# `deploy` job's master branch runs `docker compose -p blog-master ... pull &&
+# up -d --force-recreate` against the Studio daemon over the runner's mounted
+# socket — no SSH.
+#
+# Secrets are interpolated from the workflow env (GitHub Actions secrets) at
+# `up` time — never hardcoded here (public repo).
+#
+# Traefik on the NAS fronts this at blog.traefik.mitchelletzel.com and dials
+# the Studio by LAN IP + published port (http://192.168.1.151:84) — same
+# cross-host pattern as blog-dev. The container serves plain HTTP on :8080
+# internally; Traefik terminates TLS. DEPLOYMENT is deliberately UNSET so
+# the binary's `else` branch runs `httpServer.Run()` instead of certmagic
+# (which would clash with Traefik for cert ownership).
+#
+# Companion GCP container has its own compose (gcp.master.yml) and gets the
+# amd64 image loaded from a tarball, not from the registry.
+services:
+  blog-in-golang-master:
+    image: nas.home.arpa:5001/blog:latest
+    container_name: blog-in-golang-master
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    ports:
+      - "84:8080/tcp"
+    volumes:
+      - '/Users/mitchelletzel/blog-master-docker/config:/config'
+    environment:
+      AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
+      AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
+      ARTICLES: "Live-Articles"
+      # Bearer token required on GET /metrics. Mirror the same value in the
+      # Studio's Prometheus scrape_config.authorization.credentials. Empty
+      # means /metrics is open — fine for LAN-only access, not for prod.
+      METRICS_TOKEN: "${METRICS_TOKEN}"
+    # Docker healthcheck — hits /healthz (cheap, no DynamoDB/S3 calls). See
+    # the matching note in studio.develop.yml; same alpine:3.22 base, same
+    # busybox `wget` constraints.
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--tries=1", "-O", "/dev/null", "http://localhost:8080/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s

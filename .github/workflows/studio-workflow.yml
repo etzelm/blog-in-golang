@@ -1,0 +1,455 @@
+name: blog-in-golang-studio
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - 'develop'
+      - 'master'
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+
+  studio-build:
+    if: github.ref != 'refs/heads/master' && github.ref != 'refs/heads/develop'
+    runs-on: [self-hosted, Linux, ARM64, studio]
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Build
+        shell: bash
+        run: |
+          set -e
+          set -o pipefail
+
+          # Retry function
+          retry() {
+            local max_attempts=$1
+            local delay=$2
+            local cmd="${@:3}"
+            for i in $(seq 1 $max_attempts); do
+              echo "Attempt $i: $cmd"
+              if eval "$cmd"; then
+                echo "✓ Success on attempt $i"
+                return 0
+              fi
+              if [ $i -lt $max_attempts ]; then
+                echo "✗ Failed, retrying in ${delay}s..."
+                sleep $delay
+              fi
+            done
+            echo "✗ Failed after $max_attempts attempts"
+            return 1
+          }
+
+          echo STARTING BUILD
+          BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+          echo "BRANCH: $BRANCH"
+
+          pushd realtor
+          echo "React Build Starting"
+          retry 3 5 "yarn install"
+          retry 2 5 "yarn test --coverage"
+          retry 2 5 "yarn build"
+          echo "React Build Finished"
+          popd
+
+          pushd blog
+          echo "Golang Build Starting"
+          retry 3 5 "go mod download"
+          retry 2 5 "go test -v -coverprofile=coverage.out ./..."
+          go tool cover -func=coverage.out
+          retry 2 5 "CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o blog-in-golang ."
+          echo "Golang Build Finished"
+          popd
+
+  dependabot:
+    name: 'Dependabot'
+    needs: [studio-build]
+    runs-on: [self-hosted, Linux, ARM64, studio]
+    if: ${{ (github.actor == 'dependabot[bot]' || github.actor == 'etzelm') && github.event_name == 'pull_request' }}
+    env:
+      PR_URL: ${{github.event.pull_request.html_url}}
+      GITHUB_TOKEN: ${{secrets.TOKEN}}
+    steps:
+      - name: Enable auto-merge for Dependabot PRs
+        if: github.actor == 'dependabot[bot]'
+        run: |
+          gh pr review "$PR_URL" --approve -b "LGTM! Approved for auto-merge."
+          gh pr merge --auto --merge "$PR_URL"
+      - name: Merge PR for etzelm with admin rights
+        if: github.actor == 'etzelm'
+        run: gh pr merge --admin --merge "$PR_URL"
+
+  # ───────────────────────────── Phase 2a: develop ─────────────────────────────
+  # build-push: build the image natively on the Studio (arm64) and push it to
+  #   the NAS push registry (nas.home.arpa:5001), which the Studio daemon trusts
+  #   via daemon.json. deploy: pull it back and bring the dev container up on the
+  #   Studio over the runner's docker socket — no SSH, no NAS_* secrets.
+  #
+  # master/prod (arm64 push for the Studio prod container + amd64 buildx
+  # cross-build → docker save → scp/load to GCP + CloudFront) lands in Phase 2b,
+  # which also adds buildx to the runner image. Until then these jobs gate on
+  # develop only, so a master push is a safe no-op (nothing deploys).
+
+  build-push:
+    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master'
+    runs-on: [self-hosted, Linux, ARM64, studio]
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      GAPI: ${{ secrets.GAPI }}
+      REGISTRY: nas.home.arpa:5001
+    outputs:
+      build_changed: ${{ steps.changed-build-files.outputs.any_changed }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Get Changed Build Files
+        id: changed-build-files
+        uses: tj-actions/changed-files@v47
+        with:
+          files: |
+            blog/go.mod
+            blog/go.sum
+            blog/app.go
+            blog/app_test.go
+            blog/Dockerfile
+            blog/public/**
+            blog/src/**
+            blog/templates/**
+            realtor/yarn.lock
+            realtor/package.json
+            realtor/public/**
+            realtor/src/**
+      - name: Build & Push (develop, arm64)
+        if: github.ref == 'refs/heads/develop' && steps.changed-build-files.outputs.any_changed == 'true'
+        shell: bash
+        run: |
+          set -e
+          set -o pipefail
+          IMAGE="$REGISTRY/blog:develop"
+          echo "BUILDING $IMAGE (native arm64)"
+          BUILD_OK=false
+          for i in 1 2; do
+            echo "Build attempt $i..."
+            if docker build \
+                --build-arg GAPI="$GAPI" \
+                --secret id=aws_access_key_id,env=AWS_ACCESS_KEY_ID \
+                --secret id=aws_secret_access_key,env=AWS_SECRET_ACCESS_KEY \
+                -t "$IMAGE" -f blog/Dockerfile .; then
+              BUILD_OK=true
+              break
+            fi
+            if [ $i -eq 2 ]; then
+              echo "Docker build failed after 2 attempts."
+              exit 1
+            fi
+            echo "Build failed on attempt $i, retrying in 15s..."
+            sleep 15
+          done
+          if ! $BUILD_OK; then
+            echo "Docker build ultimately failed. Exiting."
+            exit 1
+          fi
+          echo "PUSHING $IMAGE TO THE NAS REGISTRY"
+          docker push "$IMAGE"
+          docker system prune -f
+      - name: Build & Push (master, arm64 for Studio prod + amd64 buildx for GCP tarball)
+        if: github.ref == 'refs/heads/master' && steps.changed-build-files.outputs.any_changed == 'true'
+        shell: bash
+        run: |
+          set -e
+          set -o pipefail
+          IMAGE_ARM="$REGISTRY/blog:latest"
+          IMAGE_AMD="blog:latest-amd64"
+
+          # ── arm64 build → push to NAS registry (Studio prod pulls this) ──
+          # Mirror of the develop path's logic, just :latest instead of
+          # :develop. Retry once on transient failures.
+          echo "BUILDING $IMAGE_ARM (native arm64)"
+          ARM_OK=false
+          for i in 1 2; do
+            echo "arm64 build attempt $i..."
+            if docker build \
+                --build-arg GAPI="$GAPI" \
+                --secret id=aws_access_key_id,env=AWS_ACCESS_KEY_ID \
+                --secret id=aws_secret_access_key,env=AWS_SECRET_ACCESS_KEY \
+                -t "$IMAGE_ARM" -f blog/Dockerfile .; then
+              ARM_OK=true
+              break
+            fi
+            [ $i -eq 2 ] && { echo "arm64 build failed after 2 attempts."; exit 1; }
+            echo "arm64 build failed on attempt $i, retrying in 15s..."
+            sleep 15
+          done
+          $ARM_OK || { echo "arm64 build ultimately failed."; exit 1; }
+          echo "PUSHING $IMAGE_ARM TO THE NAS REGISTRY"
+          docker push "$IMAGE_ARM"
+
+          # ── amd64 buildx cross-build → local image (deploy job will save it) ──
+          # blog/Dockerfile pins the Go + React builder stages to $BUILDPLATFORM
+          # (native arm64) and cross-compiles via GOARCH=${TARGETARCH}; the
+          # runtime stage is amd64 alpine with no RUN commands, so this is a
+          # fast cross-build (no QEMU emulation of the toolchain).
+          # --output type=docker loads the image straight into the host daemon
+          # under $IMAGE_AMD so the deploy job's GCP step can `docker save` it.
+          echo "BUILDING $IMAGE_AMD (amd64 cross-build via buildx)"
+          AMD_OK=false
+          for i in 1 2; do
+            echo "amd64 build attempt $i..."
+            if docker buildx build --platform linux/amd64 \
+                --build-arg GAPI="$GAPI" \
+                --secret id=aws_access_key_id,env=AWS_ACCESS_KEY_ID \
+                --secret id=aws_secret_access_key,env=AWS_SECRET_ACCESS_KEY \
+                --output type=docker,name="$IMAGE_AMD" \
+                -f blog/Dockerfile .; then
+              AMD_OK=true
+              break
+            fi
+            [ $i -eq 2 ] && { echo "amd64 build failed after 2 attempts."; exit 1; }
+            echo "amd64 build failed on attempt $i, retrying in 15s..."
+            sleep 15
+          done
+          $AMD_OK || { echo "amd64 build ultimately failed."; exit 1; }
+
+          docker system prune -f
+
+  deploy:
+    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master'
+    needs: [build-push]
+    runs-on: [self-hosted, Linux, ARM64, studio]
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      # Studio host the deploy job dials for the develop-path smoke-test
+      # (`Test (develop)` expands $STUDIO_ADDR via eval against
+      # local-urls.txt). Sourced from a repo secret to keep the LAN IP out
+      # of the public repo.
+      STUDIO_ADDR: ${{ secrets.STUDIO_ADDR }}
+      # Bearer token gating GET /metrics. studio.{develop,master}.yml and
+      # gcp.master.yml interpolate this into the container's METRICS_TOKEN
+      # env. Mirror the same value in the Studio's Prometheus scrape
+      # configs. Empty → open /metrics (acceptable for LAN-only dev only).
+      METRICS_TOKEN: ${{ secrets.METRICS_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Get Changed Article Files
+        id: changed-daemon-files
+        uses: tj-actions/changed-files@v47
+        with:
+          files: |
+            daemon/articles/**
+            daemon/app.go
+      - name: Push Article Changes
+        if: steps.changed-daemon-files.outputs.any_changed == 'true'
+        shell: bash
+        run: |
+          set -e
+          set -o pipefail
+          # Live-Articles on master (prod table), Test-Articles on develop
+          # (staging table). The daemon dispatches on the env var; container
+          # env vars themselves are set by each compose file separately.
+          if [ "$GITHUB_REF" = "refs/heads/master" ]; then
+            export ARTICLES="Live-Articles"
+          else
+            export ARTICLES="Test-Articles"
+          fi
+          echo "PUSHING ARTICLE CHANGES ($ARTICLES)"
+          pushd daemon
+          for i in {0..4}
+            do go run app.go $i
+          done
+          popd
+      - name: Deploy (develop -> Studio dev)
+        id: deploy
+        if: github.ref == 'refs/heads/develop' && needs.build-push.outputs.build_changed == 'true'
+        shell: bash
+        run: |
+          set -e
+          set -o pipefail
+          COMPOSE=.github/docker-compose/studio.develop.yml
+          echo "PULLING blog:develop FROM THE NAS REGISTRY"
+          docker compose -p blog-develop -f "$COMPOSE" pull
+          echo "DEPLOYING blog:develop ON THE STUDIO"
+          docker compose -p blog-develop -f "$COMPOSE" up -d --force-recreate
+          docker system prune -f
+      - name: Deploy (master -> Studio prod)
+        id: deploy-master-studio
+        if: github.ref == 'refs/heads/master' && needs.build-push.outputs.build_changed == 'true'
+        shell: bash
+        env:
+          REGISTRY: nas.home.arpa:5001
+        run: |
+          set -e
+          set -o pipefail
+          COMPOSE=.github/docker-compose/studio.master.yml
+          echo "PULLING $REGISTRY/blog:latest FROM THE NAS REGISTRY"
+          docker compose -p blog-master -f "$COMPOSE" pull
+          echo "DEPLOYING blog:latest ON STUDIO PROD (port 84)"
+          docker compose -p blog-master -f "$COMPOSE" up -d --force-recreate
+          docker system prune -f
+      - name: Deploy (master -> GCP)
+        id: deploy-master-gcp
+        if: github.ref == 'refs/heads/master' && needs.build-push.outputs.build_changed == 'true'
+        shell: bash
+        env:
+          # GCP SSH target (private). Same secrets the old NAS-deploy used,
+          # just pointed at GCP instead of NAS.
+          GCP_ADDR: ${{ secrets.GCP_ADDR }}
+          GCP_USER: ${{ secrets.GCP_USER }}
+          GCP_DIR: ${{ secrets.GCP_DIR }}
+          GCP_BIN: ${{ secrets.GCP_BIN }}
+          GCP_ARGS: ${{ secrets.GCP_ARGS }}
+          # Loki push hook (the GCP box ships its own logs via lokirus —
+          # see app.go init() and PR #502). Passed through SSH env so docker
+          # compose can interpolate ${LOKI_*} from gcp.master.yml.
+          LOKI_URL: ${{ secrets.LOKI_URL }}
+          LOKI_USERNAME: ${{ secrets.LOKI_USERNAME }}
+          LOKI_PASSWORD: ${{ secrets.LOKI_PASSWORD }}
+        run: |
+          set -e
+          set -o pipefail
+          IMAGE_AMD="blog:latest-amd64"
+          TARBALL=/tmp/blog-gcp.tar
+          # docker save the amd64 image build-push produced, then gzip — the
+          # image is ~30-50MB compressed, the bandwidth to GCP is the slow
+          # link on this whole flow.
+          echo "SAVING $IMAGE_AMD AS TARBALL"
+          docker save "$IMAGE_AMD" -o "$TARBALL"
+          gzip -f "$TARBALL"
+          echo "  tarball size: $(du -h "$TARBALL.gz" | cut -f1)"
+
+          SSH_ARGS="-i /home/docker/.ssh/gcp_rsa -o StrictHostKeyChecking=no $GCP_ARGS"
+          SSH_DEST="$GCP_USER@$GCP_ADDR"
+
+          # scp the tarball + the canonical compose to GCP (we ship the
+          # compose every deploy so a config-only change reaches prod too).
+          echo "SCP TARBALL + COMPOSE TO GCP"
+          scp $SSH_ARGS "$TARBALL.gz" "$SSH_DEST:$GCP_DIR/blog.tar.gz"
+          scp $SSH_ARGS .github/docker-compose/gcp.master.yml "$SSH_DEST:$GCP_DIR/docker-compose.yml"
+
+          # Load the image on GCP, re-tag from blog:latest-amd64 → blog:latest
+          # so gcp.master.yml (which references plain blog:latest) finds it,
+          # then bring the container up with all the runtime secrets passed
+          # through the SSH env so compose's ${...} interpolation can see them.
+          echo "DEPLOYING ON GCP"
+          ssh $SSH_ARGS "$SSH_DEST" "set -e
+            cd $GCP_DIR
+            gunzip -f blog.tar.gz
+            $GCP_BIN/docker load -i blog.tar
+            $GCP_BIN/docker tag $IMAGE_AMD blog:latest
+            rm -f blog.tar
+            export AWS_ACCESS_KEY_ID='$AWS_ACCESS_KEY_ID'
+            export AWS_SECRET_ACCESS_KEY='$AWS_SECRET_ACCESS_KEY'
+            export METRICS_TOKEN='$METRICS_TOKEN'
+            export LOKI_URL='$LOKI_URL'
+            export LOKI_USERNAME='$LOKI_USERNAME'
+            export LOKI_PASSWORD='$LOKI_PASSWORD'
+            $GCP_BIN/docker compose -p blog-master -f docker-compose.yml up -d --force-recreate
+            $GCP_BIN/docker system prune -f
+          "
+          rm -f "$TARBALL.gz"
+      - name: Invalidate CloudFront cache (master)
+        id: cloudfront-invalidate
+        if: github.ref == 'refs/heads/master' && (steps.deploy-master-gcp.outcome == 'success' || steps.deploy-master-gcp.outcome == 'skipped')
+        shell: bash
+        env:
+          DISTRIBUTION_ID1: ${{ secrets.DISTRIBUTION_ID1 }}
+          AWS_DEFAULT_REGION: us-east-1
+        run: |
+          set -e
+          set -o pipefail
+          if [ -z "$DISTRIBUTION_ID1" ]; then
+            echo "::warning::DISTRIBUTION_ID1 unset — skipping CloudFront invalidation"
+            exit 0
+          fi
+          echo "INVALIDATING CLOUDFRONT CACHE (/*)"
+          aws cloudfront create-invalidation --distribution-id "$DISTRIBUTION_ID1" --paths "/*"
+      - name: Test (develop -> local-urls.txt via STUDIO_ADDR)
+        if: github.ref == 'refs/heads/develop' && (steps.deploy.outcome == 'success' || steps.deploy.outcome == 'skipped')
+        shell: bash
+        run: |
+          set -e
+          set -o pipefail
+          echo "RUNNING DEVELOP TESTS"
+          TEST=.github/workflows/local-urls.txt
+          while IFS= read -r line
+          do
+            echo $line
+            command="curl --fail --header 'accept-encoding: gzip' "$line" > /dev/null"
+            eval "$command"
+          done < $TEST
+      - name: Test (master -> public-urls.txt via CloudFront)
+        if: github.ref == 'refs/heads/master' && (steps.deploy-master-gcp.outcome == 'success' || steps.deploy-master-gcp.outcome == 'skipped')
+        shell: bash
+        run: |
+          set -e
+          set -o pipefail
+          echo "RUNNING PUBLIC TESTS"
+          TEST=.github/workflows/public-urls.txt
+          while IFS= read -r line
+          do
+            echo "$line"
+            curl --fail --header 'accept-encoding: gzip' "$line" > /dev/null
+          done < $TEST
+
+  # Provisions blog-owned Grafana dashboards (monitoring/dashboards/*.json) to
+  # the Studio's Grafana via its HTTP API on every develop push that touches
+  # one of those files. The JSON files in this repo are the source of truth;
+  # any UI edits in Grafana get overwritten on the next push.
+  #
+  # The dashboards reference blog-emitted metric/label names (blog_http_*),
+  # so ownership stays here rather than in studio-configs (which only owns
+  # the Grafana install itself + datasources + infra-wide dashboards).
+  #
+  # Auth: secrets.GRAFANA_TOKEN — Grafana Service Account API token (Editor).
+  # The runner reaches Grafana over the docker bridge via host.docker.internal,
+  # not through the Authentik-fronted public route (forwardauth doesn't pass
+  # bearer-only API calls).
+  provision-grafana:
+    if: github.ref == 'refs/heads/develop'
+    runs-on: [self-hosted, Linux, ARM64, studio]
+    env:
+      GRAFANA_URL: http://host.docker.internal:3000
+      GRAFANA_TOKEN: ${{ secrets.GRAFANA_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Get Changed Dashboards
+        id: changed-dashboards
+        uses: tj-actions/changed-files@v47
+        with:
+          files: monitoring/dashboards/*.json
+      - name: Provision dashboards via Grafana API
+        if: steps.changed-dashboards.outputs.any_changed == 'true'
+        shell: bash
+        run: |
+          set -eo pipefail
+          if [ -z "$GRAFANA_TOKEN" ]; then
+            echo "::warning::secrets.GRAFANA_TOKEN is unset — skipping provisioning"
+            exit 0
+          fi
+          for f in ${{ steps.changed-dashboards.outputs.all_changed_files }}; do
+            echo "uploading $f"
+            # `id: null` forces upsert by `uid`. POST /api/dashboards/db
+            # returns 200 with the canonical url + version on success.
+            jq -n --slurpfile dash "$f" --arg msg "ci ${{ github.sha }}" '{
+              dashboard: ($dash[0] | .id = null),
+              overwrite: true,
+              message: $msg
+            }' > /tmp/grafana-payload.json
+            response=$(curl -fsSL -X POST \
+              -H "Authorization: Bearer $GRAFANA_TOKEN" \
+              -H "Content-Type: application/json" \
+              --data @/tmp/grafana-payload.json \
+              "$GRAFANA_URL/api/dashboards/db")
+            echo "$response" | jq -r '"  ok: " + .url + "  v" + (.version|tostring)'
+          done
