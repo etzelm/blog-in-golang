@@ -25,9 +25,15 @@ func main() {
 	gin.SetMode(gin.ReleaseMode)
 	httpServer := gin.Default()
 	httpServer.LoadHTMLGlob("templates/*")
+	// Middlewares MUST be registered before routes — Gin snapshots
+	// engine.Handlers into each route's frozen handler chain at registration
+	// time (combineHandlers). Use() called AFTER routes are registered only
+	// affects the 404/405 handlers (rebuild404Handlers / rebuild405Handlers),
+	// not the real routes — which is why CSP, X-Frame-Options, Permissions-
+	// Policy, etc. were silently NOT being applied to any 200 response.
+	LoadMiddlewares(httpServer)
 	LoadStaticFileRoutes(httpServer)
 	LoadServerRoutes(httpServer)
-	LoadMiddlewares(httpServer)
 	log.WithField("server", httpServer).Info("Default Gin server created.")
 
 	go func() {
@@ -140,7 +146,10 @@ func securityHeadersMiddleware() gin.HandlerFunc {
 		// Security headers
 		c.Header("X-Frame-Options", "DENY")
 		c.Header("X-Content-Type-Options", "nosniff")
-		c.Header("X-XSS-Protection", "1; mode=block")
+		// X-XSS-Protection deliberately NOT set — Chrome removed the XSSAuditor in
+		// 2019 and the header has been known to introduce its own side-channel
+		// vulnerabilities. Modern guidance (OWASP, MDN) is to omit it and rely on
+		// the CSP below. https://owasp.org/www-project-secure-headers/#x-xss-protection
 		c.Header("Referrer-Policy", "strict-origin-when-cross-origin")
 		c.Header("Permissions-Policy", "geolocation=(), microphone=(), camera=()")
 
