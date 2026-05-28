@@ -229,3 +229,56 @@ jobs:
             command="curl --fail --header 'accept-encoding: gzip' "$line" > /dev/null"
             eval "$command"
           done < $TEST
+
+  # Provisions blog-owned Grafana dashboards (monitoring/dashboards/*.json) to
+  # the Studio's Grafana via its HTTP API on every develop push that touches
+  # one of those files. The JSON files in this repo are the source of truth;
+  # any UI edits in Grafana get overwritten on the next push.
+  #
+  # The dashboards reference blog-emitted metric/label names (blog_http_*),
+  # so ownership stays here rather than in studio-configs (which only owns
+  # the Grafana install itself + datasources + infra-wide dashboards).
+  #
+  # Auth: secrets.GRAFANA_TOKEN — Grafana Service Account API token (Editor).
+  # The runner reaches Grafana over the docker bridge via host.docker.internal,
+  # not through the Authentik-fronted public route (forwardauth doesn't pass
+  # bearer-only API calls).
+  provision-grafana:
+    if: github.ref == 'refs/heads/develop'
+    runs-on: [self-hosted, Linux, ARM64, studio]
+    env:
+      GRAFANA_URL: http://host.docker.internal:3000
+      GRAFANA_TOKEN: ${{ secrets.GRAFANA_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Get Changed Dashboards
+        id: changed-dashboards
+        uses: tj-actions/changed-files@v47
+        with:
+          files: monitoring/dashboards/*.json
+      - name: Provision dashboards via Grafana API
+        if: steps.changed-dashboards.outputs.any_changed == 'true'
+        shell: bash
+        run: |
+          set -eo pipefail
+          if [ -z "$GRAFANA_TOKEN" ]; then
+            echo "::warning::secrets.GRAFANA_TOKEN is unset — skipping provisioning"
+            exit 0
+          fi
+          for f in ${{ steps.changed-dashboards.outputs.all_changed_files }}; do
+            echo "uploading $f"
+            # `id: null` forces upsert by `uid`. POST /api/dashboards/db
+            # returns 200 with the canonical url + version on success.
+            jq -n --slurpfile dash "$f" --arg msg "ci ${{ github.sha }}" '{
+              dashboard: ($dash[0] | .id = null),
+              overwrite: true,
+              message: $msg
+            }' > /tmp/grafana-payload.json
+            response=$(curl -fsSL -X POST \
+              -H "Authorization: Bearer $GRAFANA_TOKEN" \
+              -H "Content-Type: application/json" \
+              --data @/tmp/grafana-payload.json \
+              "$GRAFANA_URL/api/dashboards/db")
+            echo "$response" | jq -r '"  ok: " + .url + "  v" + (.version|tostring)'
+          done
