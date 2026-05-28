@@ -45,6 +45,16 @@ var (
 )
 
 func init() {
+	// Emit logs as JSON so Grafana Loki / LogQL can extract fields with
+	// `| json` instead of regex over freeform text. logrus's default
+	// TextFormatter renders `level=info msg="…"` which works but is
+	// strictly weaker downstream — JSON gives `level="info"`, `msg=…`,
+	// and any `log.WithField(...)`-attached fields as first-class labels.
+	// RFC3339Nano keeps sub-ms precision for request-rate analysis.
+	log.SetFormatter(&log.JSONFormatter{
+		TimestampFormat: time.RFC3339Nano,
+	})
+
 	prometheus.MustRegister(httpRequestsTotal, httpRequestDuration)
 }
 
