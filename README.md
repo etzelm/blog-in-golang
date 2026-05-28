@@ -51,7 +51,7 @@ A modern full-stack web application featuring a blog platform and realtor listin
 
 ## Quick Start
 
-**Prerequisites:** Go 1.26.3+, Node.js 18+, Docker, AWS Account
+**Prerequisites:** Go 1.26.3+, Node.js 26+, Docker, AWS Account
 
 ### Local Development
 

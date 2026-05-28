@@ -39,7 +39,12 @@ RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH:-amd64} go build -
 
 # Stage 2: React Builder
 # JS build is arch-independent; keep it on the native platform for speed.
-FROM --platform=$BUILDPLATFORM node:20-alpine AS react-builder
+FROM --platform=$BUILDPLATFORM node:26-alpine AS react-builder
+
+# node:N-alpine dropped the pre-bundled yarn around v22+; install yarn 1.x
+# explicitly (matches the yarn 1.x lockfile format) so the existing yarn-based
+# build commands still work without migrating to corepack/yarn 4.
+RUN npm install -g yarn@1.22.22
 
 # Declare ARG for Google API Key
 ARG GAPI
