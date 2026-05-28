@@ -44,7 +44,7 @@ FROM --platform=$BUILDPLATFORM node:26-alpine AS react-builder
 # node:N-alpine dropped the pre-bundled yarn around v22+; install yarn 1.x
 # explicitly (matches the yarn 1.x lockfile format) so the existing yarn-based
 # build commands still work without migrating to corepack/yarn 4.
-RUN npm install -g yarn@1.22.22
+RUN npm install -g corepack@latest && corepack enable
 
 # Declare ARG for Google API Key
 ARG GAPI
@@ -56,7 +56,7 @@ WORKDIR /app/realtor
 COPY realtor/package.json realtor/yarn.lock ./
 
 # Install dependencies using yarn
-RUN yarn install --frozen-lockfile
+RUN yarn install --immutable
 
 # Copy the rest of the React app source code
 COPY realtor/ ./
