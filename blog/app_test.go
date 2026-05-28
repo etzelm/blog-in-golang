@@ -376,7 +376,6 @@ func TestSecurityHeadersMiddleware(t *testing.T) {
 	expectedHeaders := map[string]string{
 		"X-Frame-Options":        "DENY",
 		"X-Content-Type-Options": "nosniff",
-		"X-XSS-Protection":       "1; mode=block",
 		"Referrer-Policy":        "strict-origin-when-cross-origin",
 		"Permissions-Policy":     "geolocation=(), microphone=(), camera=()",
 	}
@@ -386,6 +385,14 @@ func TestSecurityHeadersMiddleware(t *testing.T) {
 		if actualValue != expectedValue {
 			t.Errorf("Expected %s header to be %q, got %q", header, expectedValue, actualValue)
 		}
+	}
+
+	// X-XSS-Protection is deliberately NOT set — header is deprecated (Chrome
+	// removed the XSSAuditor in 2019) and has known side-channel attack
+	// vectors. We rely on CSP instead. Assert it stays absent so a future
+	// re-introduction doesn't slip through silently.
+	if v := rr.Header().Get("X-XSS-Protection"); v != "" {
+		t.Errorf("Expected X-XSS-Protection to be unset (deprecated; rely on CSP), got %q", v)
 	}
 
 	// Check Content Security Policy header
