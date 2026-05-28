@@ -15,7 +15,7 @@ jobs:
 
   NAS-build:
     if: github.ref != 'refs/heads/master' && github.ref != 'refs/heads/develop'
-    runs-on: [self-hosted, Linux, X64, nas]
+    runs-on: [self-hosted, Linux, ARM64, studio]
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -72,7 +72,7 @@ jobs:
   dependabot:
     name: 'Dependabot'
     needs: [NAS-build]
-    runs-on: [self-hosted, Linux, X64, nas]
+    runs-on: [self-hosted, Linux, ARM64, studio]
     if: ${{ (github.actor == 'dependabot[bot]' || github.actor == 'etzelm') && github.event_name == 'pull_request' }}
     env:
       PR_URL: ${{github.event.pull_request.html_url}}
@@ -89,7 +89,7 @@ jobs:
 
   NAS-deploy:
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop'
-    runs-on: [self-hosted, Linux, X64, nas]
+    runs-on: [self-hosted, Linux, ARM64, studio]
     env:
       NAS_ADDR: ${{ secrets.NAS_ADDR }}
       NAS_USER: ${{ secrets.NAS_USER }}
