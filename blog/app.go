@@ -147,7 +147,12 @@ func LoadMiddlewares(server *gin.Engine) {
 	server.Use(securityHeadersMiddleware())
 	server.Use(staticCacheMiddleware())
 	server.Use(unauthorizedMiddleware())
-	server.Use(gzip.Gzip(gzip.BestCompression))
+	// Exclude /metrics — promhttp.Handler() already compresses when the client
+	// sends Accept-Encoding: gzip (Prometheus does). Wrapping it here would
+	// gzip the response a second time, and Prometheus's single decompression
+	// pass would leave it staring at "\x1f" (inner gzip magic) and emit:
+	//   "expected a valid start token, got \"\\x1f\" (\"INVALID\")"
+	server.Use(gzip.Gzip(gzip.BestCompression, gzip.WithExcludedPaths([]string{"/metrics"})))
 
 }
 
