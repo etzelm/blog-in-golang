@@ -667,7 +667,7 @@
             "type": "loki",
             "uid": "P982945308D3682D1"
           },
-          "expr": "sum by (level) (rate({service=\"$log_service\"} | json [5m]))",
+          "expr": "sum by (level) (rate({service=\"$log_service\"} | json | __error__=\"\" [5m]))",
           "legendFormat": "{{level}}",
           "refId": "A",
           "queryType": "range"
@@ -726,7 +726,7 @@
             "type": "loki",
             "uid": "P982945308D3682D1"
           },
-          "expr": "sum(count_over_time({service=\"$log_service\"} | json | level=\"error\" [1m]))",
+          "expr": "sum(count_over_time({service=\"$log_service\"} | json | __error__=\"\" | level=\"error\" [1m]))",
           "legendFormat": "errors",
           "refId": "A",
           "queryType": "range"
