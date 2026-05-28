@@ -10,6 +10,20 @@ on:
       - 'master'
   pull_request:
   workflow_dispatch:
+    inputs:
+      # When triggered manually from the Actions UI, this lets you force the
+      # build + deploy paths to run even though `tj-actions/changed-files`
+      # would skip them (e.g. a workflow-only PR landed on master and now
+      # you want to redeploy prod — no app code changed, so the normal
+      # changed-files gate says "nothing to do"). Default true because the
+      # manual UI button is almost always pressed BECAUSE you want a deploy;
+      # set to false if you want to exercise the workflow without touching
+      # the live containers.
+      force_deploy:
+        description: 'Force build + deploy regardless of changed-files'
+        type: boolean
+        required: false
+        default: true
 
 jobs:
 
@@ -129,7 +143,7 @@ jobs:
             realtor/public/**
             realtor/src/**
       - name: Build & Push (develop, arm64)
-        if: github.ref == 'refs/heads/develop' && steps.changed-build-files.outputs.any_changed == 'true'
+        if: github.ref == 'refs/heads/develop' && (steps.changed-build-files.outputs.any_changed == 'true' || github.event.inputs.force_deploy == 'true')
         shell: bash
         run: |
           set -e
@@ -162,7 +176,7 @@ jobs:
           docker push "$IMAGE"
           docker system prune -f
       - name: Build & Push (master, arm64 for Studio prod + amd64 buildx for GCP tarball)
-        if: github.ref == 'refs/heads/master' && steps.changed-build-files.outputs.any_changed == 'true'
+        if: github.ref == 'refs/heads/master' && (steps.changed-build-files.outputs.any_changed == 'true' || github.event.inputs.force_deploy == 'true')
         shell: bash
         run: |
           set -e
@@ -270,7 +284,7 @@ jobs:
           popd
       - name: Deploy (develop -> Studio dev)
         id: deploy
-        if: github.ref == 'refs/heads/develop' && needs.build-push.outputs.build_changed == 'true'
+        if: github.ref == 'refs/heads/develop' && (needs.build-push.outputs.build_changed == 'true' || github.event.inputs.force_deploy == 'true')
         shell: bash
         run: |
           set -e
@@ -283,7 +297,7 @@ jobs:
           docker system prune -f
       - name: Deploy (master -> Studio prod)
         id: deploy-master-studio
-        if: github.ref == 'refs/heads/master' && needs.build-push.outputs.build_changed == 'true'
+        if: github.ref == 'refs/heads/master' && (needs.build-push.outputs.build_changed == 'true' || github.event.inputs.force_deploy == 'true')
         shell: bash
         env:
           REGISTRY: nas.home.arpa:5001
@@ -298,7 +312,7 @@ jobs:
           docker system prune -f
       - name: Deploy (master -> GCP)
         id: deploy-master-gcp
-        if: github.ref == 'refs/heads/master' && needs.build-push.outputs.build_changed == 'true'
+        if: github.ref == 'refs/heads/master' && (needs.build-push.outputs.build_changed == 'true' || github.event.inputs.force_deploy == 'true')
         shell: bash
         env:
           # GCP SSH target (private). Same secrets the old NAS-deploy used,
