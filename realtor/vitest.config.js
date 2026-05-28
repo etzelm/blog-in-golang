@@ -17,11 +17,13 @@ export default defineConfig({
       reporter: ['text', 'json', 'html'],
     },
     pool: 'forks',
-    poolOptions: {
-      forks: {
-        singleFork: true
-      }
-    }
+    // vitest 4 removed `poolOptions` — keep the previous "one fork process for
+    // the whole run" behavior with `maxWorkers: 1` at the top of `test`. Don't
+    // also set `isolate: false` (the migration guide's literal swap) — that
+    // disables per-file module isolation, which breaks our cross-file mock
+    // setup (App.test.jsx's `vi.mock('@react-oauth/google', ...)` would leak
+    // into NavBar.test.jsx and others). https://vitest.dev/guide/migration#pool-rework
+    maxWorkers: 1
   },
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
