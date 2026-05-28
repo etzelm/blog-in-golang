@@ -18,6 +18,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
+	"github.com/yukitsune/lokirus"
 )
 
 // Prometheus metrics. Labels:
@@ -55,6 +56,36 @@ func init() {
 		TimestampFormat: time.RFC3339Nano,
 	})
 
+	// Loki push hook for GCP. The Studio containers (dev + prod) are tailed
+	// by Grafana Alloy on the host, which reads the docker journal and ships
+	// to Loki over the compose network — no in-process hook needed. The GCP
+	// box has a 0.5 vCPU budget that doesn't justify a separate shipper
+	// process, so the blog binary pushes its own logs directly via lokirus.
+	//
+	// When LOKI_URL is set, the hook batches logrus entries (Info+) and
+	// POSTs them to the configured Loki endpoint using basic auth. Static
+	// labels (service / env / source) determine the Loki stream identity —
+	// pinned to the GCP container's slot so it never collides with the
+	// Alloy-shipped studio streams.
+	if lokiURL := os.Getenv("LOKI_URL"); lokiURL != "" {
+		opts := lokirus.NewLokiHookOptions().
+			WithBasicAuth(os.Getenv("LOKI_USERNAME"), os.Getenv("LOKI_PASSWORD")).
+			WithFormatter(&log.JSONFormatter{
+				TimestampFormat: time.RFC3339Nano,
+			}).
+			WithStaticLabels(lokirus.Labels{
+				"service": "blog-in-golang-gcp",
+				"env":     "gcp",
+				"source":  "lokirus",
+			})
+		hook := lokirus.NewLokiHookWithOpts(
+			lokiURL,
+			opts,
+			log.InfoLevel, log.WarnLevel, log.ErrorLevel, log.FatalLevel, log.PanicLevel,
+		)
+		log.AddHook(hook)
+	}
+
 	prometheus.MustRegister(httpRequestsTotal, httpRequestDuration)
 }
 
@@ -87,7 +118,11 @@ func main() {
 	LoadMiddlewares(httpServer)
 	LoadStaticFileRoutes(httpServer)
 	LoadServerRoutes(httpServer)
-	log.WithField("server", httpServer).Info("Default Gin server created.")
+	// Don't log the *gin.Engine as a structured field — it embeds
+	// `gin.HandlerFunc` slices that json.Marshal can't serialize, so
+	// JSONFormatter / lokirus drop the line with
+	//   "failed to marshal fields to JSON, json: unsupported type: gin.HandlerFunc".
+	log.Info("Gin server created.")
 
 	go func() {
 		for range time.Tick(time.Hour * 3) {

@@ -17,6 +17,7 @@ require (
 	github.com/prometheus/client_golang v1.23.2
 	github.com/sirupsen/logrus v1.9.4
 	github.com/stretchr/testify v1.11.1
+	github.com/yukitsune/lokirus v1.0.1
 	golang.org/x/crypto v0.52.0
 )
 
