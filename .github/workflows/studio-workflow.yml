@@ -21,7 +21,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Build
         shell: bash
         run: |
@@ -110,10 +110,10 @@ jobs:
       build_changed: ${{ steps.changed-build-files.outputs.any_changed }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Get Changed Build Files
         id: changed-build-files
-        uses: tj-actions/changed-files@v45
+        uses: tj-actions/changed-files@v47
         with:
           files: |
             blog/go.mod
@@ -175,10 +175,10 @@ jobs:
       STUDIO_ADDR: ${{ secrets.STUDIO_ADDR }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Get Changed Article Files
         id: changed-daemon-files
-        uses: tj-actions/changed-files@v45
+        uses: tj-actions/changed-files@v47
         with:
           files: |
             daemon/articles/**
