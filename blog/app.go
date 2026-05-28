@@ -2,7 +2,9 @@ package main
 
 import (
 	"math/rand/v2"
+	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -13,8 +15,38 @@ import (
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 )
+
+// Prometheus metrics. Labels:
+//   - method:   HTTP method (GET, POST, …)
+//   - route:    c.FullPath() — the route TEMPLATE (e.g. /article/:article_id),
+//               never the raw path. Keeps label cardinality bounded and prevents
+//               path parameters / query values from leaking into Prometheus.
+//   - status:   HTTP status code as string.
+var (
+	httpRequestsTotal = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "blog_http_requests_total",
+			Help: "Total HTTP requests served, labeled by method, route template, and status code.",
+		},
+		[]string{"method", "route", "status"},
+	)
+	httpRequestDuration = prometheus.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Name:    "blog_http_request_duration_seconds",
+			Help:    "HTTP request duration in seconds, labeled by method, route template, and status code.",
+			Buckets: prometheus.DefBuckets,
+		},
+		[]string{"method", "route", "status"},
+	)
+)
+
+func init() {
+	prometheus.MustRegister(httpRequestsTotal, httpRequestDuration)
+}
 
 var RandomOne int = randRange(1, 9)
 var RandomTwo int = randRange(1, 9)
@@ -31,6 +63,9 @@ func main() {
 	// affects the 404/405 handlers (rebuild404Handlers / rebuild405Handlers),
 	// not the real routes — which is why CSP, X-Frame-Options, Permissions-
 	// Policy, etc. were silently NOT being applied to any 200 response.
+	//
+	// metricsMiddleware is registered FIRST (in LoadMiddlewares) so it
+	// observes total end-to-end request time, including downstream middleware.
 	LoadMiddlewares(httpServer)
 	LoadStaticFileRoutes(httpServer)
 	LoadServerRoutes(httpServer)
@@ -91,16 +126,70 @@ func LoadServerRoutes(server *gin.Engine) {
 	server.POST("/listings/add/:key", handlers.ListingPOSTAPI)
 	server.POST("/upload/image/:user", handlers.UploadImagePOSTAPI)
 
+	// Liveness probe — used by the container healthcheck and any external
+	// uptime monitors. Deliberately cheap: no DynamoDB / S3 / external calls.
+	// Just confirms the process is alive and the HTTP server is responding.
+	server.GET("/healthz", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"status": "ok"})
+	})
+
+	// Prometheus scrape endpoint. Gated by metricsAuth (Bearer ${METRICS_TOKEN}
+	// in prod; open if METRICS_TOKEN is unset, for local dev). Wrapped with
+	// gin.WrapH because promhttp.Handler() is a stdlib http.Handler.
+	server.GET("/metrics", metricsAuth(), gin.WrapH(promhttp.Handler()))
+
 }
 
 // LoadMiddlewares loads third party and custom gin middlewares the server uses.
 func LoadMiddlewares(server *gin.Engine) {
 
+	server.Use(metricsMiddleware())
 	server.Use(securityHeadersMiddleware())
 	server.Use(staticCacheMiddleware())
 	server.Use(unauthorizedMiddleware())
 	server.Use(gzip.Gzip(gzip.BestCompression))
 
+}
+
+// metricsMiddleware records request count + duration into the Prometheus
+// counter/histogram vecs declared at package level. Skips /metrics itself so
+// the scrape doesn't self-observe.
+func metricsMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if c.Request.URL.Path == "/metrics" {
+			c.Next()
+			return
+		}
+		start := time.Now()
+		c.Next()
+		route := c.FullPath() // route TEMPLATE, not raw path — see vec docs
+		if route == "" {
+			route = "unmatched" // 404s without a registered template
+		}
+		status := strconv.Itoa(c.Writer.Status())
+		method := c.Request.Method
+		httpRequestsTotal.WithLabelValues(method, route, status).Inc()
+		httpRequestDuration.WithLabelValues(method, route, status).Observe(time.Since(start).Seconds())
+	}
+}
+
+// metricsAuth gates /metrics behind a bearer token when METRICS_TOKEN is set
+// in the environment. If unset, /metrics is open — convenient for local dev,
+// closed in prod by setting the secret. Token is captured at middleware
+// construction time (process start) so we avoid a syscall per scrape.
+func metricsAuth() gin.HandlerFunc {
+	expected := os.Getenv("METRICS_TOKEN")
+	return func(c *gin.Context) {
+		if expected == "" {
+			c.Next()
+			return
+		}
+		if c.Request.Header.Get("Authorization") != "Bearer "+expected {
+			c.AbortWithStatus(http.StatusUnauthorized)
+			return
+		}
+		c.Next()
+	}
 }
 
 // staticCacheMiddleware adds optimized caching headers for static files with proper cache strategies
