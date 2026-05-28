@@ -53,7 +53,7 @@ ARG GAPI
 WORKDIR /app/realtor
 
 # Copy package.json and yarn.lock to leverage Docker cache
-COPY realtor/package.json realtor/yarn.lock ./
+COPY realtor/package.json realtor/yarn.lock realtor/.yarnrc.yml ./
 
 # Install dependencies using yarn
 RUN yarn install --immutable
