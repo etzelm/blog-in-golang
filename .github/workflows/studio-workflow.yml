@@ -347,6 +347,17 @@ jobs:
             $GCP_BIN/docker load -i blog.tar
             $GCP_BIN/docker tag $IMAGE_AMD blog:latest
             rm -f blog.tar
+            # The container_name 'blog-in-golang' (set in gcp.master.yml) is
+            # a global identifier in Docker — it can collide across compose
+            # projects. The pre-Phase-2b container was created under a
+            # different project name (default = compose-dir basename); our
+            # new project 'blog-master' can't reuse the name without first
+            # removing the old container. --force-recreate only handles
+            # collisions WITHIN a project, so this rm is needed for the
+            # first Phase-2b master deploy. Subsequent deploys also benefit
+            # — anything that ever drifted into a 'wrong' project gets
+            # cleaned up automatically.
+            $GCP_BIN/docker rm -f blog-in-golang 2>/dev/null || true
             export AWS_ACCESS_KEY_ID='$AWS_ACCESS_KEY_ID'
             export AWS_SECRET_ACCESS_KEY='$AWS_SECRET_ACCESS_KEY'
             export METRICS_TOKEN='$METRICS_TOKEN'
