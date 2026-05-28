@@ -455,6 +455,81 @@ func TestSecurityHeadersMiddleware_MultipleRequests(t *testing.T) {
 	}
 }
 
+func TestHealthzHandler(t *testing.T) {
+	silenceLogrus(t)
+	gin.SetMode(gin.TestMode)
+	router := gin.New()
+	LoadServerRoutes(router)
+
+	req, _ := http.NewRequest(http.MethodGet, "/healthz", nil)
+	rr := httptest.NewRecorder()
+	router.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Fatalf("Expected /healthz to return 200, got %d", rr.Code)
+	}
+	if ct := rr.Header().Get("Content-Type"); !strings.HasPrefix(ct, "application/json") {
+		t.Errorf("Expected Content-Type application/json, got %q", ct)
+	}
+	if !strings.Contains(rr.Body.String(), `"status":"ok"`) {
+		t.Errorf("Expected body to contain status:ok, got %q", rr.Body.String())
+	}
+}
+
+func TestMetricsAuth_OpenWhenTokenUnset(t *testing.T) {
+	silenceLogrus(t)
+	// Belt-and-suspenders: ensure no leftover token from other tests.
+	t.Setenv("METRICS_TOKEN", "")
+	gin.SetMode(gin.TestMode)
+	router := gin.New()
+	LoadServerRoutes(router)
+
+	req, _ := http.NewRequest(http.MethodGet, "/metrics", nil)
+	rr := httptest.NewRecorder()
+	router.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Fatalf("Expected /metrics to return 200 when METRICS_TOKEN unset, got %d", rr.Code)
+	}
+	if !strings.Contains(rr.Body.String(), "# HELP") {
+		t.Errorf("Expected Prometheus exposition format (# HELP lines), got %q", rr.Body.String()[:min(200, len(rr.Body.String()))])
+	}
+}
+
+func TestMetricsAuth_TokenSet(t *testing.T) {
+	silenceLogrus(t)
+	t.Setenv("METRICS_TOKEN", "s3cret-token")
+	gin.SetMode(gin.TestMode)
+	router := gin.New()
+	LoadServerRoutes(router)
+
+	// No header → 401
+	req1, _ := http.NewRequest(http.MethodGet, "/metrics", nil)
+	rr1 := httptest.NewRecorder()
+	router.ServeHTTP(rr1, req1)
+	if rr1.Code != http.StatusUnauthorized {
+		t.Errorf("Expected 401 without Authorization, got %d", rr1.Code)
+	}
+
+	// Wrong token → 401
+	req2, _ := http.NewRequest(http.MethodGet, "/metrics", nil)
+	req2.Header.Set("Authorization", "Bearer wrong-token")
+	rr2 := httptest.NewRecorder()
+	router.ServeHTTP(rr2, req2)
+	if rr2.Code != http.StatusUnauthorized {
+		t.Errorf("Expected 401 with wrong token, got %d", rr2.Code)
+	}
+
+	// Correct token → 200
+	req3, _ := http.NewRequest(http.MethodGet, "/metrics", nil)
+	req3.Header.Set("Authorization", "Bearer s3cret-token")
+	rr3 := httptest.NewRecorder()
+	router.ServeHTTP(rr3, req3)
+	if rr3.Code != http.StatusOK {
+		t.Errorf("Expected 200 with correct token, got %d", rr3.Code)
+	}
+}
+
 // Helper function to check if a string contains a substring
 func contains(str, substr string) bool {
 	return len(str) >= len(substr) &&

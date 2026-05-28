@@ -28,3 +28,23 @@ services:
       AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
       AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
       ARTICLES: "Test-Articles"
+      # Bearer token required on GET /metrics. Set in repo secrets +
+      # mirrored to the Prometheus scrape_config on the Studio. If empty,
+      # /metrics is open (acceptable for LAN-only dev, not for prod).
+      METRICS_TOKEN: "${METRICS_TOKEN}"
+    # Docker healthcheck — hits /healthz (cheap, no DynamoDB/S3 calls). The
+    # final image is alpine:3.22 which ships busybox wget but NOT curl, hence
+    # `wget --spider`. start_period gives the Go process time to come up
+    # (certmagic init etc.) before failures count toward the 3-retry limit.
+    # NOTE: `restart: unless-stopped` only reacts to container EXIT, not to
+    # unhealthy status. Auto-restart on unhealthy needs the autoheal sidecar
+    # or a Prometheus alert on container_health_status — tracked as a follow-up.
+    healthcheck:
+      # `wget -O /dev/null` instead of `--spider` — busybox's --spider sends a
+      # HEAD on some versions, and Gin's GET routes don't auto-register HEAD,
+      # which would make every healthcheck fail with 404.
+      test: ["CMD", "wget", "-q", "--tries=1", "-O", "/dev/null", "http://localhost:8080/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s

@@ -173,6 +173,12 @@ jobs:
       # (`Test` step expands $STUDIO_ADDR via eval against local-urls.txt).
       # Sourced from a repo secret to keep the LAN IP out of the public repo.
       STUDIO_ADDR: ${{ secrets.STUDIO_ADDR }}
+      # Bearer token gating GET /metrics. studio.develop.yml interpolates this
+      # into the container's METRICS_TOKEN env. Mirror the same value in the
+      # Studio's Prometheus scrape_config.bearer_token. If the secret is unset
+      # the container env will be empty and /metrics will be open — acceptable
+      # for LAN-only dev, not for prod.
+      METRICS_TOKEN: ${{ secrets.METRICS_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
