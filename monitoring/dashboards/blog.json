@@ -82,7 +82,7 @@
             "type": "prometheus",
             "uid": "P1809F7CD0C75ACF3"
           },
-          "expr": "sum(rate(blog_http_requests_total[5m]))",
+          "expr": "sum(rate(blog_http_requests_total{env=\"$env\"}[5m]))",
           "refId": "A"
         }
       ]
@@ -143,7 +143,7 @@
             "type": "prometheus",
             "uid": "P1809F7CD0C75ACF3"
           },
-          "expr": "sum(rate(blog_http_requests_total{status=~\"4..\"}[5m]))",
+          "expr": "sum(rate(blog_http_requests_total{env=\"$env\",status=~\"4..\"}[5m]))",
           "refId": "A"
         }
       ]
@@ -204,7 +204,7 @@
             "type": "prometheus",
             "uid": "P1809F7CD0C75ACF3"
           },
-          "expr": "sum(rate(blog_http_requests_total{status=~\"5..\"}[5m]))",
+          "expr": "sum(rate(blog_http_requests_total{env=\"$env\",status=~\"5..\"}[5m]))",
           "refId": "A"
         }
       ]
@@ -269,7 +269,7 @@
             "type": "prometheus",
             "uid": "P1809F7CD0C75ACF3"
           },
-          "expr": "histogram_quantile(0.95, sum by (le)(rate(blog_http_request_duration_seconds_bucket[5m])))",
+          "expr": "histogram_quantile(0.95, sum by (le)(rate(blog_http_request_duration_seconds_bucket{env=\"$env\"}[5m])))",
           "refId": "A"
         }
       ]
@@ -343,7 +343,7 @@
             "type": "prometheus",
             "uid": "P1809F7CD0C75ACF3"
           },
-          "expr": "sum by (status)(rate(blog_http_requests_total[5m]))",
+          "expr": "sum by (status)(rate(blog_http_requests_total{env=\"$env\"}[5m]))",
           "legendFormat": "{{status}}",
           "refId": "A"
         }
@@ -405,7 +405,7 @@
             "type": "prometheus",
             "uid": "P1809F7CD0C75ACF3"
           },
-          "expr": "sum by (route)(rate(blog_http_requests_total[5m]))",
+          "expr": "sum by (route)(rate(blog_http_requests_total{env=\"$env\"}[5m]))",
           "legendFormat": "{{route}}",
           "refId": "A"
         }
@@ -480,7 +480,7 @@
             "type": "prometheus",
             "uid": "P1809F7CD0C75ACF3"
           },
-          "expr": "histogram_quantile(0.50, sum by (le)(rate(blog_http_request_duration_seconds_bucket[5m])))",
+          "expr": "histogram_quantile(0.50, sum by (le)(rate(blog_http_request_duration_seconds_bucket{env=\"$env\"}[5m])))",
           "legendFormat": "p50",
           "refId": "A"
         },
@@ -489,7 +489,7 @@
             "type": "prometheus",
             "uid": "P1809F7CD0C75ACF3"
           },
-          "expr": "histogram_quantile(0.90, sum by (le)(rate(blog_http_request_duration_seconds_bucket[5m])))",
+          "expr": "histogram_quantile(0.90, sum by (le)(rate(blog_http_request_duration_seconds_bucket{env=\"$env\"}[5m])))",
           "legendFormat": "p90",
           "refId": "B"
         },
@@ -498,7 +498,7 @@
             "type": "prometheus",
             "uid": "P1809F7CD0C75ACF3"
           },
-          "expr": "histogram_quantile(0.99, sum by (le)(rate(blog_http_request_duration_seconds_bucket[5m])))",
+          "expr": "histogram_quantile(0.99, sum by (le)(rate(blog_http_request_duration_seconds_bucket{env=\"$env\"}[5m])))",
           "legendFormat": "p99",
           "refId": "C"
         }
@@ -560,7 +560,7 @@
             "type": "prometheus",
             "uid": "P1809F7CD0C75ACF3"
           },
-          "expr": "histogram_quantile(0.95, sum by (le,route)(rate(blog_http_request_duration_seconds_bucket[5m])))",
+          "expr": "histogram_quantile(0.95, sum by (le,route)(rate(blog_http_request_duration_seconds_bucket{env=\"$env\"}[5m])))",
           "legendFormat": "{{route}}",
           "refId": "A"
         }
@@ -609,7 +609,7 @@
             "type": "loki",
             "uid": "P982945308D3682D1"
           },
-          "expr": "{service=\"blog-in-golang-develop\"} | json",
+          "expr": "{service=\"$log_service\"} | json",
           "refId": "A",
           "queryType": "range"
         }
@@ -667,7 +667,7 @@
             "type": "loki",
             "uid": "P982945308D3682D1"
           },
-          "expr": "sum by (level) (rate({service=\"blog-in-golang-develop\"} | json [5m]))",
+          "expr": "sum by (level) (rate({service=\"$log_service\"} | json [5m]))",
           "legendFormat": "{{level}}",
           "refId": "A",
           "queryType": "range"
@@ -726,7 +726,7 @@
             "type": "loki",
             "uid": "P982945308D3682D1"
           },
-          "expr": "sum(count_over_time({service=\"blog-in-golang-develop\"} | json | level=\"error\" [1m]))",
+          "expr": "sum(count_over_time({service=\"$log_service\"} | json | level=\"error\" [1m]))",
           "legendFormat": "errors",
           "refId": "A",
           "queryType": "range"
@@ -735,7 +735,61 @@
     }
   ],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "name": "env",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "P1809F7CD0C75ACF3"
+        },
+        "definition": "label_values(blog_http_requests_total, env)",
+        "query": {
+          "query": "label_values(blog_http_requests_total, env)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "sort": 1,
+        "multi": false,
+        "includeAll": false,
+        "current": {
+          "selected": true,
+          "text": "dev",
+          "value": "dev"
+        },
+        "options": [],
+        "label": "env",
+        "hide": 0
+      },
+      {
+        "name": "log_service",
+        "type": "custom",
+        "query": "dev : blog-in-golang-develop, prod : blog-in-golang-latest",
+        "options": [
+          {
+            "text": "blog-in-golang-develop",
+            "value": "blog-in-golang-develop",
+            "selected": true
+          },
+          {
+            "text": "blog-in-golang-latest",
+            "value": "blog-in-golang-latest",
+            "selected": false
+          }
+        ],
+        "current": {
+          "selected": true,
+          "text": "blog-in-golang-develop",
+          "value": "blog-in-golang-develop"
+        },
+        "multi": false,
+        "includeAll": false,
+        "hide": 2,
+        "skipUrlSync": true,
+        "label": "log_service"
+      }
+    ]
   },
   "annotations": {
     "list": []
