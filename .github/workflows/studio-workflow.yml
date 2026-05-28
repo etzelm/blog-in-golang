@@ -1,0 +1,221 @@
+name: blog-in-golang-studio
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - 'develop'
+      - 'master'
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+
+  studio-build:
+    if: github.ref != 'refs/heads/master' && github.ref != 'refs/heads/develop'
+    runs-on: [self-hosted, Linux, ARM64, studio]
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build
+        shell: bash
+        run: |
+          set -e
+          set -o pipefail
+
+          # Retry function
+          retry() {
+            local max_attempts=$1
+            local delay=$2
+            local cmd="${@:3}"
+            for i in $(seq 1 $max_attempts); do
+              echo "Attempt $i: $cmd"
+              if eval "$cmd"; then
+                echo "✓ Success on attempt $i"
+                return 0
+              fi
+              if [ $i -lt $max_attempts ]; then
+                echo "✗ Failed, retrying in ${delay}s..."
+                sleep $delay
+              fi
+            done
+            echo "✗ Failed after $max_attempts attempts"
+            return 1
+          }
+
+          echo STARTING BUILD
+          BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+          echo "BRANCH: $BRANCH"
+
+          pushd realtor
+          echo "React Build Starting"
+          retry 3 5 "yarn install"
+          retry 2 5 "yarn test --coverage"
+          retry 2 5 "yarn build"
+          echo "React Build Finished"
+          popd
+
+          pushd blog
+          echo "Golang Build Starting"
+          retry 3 5 "go mod download"
+          retry 2 5 "go test -v -coverprofile=coverage.out ./..."
+          go tool cover -func=coverage.out
+          retry 2 5 "CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o blog-in-golang ."
+          echo "Golang Build Finished"
+          popd
+
+  dependabot:
+    name: 'Dependabot'
+    needs: [studio-build]
+    runs-on: [self-hosted, Linux, ARM64, studio]
+    if: ${{ (github.actor == 'dependabot[bot]' || github.actor == 'etzelm') && github.event_name == 'pull_request' }}
+    env:
+      PR_URL: ${{github.event.pull_request.html_url}}
+      GITHUB_TOKEN: ${{secrets.TOKEN}}
+    steps:
+      - name: Enable auto-merge for Dependabot PRs
+        if: github.actor == 'dependabot[bot]'
+        run: |
+          gh pr review "$PR_URL" --approve -b "LGTM! Approved for auto-merge."
+          gh pr merge --auto --merge "$PR_URL"
+      - name: Merge PR for etzelm with admin rights
+        if: github.actor == 'etzelm'
+        run: gh pr merge --admin --merge "$PR_URL"
+
+  # ───────────────────────────── Phase 2a: develop ─────────────────────────────
+  # build-push: build the image natively on the Studio (arm64) and push it to
+  #   the NAS push registry (nas.home.arpa:5001), which the Studio daemon trusts
+  #   via daemon.json. deploy: pull it back and bring the dev container up on the
+  #   Studio over the runner's docker socket — no SSH, no NAS_* secrets.
+  #
+  # master/prod (arm64 push for the Studio prod container + amd64 buildx
+  # cross-build → docker save → scp/load to GCP + CloudFront) lands in Phase 2b,
+  # which also adds buildx to the runner image. Until then these jobs gate on
+  # develop only, so a master push is a safe no-op (nothing deploys).
+
+  build-push:
+    if: github.ref == 'refs/heads/develop'
+    runs-on: [self-hosted, Linux, ARM64, studio]
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      GAPI: ${{ secrets.GAPI }}
+      REGISTRY: nas.home.arpa:5001
+    outputs:
+      build_changed: ${{ steps.changed-build-files.outputs.any_changed }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Get Changed Build Files
+        id: changed-build-files
+        uses: tj-actions/changed-files@v45
+        with:
+          files: |
+            blog/go.mod
+            blog/go.sum
+            blog/app.go
+            blog/app_test.go
+            blog/Dockerfile
+            blog/public/**
+            blog/src/**
+            blog/templates/**
+            realtor/yarn.lock
+            realtor/package.json
+            realtor/public/**
+            realtor/src/**
+      - name: Build & Push (develop, arm64)
+        if: steps.changed-build-files.outputs.any_changed == 'true'
+        shell: bash
+        run: |
+          set -e
+          set -o pipefail
+          IMAGE="$REGISTRY/blog:develop"
+          echo "BUILDING $IMAGE (native arm64)"
+          BUILD_OK=false
+          for i in 1 2; do
+            echo "Build attempt $i..."
+            if docker build \
+                --build-arg GAPI="$GAPI" \
+                --build-arg AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID" \
+                --build-arg AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY" \
+                -t "$IMAGE" -f blog/Dockerfile .; then
+              BUILD_OK=true
+              break
+            fi
+            if [ $i -eq 2 ]; then
+              echo "Docker build failed after 2 attempts."
+              exit 1
+            fi
+            echo "Build failed on attempt $i, retrying in 15s..."
+            sleep 15
+          done
+          if ! $BUILD_OK; then
+            echo "Docker build ultimately failed. Exiting."
+            exit 1
+          fi
+          echo "PUSHING $IMAGE TO THE NAS REGISTRY"
+          docker push "$IMAGE"
+          docker system prune -f
+
+  deploy:
+    if: github.ref == 'refs/heads/develop'
+    needs: [build-push]
+    runs-on: [self-hosted, Linux, ARM64, studio]
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Get Changed Article Files
+        id: changed-daemon-files
+        uses: tj-actions/changed-files@v45
+        with:
+          files: |
+            daemon/articles/**
+            daemon/app.go
+      - name: Push Article Changes
+        if: steps.changed-daemon-files.outputs.any_changed == 'true'
+        shell: bash
+        run: |
+          set -e
+          set -o pipefail
+          echo "PUSHING ARTICLE CHANGES (Test-Articles)"
+          export ARTICLES="Test-Articles"
+          pushd daemon
+          for i in {0..4}
+            do go run app.go $i
+          done
+          popd
+      - name: Deploy (develop -> Studio)
+        id: deploy
+        if: needs.build-push.outputs.build_changed == 'true'
+        shell: bash
+        run: |
+          set -e
+          set -o pipefail
+          COMPOSE=.github/docker-compose/studio.develop.yml
+          echo "PULLING blog:develop FROM THE NAS REGISTRY"
+          docker compose -p blog-develop -f "$COMPOSE" pull
+          echo "DEPLOYING blog:develop ON THE STUDIO"
+          docker compose -p blog-develop -f "$COMPOSE" up -d --force-recreate
+          docker system prune -f
+      - name: Test
+        if: steps.deploy.outcome == 'success' || steps.deploy.outcome == 'skipped'
+        shell: bash
+        run: |
+          set -e
+          set -o pipefail
+          echo RUNNING TESTS
+          TEST=.github/workflows/local-urls.txt
+          while IFS= read -r line
+          do
+            echo $line
+            command="curl --fail --header 'accept-encoding: gzip' "$line" > /dev/null"
+            eval "$command"
+          done < $TEST
