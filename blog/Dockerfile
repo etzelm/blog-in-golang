@@ -1,5 +1,7 @@
 # Stage 1: Go Builder
-FROM golang:1.24.6-alpine3.22 AS golang-builder
+# Pin the builder to the native build platform and cross-compile to the target
+# arch (see the build RUN below) — fast, vs. emulating the whole toolchain.
+FROM --platform=$BUILDPLATFORM golang:1.24.6-alpine3.22 AS golang-builder
 
 # Update package index and upgrade all packages to latest versions
 RUN apk update && apk upgrade
@@ -27,11 +29,17 @@ RUN export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID && \
     go test -v -coverprofile=coverage.out ./...
 RUN go tool cover -func=coverage.out
 
-# Build the Go application
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o blog-in-golang .
+# Build the Go application for the target platform. BuildKit populates
+# TARGETOS/TARGETARCH automatically: linux/arm64 on the Studio's native build,
+# linux/amd64 under `docker buildx build --platform linux/amd64` for the GCP
+# tarball. CGO is disabled so this is a pure cross-compile.
+ARG TARGETOS
+ARG TARGETARCH
+RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH:-amd64} go build -a -installsuffix cgo -o blog-in-golang .
 
 # Stage 2: React Builder
-FROM node:20-alpine AS react-builder
+# JS build is arch-independent; keep it on the native platform for speed.
+FROM --platform=$BUILDPLATFORM node:20-alpine AS react-builder
 
 # Declare ARG for Google API Key
 ARG GAPI

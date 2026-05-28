@@ -1,0 +1,30 @@
+# Develop blog container — runs on the Mac Studio (arm64).
+#
+# Image is pulled from the NAS push registry (nas.home.arpa:5001), which the
+# Studio's docker daemon trusts via daemon.json insecure-registries. The
+# `deploy` job in studio-workflow.yml runs `docker compose -p blog-develop ...
+# pull && up -d` against the Studio daemon over the runner's mounted socket —
+# no SSH.
+#
+# Secrets are interpolated from the workflow env (GitHub Actions secrets) at
+# `up` time — never hardcoded here (public repo).
+#
+# Traefik on the NAS fronts this at blog-dev.traefik.mitchelletzel.com and now
+# dials the Studio by LAN IP + published port (http://192.168.1.151:85), since
+# it can no longer reach the container by name across hosts. The container
+# serves plain HTTP on :8080 internally; Traefik terminates TLS.
+services:
+  blog-in-golang-develop:
+    image: nas.home.arpa:5001/blog:develop
+    container_name: blog-in-golang-develop
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    ports:
+      - "85:8080/tcp"
+    volumes:
+      - '/Users/mitchelletzel/blog-develop-docker/config:/config'
+    environment:
+      AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
+      AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
+      ARTICLES: "Test-Articles"
