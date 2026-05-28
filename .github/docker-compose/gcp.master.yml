@@ -1,3 +1,17 @@
+# GCP production blog container.
+#
+# Image (blog:latest, amd64) is loaded from a tarball scp'd by the deploy
+# job's master path — the GCP box can't reach the LAN-only nas.home.arpa:5001
+# registry. The deploy job builds amd64 via `docker buildx build --platform
+# linux/amd64`, saves it, ships it over SSH, loads on GCP, and brings the
+# container up.
+#
+# DEPLOYMENT=GCP triggers certmagic in the binary (the GCP box has no Traefik
+# in front; the container terminates TLS itself), so this compose keeps the
+# :443 + :80 port publishes for the LE HTTP-01 challenge + serving traffic.
+#
+# All `${...}` env vars are interpolated by docker compose from the SSH
+# session's exported environment, set by the deploy job before `up -d`.
 services:
   blog-in-golang:
     image: blog:latest
@@ -14,3 +28,13 @@ services:
       ARTICLES: "Live-Articles"
       DEPLOYMENT: "GCP"
       DOMAIN: "gcp.mitchelletzel.com"
+      # Bearer token required on GET /metrics. Mirror the same value in the
+      # Studio's Prometheus scrape_config (env=gcp target).
+      METRICS_TOKEN: "${METRICS_TOKEN}"
+      # Loki push hook (the studio runs Alloy on the host; GCP doesn't, so
+      # the blog binary ships its own logs via lokirus when LOKI_URL is set).
+      # See blog/app.go init() and PR #502. The push endpoint is gated by
+      # basicAuth at Traefik (nas-configs !87).
+      LOKI_URL: "${LOKI_URL}"
+      LOKI_USERNAME: "${LOKI_USERNAME}"
+      LOKI_PASSWORD: "${LOKI_PASSWORD}"
