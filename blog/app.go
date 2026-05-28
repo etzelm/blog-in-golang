@@ -65,7 +65,15 @@ func main() {
 
 	log.Info("Server is starting...")
 	gin.SetMode(gin.ReleaseMode)
-	httpServer := gin.Default()
+	// gin.New() instead of gin.Default() — Default() auto-registers Gin's
+	// own text-format access logger and writes lines like
+	//   [GIN] 2026/05/28 - 20:15:28 | 200 | 64.417µs | ::1 | GET "/healthz"
+	// which Loki's `| json` parser can't read, defeating the structured-log
+	// work in init(). Recovery() still gets us panic protection; the
+	// equivalent of Default()'s Logger() lives in accessLogMiddleware below
+	// and emits one JSON line per request via logrus.
+	httpServer := gin.New()
+	httpServer.Use(gin.Recovery())
 	httpServer.LoadHTMLGlob("templates/*")
 	// Middlewares MUST be registered before routes — Gin snapshots
 	// engine.Handlers into each route's frozen handler chain at registration
@@ -154,6 +162,7 @@ func LoadServerRoutes(server *gin.Engine) {
 func LoadMiddlewares(server *gin.Engine) {
 
 	server.Use(metricsMiddleware())
+	server.Use(accessLogMiddleware())
 	server.Use(securityHeadersMiddleware())
 	server.Use(staticCacheMiddleware())
 	server.Use(unauthorizedMiddleware())
@@ -164,6 +173,41 @@ func LoadMiddlewares(server *gin.Engine) {
 	//   "expected a valid start token, got \"\\x1f\" (\"INVALID\")"
 	server.Use(gzip.Gzip(gzip.BestCompression, gzip.WithExcludedPaths([]string{"/metrics"})))
 
+}
+
+// accessLogMiddleware emits one structured JSON line per request via
+// logrus, replacing Gin's text-format access logger. Fields stay bounded
+// (route TEMPLATE not raw path; numeric status; integer-µs latency), so
+// Loki streams don't blow up on cardinality. Level escalates to Warn at
+// 4xx and Error at 5xx so `{service="..."} | json | level="error"` in
+// LogQL surfaces actual failures rather than every healthcheck ping.
+func accessLogMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		start := time.Now()
+		c.Next()
+		route := c.FullPath() // route TEMPLATE — same source as metrics labels
+		if route == "" {
+			route = "unmatched"
+		}
+		status := c.Writer.Status()
+		latencyMicros := time.Since(start).Microseconds()
+		entry := log.WithFields(log.Fields{
+			"client_ip":  c.ClientIP(),
+			"method":     c.Request.Method,
+			"path":       c.Request.URL.Path,
+			"route":      route,
+			"status":     status,
+			"latency_us": latencyMicros,
+		})
+		switch {
+		case status >= 500:
+			entry.Error("request")
+		case status >= 400:
+			entry.Warn("request")
+		default:
+			entry.Info("request")
+		}
+	}
 }
 
 // metricsMiddleware records request count + duration into the Prometheus
