@@ -19,13 +19,16 @@ RUN go mod download
 # Copy the rest of the Go source code
 COPY blog/ .
 
-# Test the Go application
-# Declare ARGs for AWS creds
-ARG AWS_ACCESS_KEY_ID
-ARG AWS_SECRET_ACCESS_KEY
-# Set environment variables and run tests in the same RUN command
-RUN export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID && \
-    export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY && \
+# Test the Go application. The tests hit DynamoDB, so they need AWS creds —
+# but those creds must not persist in the image's layer history. Mount them as
+# BuildKit secrets (only visible during this single RUN, never written into a
+# layer). Replaces the prior ARG/ENV approach, which fired the docker buildx
+# `SecretsUsedInArgOrEnv` warnings on every CI build.
+# CLI side (studio-workflow.yml):
+#   --secret id=aws_access_key_id,env=AWS_ACCESS_KEY_ID
+#   --secret id=aws_secret_access_key,env=AWS_SECRET_ACCESS_KEY
+RUN --mount=type=secret,id=aws_access_key_id,env=AWS_ACCESS_KEY_ID,required=true \
+    --mount=type=secret,id=aws_secret_access_key,env=AWS_SECRET_ACCESS_KEY,required=true \
     go test -v -coverprofile=coverage.out ./...
 RUN go tool cover -func=coverage.out
 

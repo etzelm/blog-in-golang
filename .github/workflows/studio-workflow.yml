@@ -141,8 +141,8 @@ jobs:
             echo "Build attempt $i..."
             if docker build \
                 --build-arg GAPI="$GAPI" \
-                --build-arg AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID" \
-                --build-arg AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY" \
+                --secret id=aws_access_key_id,env=AWS_ACCESS_KEY_ID \
+                --secret id=aws_secret_access_key,env=AWS_SECRET_ACCESS_KEY \
                 -t "$IMAGE" -f blog/Dockerfile .; then
               BUILD_OK=true
               break
