@@ -27,6 +27,7 @@ services:
     environment:
       AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
       AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
+      ENV_NAME: "dev"
       ARTICLES: "Test-Articles"
       # Bearer token required on GET /metrics. Set in repo secrets +
       # mirrored to the Prometheus scrape_config on the Studio. If empty,
