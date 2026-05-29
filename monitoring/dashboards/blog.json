@@ -582,7 +582,7 @@
     {
       "type": "logs",
       "id": 13,
-      "title": "Live blog-dev logs (most-recent first)",
+      "title": "Live logs",
       "datasource": {
         "type": "loki",
         "uid": "P982945308D3682D1"
@@ -768,31 +768,31 @@
         "query": "dev : blog-in-golang-develop, prod : blog-in-golang-latest, gcp : blog-in-golang-gcp",
         "options": [
           {
-            "text": "blog-in-golang-develop",
+            "text": "dev",
             "value": "blog-in-golang-develop",
             "selected": true
           },
           {
-            "text": "blog-in-golang-latest",
+            "text": "prod",
             "value": "blog-in-golang-latest",
             "selected": false
           },
           {
-            "text": "blog-in-golang-gcp",
+            "text": "gcp",
             "value": "blog-in-golang-gcp",
             "selected": false
           }
         ],
         "current": {
           "selected": true,
-          "text": "blog-in-golang-develop",
+          "text": "dev",
           "value": "blog-in-golang-develop"
         },
         "multi": false,
         "includeAll": false,
-        "hide": 2,
-        "skipUrlSync": true,
-        "label": "log_service"
+        "hide": 0,
+        "skipUrlSync": false,
+        "label": "env (logs)"
       }
     ]
   },
