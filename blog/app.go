@@ -45,28 +45,22 @@ var (
 	)
 )
 
+type envHook struct{ env string }
+
+func (h *envHook) Levels() []log.Level { return log.AllLevels }
+func (h *envHook) Fire(e *log.Entry) error { e.Data["env"] = h.env; return nil }
+
 func init() {
-	// Emit logs as JSON so Grafana Loki / LogQL can extract fields with
-	// `| json` instead of regex over freeform text. logrus's default
-	// TextFormatter renders `level=info msg="…"` which works but is
-	// strictly weaker downstream — JSON gives `level="info"`, `msg=…`,
-	// and any `log.WithField(...)`-attached fields as first-class labels.
-	// RFC3339Nano keeps sub-ms precision for request-rate analysis.
 	log.SetFormatter(&log.JSONFormatter{
 		TimestampFormat: time.RFC3339Nano,
 	})
 
-	// Loki push hook for GCP. The Studio containers (dev + prod) are tailed
-	// by Grafana Alloy on the host, which reads the docker journal and ships
-	// to Loki over the compose network — no in-process hook needed. The GCP
-	// box has a 0.5 vCPU budget that doesn't justify a separate shipper
-	// process, so the blog binary pushes its own logs directly via lokirus.
-	//
-	// When LOKI_URL is set, the hook batches logrus entries (Info+) and
-	// POSTs them to the configured Loki endpoint using basic auth. Static
-	// labels (service / env / source) determine the Loki stream identity —
-	// pinned to the GCP container's slot so it never collides with the
-	// Alloy-shipped studio streams.
+	envName := os.Getenv("ENV_NAME")
+	if envName == "" {
+		envName = "dev"
+	}
+	log.AddHook(&envHook{env: envName})
+
 	if lokiURL := os.Getenv("LOKI_URL"); lokiURL != "" {
 		opts := lokirus.NewLokiHookOptions().
 			WithBasicAuth(os.Getenv("LOKI_USERNAME"), os.Getenv("LOKI_PASSWORD")).
