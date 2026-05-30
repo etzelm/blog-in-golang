@@ -332,11 +332,12 @@ func securityHeadersMiddleware() gin.HandlerFunc {
 
 		// Content Security Policy (relaxed for external resources)
 		csp := "default-src 'self'; " +
-			"script-src 'self' 'unsafe-inline' https://files.mitchelletzel.com; " +
-			"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+			"script-src 'self' 'unsafe-inline' https://files.mitchelletzel.com https://accounts.google.com; " +
+			"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com; " +
 			"img-src 'self' data: https: blob:; " +
 			"font-src 'self' https://fonts.gstatic.com; " +
-			"connect-src 'self' https://files.mitchelletzel.com; " +
+			"connect-src 'self' https://files.mitchelletzel.com https://accounts.google.com; " +
+			"frame-src https://accounts.google.com; " +
 			"frame-ancestors 'none';"
 		c.Header("Content-Security-Policy", csp)
 
