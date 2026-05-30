@@ -582,7 +582,7 @@
     {
       "type": "logs",
       "id": 13,
-      "title": "Live blog-dev logs (most-recent first)",
+      "title": "Live logs",
       "datasource": {
         "type": "loki",
         "uid": "P982945308D3682D1"
@@ -609,7 +609,7 @@
             "type": "loki",
             "uid": "P982945308D3682D1"
           },
-          "expr": "{service=\"$log_service\"} | json",
+          "expr": "{service=~\"blog-in-golang-.+\"} | json | env=\"$env\"",
           "refId": "A",
           "queryType": "range"
         }
@@ -667,7 +667,7 @@
             "type": "loki",
             "uid": "P982945308D3682D1"
           },
-          "expr": "sum by (level) (rate({service=\"$log_service\"} | json | __error__=\"\" [5m]))",
+          "expr": "sum by (level) (rate({service=~\"blog-in-golang-.+\"} | json | __error__=\"\" | env=\"$env\" [5m]))",
           "legendFormat": "{{level}}",
           "refId": "A",
           "queryType": "range"
@@ -726,7 +726,7 @@
             "type": "loki",
             "uid": "P982945308D3682D1"
           },
-          "expr": "sum(count_over_time({service=\"$log_service\"} | json | __error__=\"\" | level=\"error\" [1m]))",
+          "expr": "sum(count_over_time({service=~\"blog-in-golang-.+\"} | json | __error__=\"\" | env=\"$env\" | level=\"error\" [1m]))",
           "legendFormat": "errors",
           "refId": "A",
           "queryType": "range"
@@ -761,38 +761,6 @@
         "options": [],
         "label": "env",
         "hide": 0
-      },
-      {
-        "name": "log_service",
-        "type": "custom",
-        "query": "dev : blog-in-golang-develop, prod : blog-in-golang-latest, gcp : blog-in-golang-gcp",
-        "options": [
-          {
-            "text": "blog-in-golang-develop",
-            "value": "blog-in-golang-develop",
-            "selected": true
-          },
-          {
-            "text": "blog-in-golang-latest",
-            "value": "blog-in-golang-latest",
-            "selected": false
-          },
-          {
-            "text": "blog-in-golang-gcp",
-            "value": "blog-in-golang-gcp",
-            "selected": false
-          }
-        ],
-        "current": {
-          "selected": true,
-          "text": "blog-in-golang-develop",
-          "value": "blog-in-golang-develop"
-        },
-        "multi": false,
-        "includeAll": false,
-        "hide": 2,
-        "skipUrlSync": true,
-        "label": "log_service"
       }
     ]
   },

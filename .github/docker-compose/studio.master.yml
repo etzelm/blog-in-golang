@@ -32,6 +32,7 @@ services:
     environment:
       AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
       AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
+      ENV_NAME: "prod"
       ARTICLES: "Live-Articles"
       # Bearer token required on GET /metrics. Mirror the same value in the
       # Studio's Prometheus scrape_config.authorization.credentials. Empty
