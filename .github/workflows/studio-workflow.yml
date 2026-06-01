@@ -454,7 +454,7 @@ jobs:
         with:
           files: monitoring/dashboards/*.json
       - name: Ensure Grafana folder exists
-        if: steps.changed-dashboards.outputs.any_changed == 'true'
+        if: steps.changed-dashboards.outputs.any_changed == 'true' || github.event.inputs.force_deploy == 'true'
         id: grafana-folder
         shell: bash
         run: |
@@ -479,7 +479,7 @@ jobs:
             echo "folder_uid=$uid" >> "$GITHUB_OUTPUT"
           fi
       - name: Provision dashboards via Grafana API
-        if: steps.changed-dashboards.outputs.any_changed == 'true'
+        if: steps.changed-dashboards.outputs.any_changed == 'true' || github.event.inputs.force_deploy == 'true'
         shell: bash
         run: |
           set -eo pipefail
@@ -488,7 +488,13 @@ jobs:
             exit 0
           fi
           FOLDER_UID="${{ steps.grafana-folder.outputs.folder_uid }}"
-          for f in ${{ steps.changed-dashboards.outputs.all_changed_files }}; do
+          CHANGED="${{ steps.changed-dashboards.outputs.all_changed_files }}"
+          if [ -n "$CHANGED" ]; then
+            FILES="$CHANGED"
+          else
+            FILES=$(ls monitoring/dashboards/*.json)
+          fi
+          for f in $FILES; do
             echo "uploading $f → folder $FOLDER_UID"
             jq -n --slurpfile dash "$f" --arg msg "ci ${{ github.sha }}" --arg fuid "$FOLDER_UID" '{
               dashboard: ($dash[0] | .id = null),

@@ -6,7 +6,7 @@
     "prometheus",
     "loki"
   ],
-  "schemaVersion": 38,
+  "schemaVersion": 39,
   "version": 1,
   "refresh": "30s",
   "time": {
