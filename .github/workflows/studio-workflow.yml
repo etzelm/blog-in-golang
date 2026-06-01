@@ -453,6 +453,31 @@ jobs:
         uses: tj-actions/changed-files@v47
         with:
           files: monitoring/dashboards/*.json
+      - name: Ensure Grafana folder exists
+        if: steps.changed-dashboards.outputs.any_changed == 'true'
+        id: grafana-folder
+        shell: bash
+        run: |
+          set -eo pipefail
+          if [ -z "$GRAFANA_TOKEN" ]; then
+            echo "::warning::secrets.GRAFANA_TOKEN is unset — skipping provisioning"
+            exit 0
+          fi
+          FOLDER_TITLE="blog-in-golang"
+          AUTH=(-H "Authorization: Bearer $GRAFANA_TOKEN" -H "Content-Type: application/json")
+          existing=$(curl -fsSL "${AUTH[@]}" "$GRAFANA_URL/api/folders" \
+            | jq -r --arg t "$FOLDER_TITLE" '.[] | select(.title == $t) | .uid')
+          if [ -n "$existing" ]; then
+            echo "folder already exists: uid=$existing"
+            echo "folder_uid=$existing" >> "$GITHUB_OUTPUT"
+          else
+            resp=$(curl -fsSL -X POST "${AUTH[@]}" \
+              -d "$(jq -n --arg t "$FOLDER_TITLE" '{title: $t}')" \
+              "$GRAFANA_URL/api/folders")
+            uid=$(echo "$resp" | jq -r '.uid')
+            echo "created folder: uid=$uid"
+            echo "folder_uid=$uid" >> "$GITHUB_OUTPUT"
+          fi
       - name: Provision dashboards via Grafana API
         if: steps.changed-dashboards.outputs.any_changed == 'true'
         shell: bash
@@ -462,12 +487,12 @@ jobs:
             echo "::warning::secrets.GRAFANA_TOKEN is unset — skipping provisioning"
             exit 0
           fi
+          FOLDER_UID="${{ steps.grafana-folder.outputs.folder_uid }}"
           for f in ${{ steps.changed-dashboards.outputs.all_changed_files }}; do
-            echo "uploading $f"
-            # `id: null` forces upsert by `uid`. POST /api/dashboards/db
-            # returns 200 with the canonical url + version on success.
-            jq -n --slurpfile dash "$f" --arg msg "ci ${{ github.sha }}" '{
+            echo "uploading $f → folder $FOLDER_UID"
+            jq -n --slurpfile dash "$f" --arg msg "ci ${{ github.sha }}" --arg fuid "$FOLDER_UID" '{
               dashboard: ($dash[0] | .id = null),
+              folderUid: $fuid,
               overwrite: true,
               message: $msg
             }' > /tmp/grafana-payload.json
