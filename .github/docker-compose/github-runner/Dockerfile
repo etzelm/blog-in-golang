@@ -15,7 +15,7 @@ RUN curl -sL https://api.github.com/repos/cli/cli/releases/latest \
         | cut -d '"' -f 4 \
         | wget -qi - -O gh_latest.deb
 RUN dpkg -i gh_latest.deb
-RUN curl -fsSL https://go.dev/dl/go1.26.3.linux-arm64.tar.gz -o go.tar.gz && \
+RUN curl -fsSL https://go.dev/dl/go1.26.4.linux-arm64.tar.gz -o go.tar.gz && \
     tar -C /usr/local -xzf go.tar.gz && \
     rm go.tar.gz && \
     ln -s /usr/local/go/bin/go /usr/bin/go

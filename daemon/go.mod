@@ -1,6 +1,6 @@
 module github.com/etzelm/blog-in-golang/daemon
 
-go 1.26.3
+go 1.26.4
 
 replace github.com/etzelm/blog-in-golang => ../blog
 
