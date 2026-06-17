@@ -17,6 +17,12 @@ services:
     image: blog:latest
     container_name: blog-in-golang
     restart: unless-stopped
+    # Cap memory so a leak/runaway restarts THIS container instead of tripping
+    # the host OOM-killer (the GCP box has only ~1 GB RAM). The binary idles at
+    # ~20 MiB, so 512m is generous headroom; memswap_limit allows 512m of swap
+    # on top (host has a 1 GB swapfile + vm.swappiness=10, added 2026-06-16).
+    mem_limit: 512m
+    memswap_limit: 1g
     ports:
       - "443:443/tcp"
       - "80:80/tcp"
