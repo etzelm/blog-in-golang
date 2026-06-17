@@ -340,7 +340,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-oauth/google@npm:^0.13.4":
+"@react-oauth/google@npm:^0.13.5":
   version: 0.13.5
   resolution: "@react-oauth/google@npm:0.13.5"
   peerDependencies:
@@ -639,16 +639,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:>=16.9.11":
-  version: 19.2.15
-  resolution: "@types/react@npm:19.2.15"
-  dependencies:
-    csstype: "npm:^3.2.2"
-  checksum: 10c0/b554eab715bb14e581f0ae60e5cefe91e1a5e06c31022b543a9806cf224aa056f21e4fb46208e46eb934d86ca0b247ebc82377192a0dead303cb28b8764c6e67
-  languageName: node
-  linkType: hard
-
-"@types/react@npm:^19.2.17":
+"@types/react@npm:>=16.9.11, @types/react@npm:^19.2.17":
   version: 19.2.17
   resolution: "@types/react@npm:19.2.17"
   dependencies:
@@ -1522,7 +1513,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.5.15, postcss@npm:^8.5.8":
+"postcss@npm:^8.5.15":
   version: 8.5.15
   resolution: "postcss@npm:8.5.15"
   dependencies:
@@ -1706,7 +1697,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-toastify@npm:^11.0.5":
+"react-toastify@npm:^11.1.0":
   version: 11.1.0
   resolution: "react-toastify@npm:11.1.0"
   dependencies:
@@ -1744,7 +1735,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "realtor-site@workspace:."
   dependencies:
-    "@react-oauth/google": "npm:^0.13.4"
+    "@react-oauth/google": "npm:^0.13.5"
     "@testing-library/dom": "npm:^10.4.1"
     "@testing-library/jest-dom": "npm:^6.9.1"
     "@testing-library/react": "npm:^16.3.2"
@@ -1752,14 +1743,14 @@ __metadata:
     "@vitejs/plugin-react": "npm:^6.0.2"
     "@vitest/coverage-v8": "npm:4.1.9"
     jsdom: "npm:^29.1.1"
-    postcss: "npm:^8.5.8"
+    postcss: "npm:^8.5.15"
     prop-types: "npm:^15.8.1"
     react: "npm:^19.2.7"
     react-bootstrap: "npm:^2.10.10"
     react-dom: "npm:^19.2.7"
     react-dropzone: "npm:^15.0.0"
     react-router: "npm:^7.18.0"
-    react-toastify: "npm:^11.0.5"
+    react-toastify: "npm:^11.1.0"
     terser: "npm:^5.48.0"
     typescript: "npm:^6.0.3"
     uuid: "npm:^14.0.0"
@@ -1986,17 +1977,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tinyglobby@npm:^0.2.12, tinyglobby@npm:^0.2.15":
-  version: 0.2.16
-  resolution: "tinyglobby@npm:0.2.16"
-  dependencies:
-    fdir: "npm:^6.5.0"
-    picomatch: "npm:^4.0.4"
-  checksum: 10c0/f2e09fd93dd95c41e522113b686ff6f7c13020962f8698a864a257f3d7737599afc47722b7ab726e12f8a813f779906187911ff8ee6701ede65072671a7e934b
-  languageName: node
-  linkType: hard
-
-"tinyglobby@npm:^0.2.17":
+"tinyglobby@npm:^0.2.12, tinyglobby@npm:^0.2.15, tinyglobby@npm:^0.2.17":
   version: 0.2.17
   resolution: "tinyglobby@npm:0.2.17"
   dependencies:
