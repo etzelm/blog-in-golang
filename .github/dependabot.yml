@@ -9,6 +9,14 @@ updates:
     directory: "/blog" # Location of package manifests
     schedule:
       interval: "daily"
+  # /daemon is its own module that `replace`s ../blog. Without its own entry,
+  # its indirect deps drift behind /blog's daily bumps until the module won't
+  # load without a manual `go mod tidy`. Watch it too so Dependabot keeps it
+  # in sync (direct: aws-sdk-go v1, logrus; the local blog replace is ignored).
+  - package-ecosystem: "gomod"
+    directory: "/daemon"
+    schedule:
+      interval: "daily"
   - package-ecosystem: "npm" # See documentation for possible values
     directory: "/realtor" # Location of package manifests
     schedule:
