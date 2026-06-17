@@ -406,11 +406,27 @@ jobs:
           set -o pipefail
           echo "RUNNING DEVELOP TESTS"
           TEST=.github/workflows/local-urls.txt
+          # Retry each URL with backoff so a transient blip doesn't fail the
+          # deploy; fail only if a URL stays bad after 5 attempts.
+          check() {
+            url="$1"
+            for attempt in 1 2 3 4 5; do
+              if curl --fail --silent --show-error --max-time 30 \
+                   --header 'accept-encoding: gzip' "$url" -o /dev/null; then
+                return 0
+              fi
+              echo "  attempt $attempt failed for $url; retrying in $((attempt * 5))s..."
+              sleep $((attempt * 5))
+            done
+            echo "::error::$url still failing after 5 attempts"
+            return 1
+          }
           while IFS= read -r line
           do
-            echo $line
-            command="curl --fail --header 'accept-encoding: gzip' "$line" > /dev/null"
-            eval "$command"
+            [ -z "$line" ] && continue
+            url=$(eval echo "$line")   # expand $STUDIO_ADDR in the URL
+            echo "$url"
+            check "$url"
           done < $TEST
       - name: Test (master -> public-urls.txt via CloudFront)
         if: github.ref == 'refs/heads/master' && (steps.deploy-master-gcp.outcome == 'success' || steps.deploy-master-gcp.outcome == 'skipped')
@@ -420,10 +436,29 @@ jobs:
           set -o pipefail
           echo "RUNNING PUBLIC TESTS"
           TEST=.github/workflows/public-urls.txt
+          # A master deploy invalidates CloudFront (/*) immediately before this
+          # runs, so the first hit on a purged object can race the origin
+          # re-fetch and get a transient 403 (briefly negative-cached ~10s) —
+          # see run 27661739540. Retry with backoff so a blip doesn't fail the
+          # prod deploy; fail only if a URL stays bad after 5 attempts.
+          check() {
+            url="$1"
+            for attempt in 1 2 3 4 5; do
+              if curl --fail --silent --show-error --max-time 30 \
+                   --header 'accept-encoding: gzip' "$url" -o /dev/null; then
+                return 0
+              fi
+              echo "  attempt $attempt failed for $url; retrying in $((attempt * 5))s..."
+              sleep $((attempt * 5))
+            done
+            echo "::error::$url still failing after 5 attempts"
+            return 1
+          }
           while IFS= read -r line
           do
+            [ -z "$line" ] && continue
             echo "$line"
-            curl --fail --header 'accept-encoding: gzip' "$line" > /dev/null
+            check "$line"
           done < $TEST
 
   # Provisions blog-owned Grafana dashboards (monitoring/dashboards/*.json) to
