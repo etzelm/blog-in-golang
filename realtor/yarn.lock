@@ -1665,9 +1665,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router@npm:^8.0.0":
-  version: 8.0.0
-  resolution: "react-router@npm:8.0.0"
+"react-router@npm:^8.0.1":
+  version: 8.0.1
+  resolution: "react-router@npm:8.0.1"
   dependencies:
     cookie-es: "npm:^3.1.1"
   peerDependencies:
@@ -1676,7 +1676,7 @@ __metadata:
   peerDependenciesMeta:
     react-dom:
       optional: true
-  checksum: 10c0/465f2ccc0e6aacc441064f97df722142039e0abb8bb58492a452dbf6693ed7cdd32758dc0a8bb840b6425475b66add7bf183d0ccf71b56894590bb8a81f44e10
+  checksum: 10c0/7ffcac5caf209b6988a0e045fd044f5f8e91e7f677475f707becd514f316f6c2d556f90e371c5a41f6033da891a2d97370b1c5d443ba96991ab0f4f71252c8ba
   languageName: node
   linkType: hard
 
@@ -1748,7 +1748,7 @@ __metadata:
     react-bootstrap: "npm:^2.10.10"
     react-dom: "npm:^19.2.7"
     react-dropzone: "npm:^15.0.0"
-    react-router: "npm:^8.0.0"
+    react-router: "npm:^8.0.1"
     react-toastify: "npm:^11.1.0"
     terser: "npm:^5.48.0"
     typescript: "npm:^6.0.3"
