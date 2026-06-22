@@ -616,15 +616,23 @@ jobs:
 
           cd blog
           echo "Uploading résumé PDF to s3://blog-in-golang/"
+          # --acl public-read: the PDF lives at the bucket ROOT, which is NOT
+          # covered by the public/* bucket policy, so it needs an object ACL to
+          # stay publicly readable. Without it the object uploads private and
+          # files.mitchelletzel.com returns 403.
           aws s3 cp "Mitchell-Etzel's-Resume.pdf" \
             "s3://blog-in-golang/Mitchell-Etzel's-Resume.pdf" \
-            --content-type application/pdf
+            --content-type application/pdf \
+            --acl public-read
 
           if [ -n "$DISTRIBUTION_ID_FILES" ]; then
-            echo "Invalidating files CDN for /Mitchell-Etzel's-Resume.pdf"
+            # Wildcard path: CloudFront rejects the literal apostrophe in the
+            # filename ("invalid invalidation path"), and "/Mitchell-Etzel*"
+            # matches the object regardless of how the apostrophe is encoded.
+            echo "Invalidating files CDN for the résumé PDF"
             aws cloudfront create-invalidation \
               --distribution-id "$DISTRIBUTION_ID_FILES" \
-              --paths "/Mitchell-Etzel's-Resume.pdf"
+              --paths "/Mitchell-Etzel*"
           else
             echo "::warning::DISTRIBUTION_ID2 unset — uploaded the PDF but skipped CloudFront invalidation"
           fi
