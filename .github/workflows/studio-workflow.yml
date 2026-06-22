@@ -135,6 +135,7 @@ jobs:
             blog/app.go
             blog/app_test.go
             blog/Dockerfile
+            blog/data/**
             blog/public/**
             blog/src/**
             blog/templates/**
@@ -544,3 +545,86 @@ jobs:
               "$GRAFANA_URL/api/dashboards/db")
             echo "$response" | jq -r '"  ok: " + .url + "  v" + (.version|tostring)'
           done
+
+  # ───────────────────────────── Résumé PDF ─────────────────────────────
+  # The distributed résumé PDF (files.mitchelletzel.com/Mitchell-Etzel's-
+  # Resume.pdf) is generated from blog/data/resume.json — the SAME single
+  # source the public about page renders (see blog/data/README.md). This job
+  # recompiles the PDF with Typst and, on the prod (master) path, uploads it to
+  # S3 and invalidates the files CloudFront distribution. It also runs on PRs
+  # as a compile smoke-test (no upload) so a broken resume.{json,typ} is caught
+  # before prod. Gated on the résumé files actually changing.
+  #
+  # Typst is bootstrapped in-step (idempotent) so this works on the current
+  # runner without a runner-image rebuild; the font is bundled in the repo
+  # (blog/data/fonts), so no font install is needed. Bake Typst into the runner
+  # image later to skip the download.
+  publish-resume:
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/master'
+    runs-on: [self-hosted, Linux, ARM64, studio]
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: us-west-1
+      # Pinned to match local authoring (typst 0.15.0); single static musl binary.
+      TYPST_VERSION: v0.15.0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Get Changed Résumé Files
+        id: changed-resume
+        uses: tj-actions/changed-files@v47
+        with:
+          files: |
+            blog/data/resume.json
+            blog/data/resume.typ
+      - name: Compile Résumé PDF
+        id: compile
+        if: steps.changed-resume.outputs.any_changed == 'true' || github.event.inputs.force_deploy == 'true'
+        shell: bash
+        run: |
+          set -e
+          set -o pipefail
+
+          # Bootstrap Typst if the runner image doesn't already ship it. Pinned
+          # so CI output matches local authoring; single static musl binary.
+          if ! command -v typst >/dev/null 2>&1; then
+            echo "Installing Typst ${TYPST_VERSION}..."
+            curl -fsSL "https://github.com/typst/typst/releases/download/${TYPST_VERSION}/typst-aarch64-unknown-linux-musl.tar.xz" -o /tmp/typst.tar.xz
+            sudo tar -xJf /tmp/typst.tar.xz -C /usr/local/bin --strip-components=1 typst-aarch64-unknown-linux-musl/typst
+            rm -f /tmp/typst.tar.xz
+          fi
+          typst --version
+
+          cd blog
+          # Render with the repo-bundled Liberation Sans only (data/fonts), so CI
+          # output is byte-identical to a local compile regardless of the runner's
+          # installed fonts — no apt font install, no fallback warnings.
+          typst compile data/resume.typ "Mitchell-Etzel's-Resume.pdf" \
+            --font-path data/fonts --ignore-system-fonts
+          ls -la "Mitchell-Etzel's-Resume.pdf"
+      - name: Publish PDF to files.mitchelletzel.com (prod only)
+        if: (steps.changed-resume.outputs.any_changed == 'true' || github.event.inputs.force_deploy == 'true') && github.ref == 'refs/heads/master'
+        shell: bash
+        env:
+          # CloudFront distribution that fronts files.mitchelletzel.com (the
+          # résumé PDF's CDN). Value lives in the repo secret, never in git.
+          DISTRIBUTION_ID_FILES: ${{ secrets.DISTRIBUTION_ID2 }}
+        run: |
+          set -e
+          set -o pipefail
+
+          cd blog
+          echo "Uploading résumé PDF to s3://blog-in-golang/"
+          aws s3 cp "Mitchell-Etzel's-Resume.pdf" \
+            "s3://blog-in-golang/Mitchell-Etzel's-Resume.pdf" \
+            --content-type application/pdf
+
+          if [ -n "$DISTRIBUTION_ID_FILES" ]; then
+            echo "Invalidating files CDN for /Mitchell-Etzel's-Resume.pdf"
+            aws cloudfront create-invalidation \
+              --distribution-id "$DISTRIBUTION_ID_FILES" \
+              --paths "/Mitchell-Etzel's-Resume.pdf"
+          else
+            echo "::warning::DISTRIBUTION_ID2 unset — uploaded the PDF but skipped CloudFront invalidation"
+          fi

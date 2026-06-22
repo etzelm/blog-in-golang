@@ -138,9 +138,18 @@ func ArticlePage(c *gin.Context) {
 	}
 }
 
-// AboutPage : Displays the static about.html page
+// AboutPage : Renders the about.html résumé page from the resume.json single
+// source of truth (shared with the distributed PDF — see blog/data/resume.json).
 func AboutPage(c *gin.Context) {
 	c.Header("Cache-Control", "public, max-age=31536000")
+	// Load the résumé data. On failure, log and fall back to an empty Resume so
+	// the home page still renders (degraded) rather than 500-ing — the static
+	// intro/photo/headers come from the template, not the data file.
+	resume, err := models.LoadResume()
+	if err != nil {
+		log.WithError(err).Error("AboutPage: failed to load resume data; rendering without work history")
+		resume = &models.Resume{}
+	}
 	// Call the HTML method of the Context to render a template
 	c.HTML(
 		// Set the HTTP status to 200 (OK)
@@ -149,7 +158,8 @@ func AboutPage(c *gin.Context) {
 		"about.html",
 		// Pass the data that the page uses
 		gin.H{
-			"title": "Mitchell Etzel",
+			"title":  "Mitchell Etzel",
+			"Resume": resume,
 		},
 	)
 }

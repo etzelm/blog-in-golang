@@ -110,6 +110,10 @@ COPY --from=golang-builder /app/blog-in-golang .
 COPY --from=golang-builder /app/public/ /app/public/
 COPY --from=golang-builder /app/templates/ /app/templates/
 
+# Copy the résumé data (single source for the about page + the distributed PDF)
+# so the AboutPage handler can read data/resume.json at runtime.
+COPY --from=golang-builder /app/data/ /app/data/
+
 # Copy the built React app from the react-builder stage
 COPY --from=react-builder /app/realtor/build/ /app/realtor/build/
 

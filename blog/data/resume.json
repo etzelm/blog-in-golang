@@ -1,0 +1,238 @@
+{
+  "basics": {
+    "name": "Mitchell Edward Etzel",
+    "label": "Senior Cloud Engineer / CloudOps Leader",
+    "email": "etzelm@live.com",
+    "blog": "mitchelletzel.com",
+    "linkedin": "linkedin.com/in/etzelm",
+    "github": "github.com/etzelm"
+  },
+  "education": [
+    {
+      "degree": "Bachelors of Science in Computer Science",
+      "school": "University of California, Santa Cruz",
+      "location": "",
+      "attendedShort": "June '15 to March '18",
+      "dates": "June 2015 - March 2018"
+    },
+    {
+      "degree": "Associates of Science in Computer Science",
+      "school": "Diablo Valley College",
+      "location": "Pleasant Hill, CA",
+      "attendedShort": "January '13 to June '15",
+      "dates": "January 2013 - June 2015"
+    }
+  ],
+  "skills": [
+    { "category": "Operating Systems", "items": "Ubuntu, Amazon Linux, FreeBSD, macOS, Windows Server" },
+    { "category": "Languages/Frameworks", "items": "Golang, Java, Node.js, React, Shell, PowerShell, C++, Python, SQL, NoSQL" },
+    { "category": "Infrastructure as Code/Policy as Code", "items": "Terraform, CloudFormation, Trivy, checkov, Sentinel" },
+    { "category": "Applications & Tools", "items": "Docker, git, vi, LM Studio, Visual Studio Code, GitKraken, Copilot, Claude, OpenClaw" }
+  ],
+  "work": [
+    {
+      "company": "LINQ",
+      "title": "CloudOps Engineering Manager",
+      "dates": "December 2024 - February 2026",
+      "boldTitle": true,
+      "meta": [
+        { "label": "Department", "value": "Cloud Operations" },
+        { "label": "Focus as Manager", "value": "Leading Cloud Infrastructure & Platform Reliability" },
+        { "label": "Main Languages", "value": "Terraform, Shell, PowerShell, JavaScript" },
+        { "label": "Main Cloud Platforms Worked With", "value": "AWS, Azure, Azure Gov, GCP" }
+      ],
+      "bullets": [
+        "Managed 4 engineers and a 2-6 contractor bench; led SRE, chaos-engineering, and cloud best-practice enablement",
+        "Built medallion AWS Image Builder pipelines (Nutrition suite) with EC2 fast-launch for sub-4-min Windows boots, whose vetted golden images insulated us from supply-chain attacks like the Notepad++ auto-updater compromise",
+        "Cut MTTR by 4-6 hours by auto-remediating common failures instead of paging on-call engineers",
+        "Automated policy remediation via reusable shell libraries and OIDC-based CI/CD jobs, resolving tens of thousands of critical/high CVEs",
+        "Troubleshot internal systems and delivered SSO on Azure Government for multiple state agencies as a trusted contractor"
+      ],
+      "pdf": {
+        "include": true,
+        "bullets": [
+          "Managed 4 engineers and a 2-6 contractor bench, leading SRE, chaos-engineering, and cloud best practices.",
+          "Built medallion AWS Image Builder pipelines with EC2 fast-launch (sub-4-min Windows boots); vetted golden images blocked supply-chain attacks.",
+          "Cut MTTR 4-6 hours via auto-remediation; OIDC CI/CD cleared tens of thousands of critical/high CVEs."
+        ]
+      }
+    },
+    {
+      "company": "McKinsey & Company",
+      "title": "Senior Engineer II, Cloud",
+      "dates": "May 2022 - April 2024",
+      "boldTitle": true,
+      "meta": [
+        { "label": "Division", "value": "Cloud Foundation" },
+        { "label": "Focus as Lead over 3 teams", "value": "Improve the N.A. AWS Cloud Foundation Implementation & Spend" },
+        { "label": "Main Languages", "value": "Golang, Terraform, Shell" },
+        { "label": "Main Cloud Platforms Worked With", "value": "AWS, Azure" },
+        { "label": "Operating Costs Reduced", "value": "~40-50% a month in cloud spend" }
+      ],
+      "bullets": [
+        "Lead multiple work-streams focused on deliverables during client engagements, both on-site and remotely",
+        "Applied a security-first mindset to cloud security guardrails (e.g.: dynamic Service Control Policies for boundaries)",
+        "Implemented several Policy as Code tools across all supported Cloud Service Providers for the Firm's Foundation",
+        "Worked on and presented multiple Proof-of-Concept Generative AI projects using the OpenAI service on Azure",
+        "Drove improvements across the Firm including Architecture deliverables, Coding Practices, and Security postures"
+      ],
+      "pdf": {
+        "include": true,
+        "bullets": [
+          "Led 3 teams improving the N.A. AWS Cloud Foundation, cutting monthly cloud spend ~40-50%.",
+          "Applied a security-first mindset to guardrails (dynamic SCPs) and Policy-as-Code across all supported CSPs.",
+          "Built and presented Proof-of-Concept Generative AI projects on the Azure OpenAI service."
+        ]
+      }
+    },
+    {
+      "company": "BryterCX",
+      "title": "Senior Cloud Engineer",
+      "dates": "May 2021 - May 2022",
+      "boldTitle": true,
+      "meta": [
+        { "label": "Team", "value": "Special Operations" },
+        { "label": "Focus as Team Lead", "value": "Migrating Cost Optimized SaaS Clients w/ Terraform & EMR" },
+        { "label": "Main Languages", "value": "Golang, Terraform, Shell" },
+        { "label": "Main Cloud Platforms Worked With", "value": "AWS, Terraform Cloud" },
+        { "label": "Operating Costs Reduced", "value": ">$300,000 a month saved" }
+      ],
+      "bulletsHeading": "Main Solo Project:",
+      "bulletsFloat": true,
+      "bullets": [
+        "Architect, build, and automate a scale-able, Petabyte-sized EMR cluster",
+        "Manage YARN, HBase, and Presto all running on a single set of EMR core nodes",
+        "Implement an EMR health service for graceful scale out/in without data-loss",
+        "Provided HBase scaling functionality AWS doesn’t offer publicly or in beta"
+      ],
+      "pdf": {
+        "include": true,
+        "bullets": [
+          "Led cost-optimized SaaS client migrations to AWS with Terraform & EMR, saving >$300,000 a month.",
+          "Architected and automated a petabyte-scale EMR cluster (YARN, HBase, Presto) with a health service for graceful, data-loss-free scaling."
+        ]
+      }
+    },
+    {
+      "company": "Effectual",
+      "title": "Software Engineer",
+      "dates": "June 2020 - May 2021",
+      "boldTitle": true,
+      "meta": [
+        { "label": "Team", "value": "Professional Services" },
+        { "label": "Focus as Team Lead", "value": "Migrating Corporations Into AWS Cloud Native Environments" },
+        { "label": "Main Languages", "value": "Java, Node.js, React" },
+        { "label": "Main Cloud Platforms Worked With", "value": "AWS" }
+      ],
+      "bulletsHeading": "Main Solo Project:",
+      "bulletsFloat": true,
+      "bullets": [
+        "Lead AWS migration contracts for a Multi-Million Dollar Big Data SaaS product",
+        "Championed a repeatable, layered approach to writing Terraform Modules",
+        "Contributed to Presto's Open Source to fix issues found in above work"
+      ],
+      "pdf": {
+        "include": true,
+        "bullets": [
+          "Led AWS migration contracts for a multi-million-dollar Big Data SaaS product.",
+          "Championed a repeatable, layered Terraform module architecture and contributed fixes to Presto open source."
+        ]
+      }
+    },
+    {
+      "company": "Les Schwab",
+      "title": "Software Engineer",
+      "dates": "November 2019 - May 2020",
+      "boldTitle": true,
+      "meta": [
+        { "label": "Team", "value": "Research, Architecture, and Development(RAD)" },
+        { "label": "Team Focus", "value": "Designing/Implementing the Next Gen. Solutions for Les Schwab" },
+        { "label": "Main Languages", "value": "Node.js, React, Angular" },
+        { "label": "Main Cloud Platforms Worked With", "value": "AWS, Azure" }
+      ],
+      "bulletsHeading": "Main Solo Projects:",
+      "bulletsFloat": true,
+      "bullets": [
+        "Increased security, testing, and efficiencies in existing projects/templates",
+        "Architected/implemented the E.T.L. of million(+) record DynamoDB tables",
+        "Independently wrote new tools/systems to improve customer interactions"
+      ],
+      "pdf": {
+        "include": true,
+        "bullets": [
+          "Hardened security, testing, and efficiency across existing projects and templates.",
+          "Architected and implemented the ETL of million-plus-record DynamoDB tables."
+        ]
+      }
+    },
+    {
+      "company": "ShieldX Networks",
+      "title": "Software Engineer",
+      "dates": "June 2018 - July 2019",
+      "boldTitle": true,
+      "headerOnly": true,
+      "subEntries": [
+        {
+          "title": "Software Engineer/Exploit Researcher:",
+          "dates": "January 2019 - July 2019",
+          "boldTitle": false,
+          "meta": [
+            { "label": "Team", "value": "Security/Exploit Mitigation Platform" },
+            { "label": "Team Focus", "value": "Ensuring the Functionality/Quality of the ShieldX Security Offerings" },
+            { "label": "Main Languages", "value": "C, Regular Expressions, XML" },
+            { "label": "Main Exploit Report Companies Worked With", "value": "Telus, Idappcom, MITRE(CVE), ExploitDB" }
+          ],
+          "bulletsHeading": "Main Solo Projects:",
+          "bulletsFloat": true,
+          "bullets": [
+            "False Positive Fixes/Monitoring Customer Data",
+            "Honeypot Setup/Research into Newly Seen Exploits",
+            "Generate a Majority of the New 2019 Exploit Coverage"
+          ]
+        },
+        {
+          "title": "Software Engineer:",
+          "dates": "June 2018 - January 2019",
+          "boldTitle": false,
+          "meta": [
+            { "label": "Team", "value": "Factory/Orchestration(Back-end) Team" },
+            { "label": "Team Focus", "value": "Integrating the ShieldX Product with On/Off Premise Cloud Platforms" },
+            { "label": "Main Languages", "value": "Java, Python, Bash" },
+            { "label": "Main Cloud Platforms Worked With", "value": "VMware, Azure, AWS" }
+          ],
+          "bulletsHeading": "Main Solo Projects:",
+          "bulletsFloat": true,
+          "bullets": [
+            "Azure Load Balancer Sandwich Setup Automation",
+            "Deploy Microservice Instance to a VM Folder (VMware)",
+            "Multi-cloud VM Tag Discovery and use with Resource Groups"
+          ]
+        }
+      ],
+      "pdf": {
+        "include": true,
+        "bullets": [
+          "Wrote Java integrations (e.g., multi-cloud VM Tag Discovery) for ShieldX across VMware, Azure, and AWS.",
+          "Drove exploit research and mitigation in C, regex, and XML, generating most of ShieldX's 2019 exploit coverage."
+        ]
+      }
+    },
+    {
+      "company": "",
+      "title": "Student Internship - Product Owner",
+      "dates": "January 2017 - June 2017",
+      "boldTitle": true,
+      "intro": "Internship through the UCSC Baskin School of Engineering’s Corporate Sponsorship Program:",
+      "bullets": [
+        "SmartRevenue, a market research firm based out of Connecticut, came to us as a group of students requesting help prototyping a system for determining a consumer’s “digital path to purchase”",
+        "Lead a team of 4 other students as Product Owner for the Data Collection Team, we focused on the URLs visited and Android Applications used when participants opted into our software",
+        "Our team developed both a Chrome Extension and Android Application to help collect data from the pool of over 50,000 people they use in their demographic studies",
+        "Created a website using Amazon Web Services to act as an Administration Panel/Web Interface for our Applications and Database"
+      ],
+      "pdf": {
+        "include": false,
+        "bullets": []
+      }
+    }
+  ]
+}
