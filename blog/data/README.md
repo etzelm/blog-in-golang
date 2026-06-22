@@ -29,12 +29,13 @@ The website uses the rich fields; the PDF uses the tight ones — same entry:
 
 ```bash
 # PDF (needs typst >= 0.15: `brew install typst`)
-cd blog && typst compile data/resume.typ "Mitchell-Etzel's-Resume.pdf"
+cd blog && typst compile data/resume.typ "Mitchell-Etzel's-Resume.pdf" \
+  --font-path data/fonts --ignore-system-fonts
 
 # Website
 cd blog && go run .   # then open http://localhost:8080/
 ```
 
-The PDF uses **Liberation Sans** (an Arial-metric-compatible OFL font). CI
-installs `fonts-liberation`; a local macOS render falls back to Arial, which is
-metric-identical, so line breaks and the one-page fit are the same either way.
+The PDF uses **Liberation Sans**, bundled in `data/fonts/` (OFL — see
+`data/fonts/LICENSE`). `--ignore-system-fonts` pins rendering to that bundled
+font, so the PDF is byte-identical locally and in CI regardless of installed fonts.
