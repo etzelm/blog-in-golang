@@ -1,5 +1,30 @@
 <!--about.html-->
 
+<!--
+    The résumé content below (Education + Relevant Work History) is rendered
+    from blog/data/resume.json — the single source of truth shared with the
+    distributed PDF (blog/data/resume.typ). Edit the JSON, not this markup, to
+    change résumé content. See blog/data/README.md.
+-->
+{{- define "resumeEntryBody" -}}
+{{ if .BoldTitle }}<b>{{ end }}<p style="text-align:left;">{{ .Title }}{{ if .Company }} - {{ .Company }}{{ end }}
+<span style="float:right;">{{ .Dates }}</span></p>{{ if .BoldTitle }}</b>{{ end }}
+{{- if .Intro }}
+{{ .Intro }}
+<br><br>
+{{- end }}
+{{- range $i, $m := .Meta }}
+{{ if eq $i 0 }}<br>{{ end }}<p style="text-align:left;">{{ $m.Label }}:
+<span style="float:right;">{{ $m.Value }}</span></p>
+{{- end }}
+{{- if .BulletsHeading }}
+{{ .BulletsHeading }}
+{{- end }}
+{{- if .Bullets }}
+<ul{{ if .BulletsFloat }} style="float:right;"{{ end }}>{{ range .Bullets }}<li>{{ . }}</li>{{ end }}</ul>
+{{- end }}
+{{- end -}}
+
 <!--Embed the header.html template at this location-->
 {{ template "header.html" .}}
 
@@ -7,19 +32,19 @@
         ================================================== -->
         <div class="s-content content">
             <main class="row content__page">
-                
+
                 <section class="column large-full entry format-standard">
 
                     <div class="row half-bottom">
 
                         <div class="column large-6 tab-full">
 
-                            <p><img 
-                                width="1000" height="1000" alt="" class="about-border"       
-                                src="https://files.mitchelletzel.com/about/about-1000.webp" 
-                                srcset="https://files.mitchelletzel.com/about/about-2000.webp 2000w, 
-                                https://files.mitchelletzel.com/about/about-1000.webp 1000w, 
-                                https://files.mitchelletzel.com/about/about-500.webp 500w" 
+                            <p><img
+                                width="1000" height="1000" alt="" class="about-border"
+                                src="https://files.mitchelletzel.com/about/about-1000.webp"
+                                srcset="https://files.mitchelletzel.com/about/about-2000.webp 2000w,
+                                https://files.mitchelletzel.com/about/about-1000.webp 1000w,
+                                https://files.mitchelletzel.com/about/about-500.webp 500w"
                                 sizes="(max-width: 2000px) 40vw, 2000px">
                             </p>
 
@@ -36,23 +61,20 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                    {{- range .Resume.Education }}
                                     <tr>
-                                        <td><b>Bachelors of Science in Computer Science</b><br>
-                                        University of California, Santa Cruz<br>
-                                        Attended: June '15 to March '18</td>
+                                        <td><b>{{ .Degree }}</b><br>
+                                        {{ .School }}{{ if .Location }}, {{ .Location }}{{ end }}<br>
+                                        Attended: {{ .AttendedShort }}</td>
                                     </tr>
-                                    <tr>
-                                        <td><b>Associates of Science in Computer Science</b><br>
-                                        Diablo Valley College, Pleasant Hill, CA<br>
-                                        Attended: January '13 to June '15</td>
-                                    </tr>
+                                    {{- end }}
                                     </tbody>
                                 </table>
-            
+
                             </div>
 
                         </div>
-                        
+
                     </div> <!-- end row -->
 
                     &emsp;&emsp;<b style="font-size:28px;">W</b>hat a journey it's been building and securing cloud systems
@@ -70,190 +92,19 @@
                                 <th style="color:#A619FF;"><br>Relevant Work History:</th>
                             </thead>
                             <tbody>
+                            {{- range .Resume.Work }}
                             <tr>
-                                <td>
-                                    <b><p style="text-align:left;">CloudOps Engineering Manager - LINQ
-                                    <span style="float:right;">December 2024 - February 2026</span></p></b>
-                                    <br><p style="text-align:left;">Department:
-                                    <span style="float:right;">Cloud Operations</span></p>
-                                    <p style="text-align:left;">Focus as Manager:
-                                    <span style="float:right;">
-                                        Leading Cloud Infrastructure & Platform Reliability
-                                    </span></p>
-                                    <p style="text-align:left;">Main Languages:
-                                    <span style="float:right;">Terraform, Shell, PowerShell, JavaScript</span></p>
-                                    <p style="text-align:left;">Main Cloud Platforms Worked With:
-                                    <span style="float:right;">AWS, Azure, Azure Gov, GCP</span></p>
-                                    <ul><li>Managed 4 engineers and a 2-6 contractor bench; led SRE, chaos-engineering, and cloud best-practice enablement</li>
-                                    <li>Built medallion AWS Image Builder pipelines (Nutrition suite) with EC2 fast-launch for sub-4-min boots, whose vetted golden images insulated us from supply-chain attacks like the Notepad++ auto-updater compromise</li>
-                                    <li>Cut MTTR by 4-6 hours by auto-remediating common failures instead of paging on-call engineers</li>
-                                    <li>Automated policy remediation via reusable shell libraries and OIDC-based CI/CD jobs, resolving tens of thousands of critical/high CVEs</li>
-                                    <li>Troubleshot internal systems and delivered SSO on Azure Government for multiple state agencies as a trusted contractor</li></ul>
-                                </td>
+                                <td>{{ template "resumeEntryBody" . }}</td>
                             </tr>
+                            {{- range .SubEntries }}
                             <tr>
-                                <td>
-                                    <b><p style="text-align:left;">Senior Engineer II, Cloud - McKinsey & Company
-                                    <span style="float:right;">May 2022 - April 2024</span></p></b>
-                                    <br><p style="text-align:left;">Division:
-                                    <span style="float:right;">Cloud Foundation</span></p>
-                                    <p style="text-align:left;">Focus as Lead over 3 teams:
-                                    <span style="float:right;">
-                                        Improve the N.A. AWS Cloud Foundation Implementation & Spend
-                                    </span></p>
-                                    <p style="text-align:left;">Main Languages:
-                                    <span style="float:right;">Golang, Terraform, Shell</span></p>
-                                    <p style="text-align:left;">Main Cloud Platforms Worked With:
-                                    <span style="float:right;">AWS, Azure</span></p>
-                                    <p style="text-align:left;">Operating Costs Reduced:
-                                    <span style="float:right;">~40-50% a month in cloud spend</span></p>
-                                    <ul><li>Lead multiple work-streams focused on deliverables during client engagements, both on-site and remotely</li>
-                                    <li>Applied a security-first mindset to cloud security guardrails (e.g.: dynamic Service Control Policies for boundaries)</li>
-                                    <li>Implemented several Policy as Code tools across all supported Cloud Service Providers for the Firm's Foundation</li>
-                                    <li>Worked on and presented multiple Proof-of-Concept Generative AI projects using the OpenAI service on Azure</li>
-                                    <li>Drove improvements across the Firm including Architecture deliverables, Coding Practices, and Security postures</li></ul>
-                                </td>
+                                <td>{{ template "resumeEntryBody" . }}</td>
                             </tr>
-                            <tr>
-                                <td>
-                                    <b><p style="text-align:left;">Senior Cloud Engineer - BryterCX
-                                    <span style="float:right;">May 2021 - May 2022</span></p></b>
-                                    <br><p style="text-align:left;">Team:
-                                    <span style="float:right;">Special Operations</span></p>
-                                    <p style="text-align:left;">Focus as Team Lead:
-                                    <span style="float:right;">
-                                        Migrating Cost Optimized SaaS Clients w/ Terraform & EMR
-                                    </span></p>
-                                    <p style="text-align:left;">Main Languages:
-                                    <span style="float:right;">Golang, Terraform, Shell</span></p>
-                                    <p style="text-align:left;">Main Cloud Platforms Worked With:
-                                    <span style="float:right;">AWS, Terraform Cloud</span></p>
-                                    <p style="text-align:left;">Operating Costs Reduced:
-                                    <span style="float:right;">>$300,000 a month saved</span></p>
-                                    Main Solo Project:
-                                    <ul style="float:right;"><li>Architect, build, and automate a scale-able, Petabyte-sized EMR cluster</li>
-                                    <li>Manage YARN, HBase, and Presto all running on a single set of EMR core nodes</li>
-                                    <li>Implement an EMR health service for graceful scale out/in without data-loss</li>
-                                    <li>Provided HBase scaling functionality AWS doesn’t offer publicly or in beta</li></ul>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <b><p style="text-align:left;">Software Engineer - Effectual
-                                    <span style="float:right;">June 2020 - May 2021</span></p></b>
-                                    <br><p style="text-align:left;">Team:
-                                    <span style="float:right;">Professional Services</span></p>
-                                    <p style="text-align:left;">Focus as Team Lead:
-                                    <span style="float:right;">
-                                        Migrating Corporations Into AWS Cloud Native Environments
-                                    </span></p>
-                                    <p style="text-align:left;">Main Languages:
-                                    <span style="float:right;">Java, NodeJS, React</span></p>
-                                    <p style="text-align:left;">Main Cloud Platforms Worked With:
-                                    <span style="float:right;">AWS</span></p>
-                                    Main Solo Project:
-                                    <ul style="float:right;"><li>Lead AWS migration contracts for a Multi-Million Dollar Big Data SaaS product</li>
-                                    <li>Championed a repeatable, layered approach to writing Terraform Modules</li>
-                                    <li>Contributed to Presto's Open Source to fix issues found in above work</li></ul>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <b><p style="text-align:left;">Software Engineer - Les Schwab
-                                    <span style="float:right;">November 2019 - May 2020</span></p></b>
-                                    <br><p style="text-align:left;">Team:
-                                    <span style="float:right;">Research, Architecture, and Development(RAD)</span></p>
-                                    <p style="text-align:left;">Team Focus:
-                                    <span style="float:right;">
-                                        Designing/Implementing the Next Gen. Solutions for Les Schwab
-                                    </span></p>
-                                    <p style="text-align:left;">Main Languages:
-                                    <span style="float:right;">NodeJS, React, Angular</span></p>
-                                    <p style="text-align:left;">Main Cloud Platforms Worked With:
-                                    <span style="float:right;">AWS, Azure</span></p>
-                                    Main Solo Projects:
-                                    <ul style="float:right;"><li>Increased security, testing, and efficiencies in existing projects/templates</li>
-                                    <li>Architected/implemented the E.T.L. of million(+) record DynamoDB tables</li>
-                                    <li>Independently wrote new tools/systems to improve customer interactions</li></ul>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <b><p style="text-align:left;">Software Engineer - ShieldX Networks
-                                    <span style="float:right;">June 2018 - July 2019</span></p></b>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <p style="text-align:left;">Software Engineer/Exploit Researcher:
-                                    <span style="float:right;">January 2019 - July 2019</span></p>
-                                    <br><p style="text-align:left;">Team:
-                                    <span style="float:right;">Security/Exploit Mitigation Platform</span></p>
-                                    <p style="text-align:left;">Team Focus:
-                                    <span style="float:right;">
-                                        Ensuring the Functionality/Quality of the ShieldX Security Offerings
-                                    </span></p>
-                                    <p style="text-align:left;">Main Languages:
-                                    <span style="float:right;">C, Regular Expressions, XML</span></p>
-                                    <p style="text-align:left;">Main Exploit Report Companies Worked With:
-                                    <span style="float:right;">Telus, Idappcom, MITRE(CVE), ExploitDB</span></p>
-                                    Main Solo Projects:
-                                    <ul style="float:right;"><li>False Positive Fixes/Monitoring Customer Data</li>
-                                    <li>Honeypot Setup/Research into Newly Seen Exploits</li>
-                                    <li>Generate a Majority of the New 2019 Exploit Coverage</li></ul>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <p style="text-align:left;">Software Engineer:
-                                    <span style="float:right;">June 2018 - January 2019</span></p>
-                                    <br><p style="text-align:left;">Team:
-                                    <span style="float:right;">Factory/Orchestration(Back-end) Team</span></p>
-                                    <p style="text-align:left;">Team Focus:
-                                    <span style="float:right;">
-                                        Integrating the ShieldX Product with On/Off Premise Cloud Platforms
-                                    </span></p>
-                                    <p style="text-align:left;">Main Languages:
-                                    <span style="float:right;">Java, Python, Bash</span></p>
-                                    <p style="text-align:left;">Main Cloud Platforms Worked With:
-                                    <span style="float:right;">VMware, Azure, AWS</span></p>
-                                    Main Solo Projects:
-                                    <ul style="float:right;"><li>Azure Load Balancer Sandwich Setup Automation</li>
-                                    <li>Deploy Microservice Instance to a VM Folder (VMware)</li>
-                                    <li>Multi-cloud VM Tag Discovery and use with Resource Groups</li></ul>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <b><p style="text-align:left;">Student Internship - Product Owner
-                                    <span style="float:right;">January 2017 - June 2017</span></p></b>
-                                    Internship through the UCSC Baskin School of Engineering’s Corporate Sponsorship Program:
-                                    <br><br>
-                                    <ul>
-                                        <li>
-                                            SmartRevenue, a market research firm based out of Connecticut, came to us as a group 
-                                            of students requesting help prototyping a system for determining a consumer’s 
-                                            “digital path to purchase”
-                                        </li>
-                                        <li>
-                                            Lead a team of 4 other students as Product Owner for the Data Collection Team, we 
-                                            focused on the URLs visited and Android Applications used when participants opted 
-                                            into our software
-                                        </li>
-                                        <li>
-                                            Our team developed both a Chrome Extension and Android Application to help collect 
-                                            data from the pool of over 50,000 people they use in their demographic studies
-                                        </li>
-                                        <li>
-                                            Created a website using Amazon Web Services to act as an Administration Panel/Web 
-                                            Interface for our Applications and Database
-                                        </li>
-                                    </ul>
-                                </td>
-                            </tr>
+                            {{- end }}
+                            {{- end }}
                             </tbody>
                         </table>
-    
+
                     </div>
 
                 </section>

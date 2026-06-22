@@ -9,3 +9,6 @@ realtor/node_modules/
 blog-in-golang
 combined_code_snapshot.txt
 coverage.out
+# Generated résumé PDF — compiled from blog/data/resume.typ by the publish-resume
+# CI job (and local preview); the published copy lives in S3, never in git.
+blog/Mitchell-Etzel's-Resume.pdf
