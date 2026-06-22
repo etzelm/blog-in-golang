@@ -1,9 +1,11 @@
 // resume.typ — renders the distributed one-page PDF résumé from resume.json,
 // the SAME single source the website's about page reads. Compile with:
-//   typst compile blog/data/resume.typ "Mitchell-Etzel's-Resume.pdf"
+//   typst compile blog/data/resume.typ "Mitchell-Etzel's-Resume.pdf" \
+//     --font-path blog/data/fonts --ignore-system-fonts
 //
-// Font: Liberation Sans (Arial-metric-compatible, OFL) so CI output matches a
-// local Arial render. CI installs fonts-liberation; macOS falls back to Arial.
+// Font: Liberation Sans, bundled in data/fonts/ (OFL — see data/fonts/LICENSE).
+// --ignore-system-fonts makes the output byte-identical on every machine,
+// independent of whatever fonts happen to be installed.
 
 #let data = json("resume.json")
 #let b = data.basics
@@ -11,7 +13,7 @@
 #set document(title: b.name + " — Résumé", author: b.name)
 #set page(paper: "us-letter", margin: (x: 0.5in, top: 0.5in, bottom: 0.45in))
 #set text(
-  font: ("Liberation Sans", "Arial", "Helvetica Neue", "Helvetica"),
+  font: "Liberation Sans",
   size: 10pt,
   fill: rgb("#1a1a1a"),
 )

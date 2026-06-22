@@ -555,9 +555,10 @@ jobs:
   # as a compile smoke-test (no upload) so a broken resume.{json,typ} is caught
   # before prod. Gated on the résumé files actually changing.
   #
-  # Typst + fonts-liberation are bootstrapped in-step (idempotent), so this
-  # works on the current runner without a runner-image rebuild. Bake them into
-  # .github/docker-compose/github-runner/Dockerfile later to skip the bootstrap.
+  # Typst is bootstrapped in-step (idempotent) so this works on the current
+  # runner without a runner-image rebuild; the font is bundled in the repo
+  # (blog/data/fonts), so no font install is needed. Bake Typst into the runner
+  # image later to skip the download.
   publish-resume:
     if: github.event_name == 'pull_request' || github.ref == 'refs/heads/master'
     runs-on: [self-hosted, Linux, ARM64, studio]
@@ -595,24 +596,19 @@ jobs:
           fi
           typst --version
 
-          # The PDF uses Liberation Sans (Arial-metric-compatible, OFL). Typst
-          # scans /usr/share/fonts directly, so installing the package is enough.
-          if ! ls /usr/share/fonts/truetype/liberation/LiberationSans-*.ttf >/dev/null 2>&1; then
-            echo "Installing fonts-liberation..."
-            sudo apt-get update -y
-            sudo apt-get install -y --no-install-recommends fonts-liberation
-          fi
-
           cd blog
-          typst compile data/resume.typ "Mitchell-Etzel's-Resume.pdf"
+          # Render with the repo-bundled Liberation Sans only (data/fonts), so CI
+          # output is byte-identical to a local compile regardless of the runner's
+          # installed fonts — no apt font install, no fallback warnings.
+          typst compile data/resume.typ "Mitchell-Etzel's-Resume.pdf" \
+            --font-path data/fonts --ignore-system-fonts
           ls -la "Mitchell-Etzel's-Resume.pdf"
       - name: Publish PDF to files.mitchelletzel.com (prod only)
         if: (steps.changed-resume.outputs.any_changed == 'true' || github.event.inputs.force_deploy == 'true') && github.ref == 'refs/heads/master'
         shell: bash
         env:
-          # files.mitchelletzel.com CloudFront distribution (EMNXWN6A2O5SD).
-          # DISTRIBUTION_ID1 is the apex/www site; DISTRIBUTION_ID2 is the files
-          # bucket's CDN — the only two distributions on the account.
+          # CloudFront distribution that fronts files.mitchelletzel.com (the
+          # résumé PDF's CDN). Value lives in the repo secret, never in git.
           DISTRIBUTION_ID_FILES: ${{ secrets.DISTRIBUTION_ID2 }}
         run: |
           set -e
