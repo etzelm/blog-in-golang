@@ -27,7 +27,7 @@
     { "category": "Operating Systems", "items": "Ubuntu, Amazon Linux, FreeBSD, macOS, Windows Server" },
     { "category": "Languages/Frameworks", "items": "Golang, Java, Node.js, React, Shell, PowerShell, C++, Python, SQL, NoSQL" },
     { "category": "Infrastructure as Code/Policy as Code", "items": "Terraform, CloudFormation, Trivy, checkov, Sentinel" },
-    { "category": "Applications & Tools", "items": "Docker, git, vi, LM Studio, Visual Studio Code, GitKraken, Copilot, Claude, OpenClaw" },
+    { "category": "Applications & Tools", "items": "Docker, git, vi, LM Studio, Visual Studio Code, GitKraken, Copilot, Claude, OpenClaw, Kafka" },
     { "category": "Practices & Leadership", "items": "Communication, Leadership, CI/CD, Security, Site Reliability Engineering, SRE, DevOps, Automation" }
   ],
   "work": [
