@@ -143,7 +143,7 @@
             "type": "prometheus",
             "uid": "P1809F7CD0C75ACF3"
           },
-          "expr": "sum(rate(blog_http_requests_total{env=\"$env\",status=~\"4..\"}[5m]))",
+          "expr": "sum(rate(blog_http_requests_total{env=\"$env\",status=~\"4..\",route!=\"unmatched\"}[5m]))",
           "refId": "A"
         }
       ]
@@ -204,7 +204,7 @@
             "type": "prometheus",
             "uid": "P1809F7CD0C75ACF3"
           },
-          "expr": "sum(rate(blog_http_requests_total{env=\"$env\",status=~\"5..\"}[5m]))",
+          "expr": "sum(rate(blog_http_requests_total{env=\"$env\",status=~\"5..\"}[5m])) or vector(0)",
           "refId": "A"
         }
       ]
@@ -275,6 +275,84 @@
       ]
     },
     {
+      "type": "stat",
+      "id": 16,
+      "title": "Target health (up)",
+      "description": "Prometheus scrape health for the blog HTTP targets, across all environments regardless of the $env selector above. Distinguishes a genuine scrape/target failure from a quiet-traffic period on the panels below.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 5
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": true
+        },
+        "orientation": "horizontal",
+        "textMode": "value_and_name",
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "DOWN",
+                  "color": "red"
+                },
+                "1": {
+                  "text": "UP",
+                  "color": "green"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
+          "expr": "up{job=~\"blog|blog-gcp\"}",
+          "legendFormat": "{{job}} ({{env}})",
+          "refId": "A"
+        }
+      ]
+    },
+    {
       "type": "row",
       "id": 6,
       "title": "Traffic",
@@ -283,7 +361,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 5
+        "y": 9
       },
       "panels": []
     },
@@ -299,7 +377,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 6
+        "y": 10
       },
       "options": {
         "legend": {
@@ -361,7 +439,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 6
+        "y": 10
       },
       "options": {
         "legend": {
@@ -420,7 +498,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 14
+        "y": 18
       },
       "panels": []
     },
@@ -436,7 +514,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 15
+        "y": 19
       },
       "options": {
         "legend": {
@@ -516,7 +594,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 15
+        "y": 19
       },
       "options": {
         "legend": {
@@ -575,7 +653,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 23
+        "y": 27
       },
       "panels": []
     },
@@ -591,7 +669,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 24
+        "y": 28
       },
       "options": {
         "showLabels": false,
@@ -627,7 +705,7 @@
         "h": 6,
         "w": 12,
         "x": 0,
-        "y": 34
+        "y": 38
       },
       "options": {
         "legend": {
@@ -678,6 +756,7 @@
       "type": "timeseries",
       "id": 15,
       "title": "Errors over time",
+      "description": "Blank/no data on this panel means 0 errors were logged in the window — Loki returns an empty result set when the count is zero, not a literal 0.",
       "datasource": {
         "type": "loki",
         "uid": "P982945308D3682D1"
@@ -686,7 +765,7 @@
         "h": 6,
         "w": 12,
         "x": 12,
-        "y": 34
+        "y": 38
       },
       "options": {
         "legend": {
@@ -732,6 +811,68 @@
           "queryType": "range"
         }
       ]
+    },
+    {
+      "type": "row",
+      "id": 17,
+      "title": "Security",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 44
+      },
+      "panels": []
+    },
+    {
+      "type": "table",
+      "id": 18,
+      "title": "Top client IPs hitting unmatched routes",
+      "description": "route=\"unmatched\" is consistently the largest route by volume (bot/scanner traffic). This table drills into who's generating it, over the dashboard's selected time range.",
+      "datasource": {
+        "type": "loki",
+        "uid": "P982945308D3682D1"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 45
+      },
+      "options": {
+        "showHeader": true,
+        "sortBy": [
+          {
+            "displayName": "Value",
+            "desc": true
+          }
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "P982945308D3682D1"
+          },
+          "expr": "topk(10, sum by (client_ip) (count_over_time({service=~\"blog-in-golang-.+\"} | json | route=\"unmatched\" | env=\"$env\" [$__range])))",
+          "legendFormat": "{{client_ip}}",
+          "refId": "A",
+          "queryType": "instant"
+        }
+      ]
     }
   ],
   "templating": {
@@ -755,8 +896,8 @@
         "includeAll": false,
         "current": {
           "selected": true,
-          "text": "dev",
-          "value": "dev"
+          "text": "prod",
+          "value": "prod"
         },
         "options": [],
         "label": "env",
