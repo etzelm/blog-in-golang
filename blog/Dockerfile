@@ -1,7 +1,7 @@
 # Stage 1: Go Builder
 # Pin the builder to the native build platform and cross-compile to the target
 # arch (see the build RUN below) — fast, vs. emulating the whole toolchain.
-FROM --platform=$BUILDPLATFORM golang:1.26.4-alpine3.22 AS golang-builder
+FROM --platform=$BUILDPLATFORM golang:1.26.5-alpine3.23 AS golang-builder
 
 # Update package index and upgrade all packages to latest versions
 RUN apk update && apk upgrade
