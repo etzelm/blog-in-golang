@@ -21,3 +21,10 @@ updates:
     directory: "/realtor" # Location of package manifests
     schedule:
       interval: "daily"
+    # react and react-dom enforce an exact-version match at runtime, so a PR
+    # bumping only one of them can never pass CI. Group them into one PR.
+    groups:
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
