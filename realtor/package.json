@@ -12,7 +12,7 @@
     "react-dropzone": "^19.1.1",
     "react-router": "^8.3.0",
     "react-toastify": "^11.1.0",
-    "typescript": "^6.0.3",
+    "typescript": "^7.0.2",
     "uuid": "^14.0.1"
   },
   "devDependencies": {
@@ -35,5 +35,5 @@
     "test:watch": "NODE_OPTIONS='--no-webstorage' vitest",
     "preview": "vite preview"
   },
-  "packageManager": "yarn@4.11.0"
+  "packageManager": "yarn@4.17.1"
 }
