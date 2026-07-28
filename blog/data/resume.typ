@@ -56,9 +56,10 @@
         text(weight: "bold")[#job.title #sym.dash.en #job.company],
         text(size: 9.5pt, fill: rgb("#444444"))[#pretty(job.dates)],
       )
-      // Keep slash-joined terms (CI/CD, critical/high) from breaking across
-      // lines: append a zero-width word joiner after each "/".
-      #list(..job.pdf.bullets.map(b => b.replace("/", "/\u{2060}")))
+      // No invisible characters here: a word joiner after "/" would keep
+      // CI/CD-style terms on one line, but zero-width codepoints break ATS
+      // keyword matching and get flagged by AI-detection scanners.
+      #list(..job.pdf.bullets)
     ]
     v(5pt)
   }

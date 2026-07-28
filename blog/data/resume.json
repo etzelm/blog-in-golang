@@ -9,14 +9,14 @@
   },
   "education": [
     {
-      "degree": "Bachelors of Science in Computer Science",
+      "degree": "Bachelor of Science in Computer Science",
       "school": "University of California, Santa Cruz",
       "location": "",
       "attendedShort": "June '15 to March '18",
       "dates": "June 2015 - March 2018"
     },
     {
-      "degree": "Associates of Science in Computer Science",
+      "degree": "Associate of Science in Computer Science",
       "school": "Diablo Valley College",
       "location": "Pleasant Hill, CA",
       "attendedShort": "January '13 to June '15",
@@ -26,7 +26,7 @@
   "skills": [
     { "category": "Operating Systems", "items": "Ubuntu, Amazon Linux, FreeBSD, macOS, Windows Server" },
     { "category": "Languages/Frameworks", "items": "Golang, Java, Node.js, React, Shell, PowerShell, C++, Python, SQL, NoSQL" },
-    { "category": "Infrastructure as Code/Policy as Code", "items": "Terraform, CloudFormation, Trivy, checkov, Sentinel" },
+    { "category": "Infrastructure as Code/Policy as Code", "items": "Terraform, CloudFormation, Trivy, Checkov, Sentinel" },
     { "category": "Applications & Tools", "items": "Docker, git, vi, LM Studio, Visual Studio Code, GitKraken, Copilot, Claude, OpenClaw, Kafka, SAP, CRM, Salesforce" },
     { "category": "Practices & Leadership", "items": "Communication, Leadership, CI/CD, Security, Site Reliability Engineering, SRE, DevOps, Automation, Cybersecurity, Research, Mentoring, Audit, Agile, Scrum" }
   ],
