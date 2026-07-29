@@ -21,14 +21,14 @@
 #show link: set text(fill: rgb("#0b5cad"))
 
 // Tight, clean bullet lists.
-#set list(marker: text(fill: rgb("#0b5cad"))[•], indent: 2pt, body-indent: 6pt, spacing: 4.5pt)
+#set list(marker: text(fill: rgb("#0b5cad"))[•], indent: 2pt, body-indent: 6pt, spacing: 4pt)
 
 // Pretty date ranges: "December 2024 - February 2026" -> en dash.
 #let pretty(s) = s.replace(" - ", " – ")
 
 // Section header with an underline rule.
 #let section(title) = {
-  v(7.5pt)
+  v(5.5pt)
   text(size: 13pt, weight: "bold", fill: rgb("#0b5cad"))[#upper(title)]
   v(1.5pt)
   line(length: 100%, stroke: 0.6pt + rgb("#9aa0a6"))
@@ -45,6 +45,12 @@
   #h(6pt) | #h(6pt) GitHub: #link("https://" + b.github)[#b.github]
 ]
 
+// ── Summary ──────────────────────────────────────────────────────────────
+// Rendered headerless to keep the one-page budget: two lines of italic
+// positioning directly under the contact line.
+#v(4pt)
+#text(size: 9.5pt, style: "italic", fill: rgb("#333333"))[#data.summary]
+
 // ── Experience ───────────────────────────────────────────────────────────
 #section("Experience")
 #for job in data.work {
@@ -56,11 +62,12 @@
         text(weight: "bold")[#job.title #sym.dash.en #job.company],
         text(size: 9.5pt, fill: rgb("#444444"))[#pretty(job.dates)],
       )
-      // Keep slash-joined terms (CI/CD, critical/high) from breaking across
-      // lines: append a zero-width word joiner after each "/".
-      #list(..job.pdf.bullets.map(b => b.replace("/", "/\u{2060}")))
+      // No invisible characters here: a word joiner after "/" would keep
+      // CI/CD-style terms on one line, but zero-width codepoints break ATS
+      // keyword matching and get flagged by AI-detection scanners.
+      #list(..job.pdf.bullets)
     ]
-    v(5pt)
+    v(4pt)
   }
 }
 
@@ -73,7 +80,7 @@
     [#text(weight: "bold")[#ed.degree] #h(8pt) #text(size: 9.5pt, fill: rgb("#444444"))[#ed.school]],
     text(size: 9.5pt, fill: rgb("#444444"))[#pretty(ed.dates)],
   )
-  v(3pt)
+  v(2pt)
 }
 
 // ── Computer Skills ───────────────────────────────────────────────────────

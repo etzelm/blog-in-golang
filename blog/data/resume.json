@@ -9,14 +9,14 @@
   },
   "education": [
     {
-      "degree": "Bachelors of Science in Computer Science",
+      "degree": "Bachelor of Science in Computer Science",
       "school": "University of California, Santa Cruz",
       "location": "",
       "attendedShort": "June '15 to March '18",
       "dates": "June 2015 - March 2018"
     },
     {
-      "degree": "Associates of Science in Computer Science",
+      "degree": "Associate of Science in Computer Science",
       "school": "Diablo Valley College",
       "location": "Pleasant Hill, CA",
       "attendedShort": "January '13 to June '15",
@@ -24,11 +24,30 @@
     }
   ],
   "skills": [
-    { "category": "Operating Systems", "items": "Ubuntu, Amazon Linux, FreeBSD, macOS, Windows Server" },
-    { "category": "Languages/Frameworks", "items": "Golang, Java, Node.js, React, Shell, PowerShell, C++, Python, SQL, NoSQL" },
-    { "category": "Infrastructure as Code/Policy as Code", "items": "Terraform, CloudFormation, Trivy, checkov, Sentinel" },
-    { "category": "Applications & Tools", "items": "Docker, git, vi, LM Studio, Visual Studio Code, GitKraken, Copilot, Claude, OpenClaw, Kafka, SAP, CRM, Salesforce" },
-    { "category": "Practices & Leadership", "items": "Communication, Leadership, CI/CD, Security, Site Reliability Engineering, SRE, DevOps, Automation, Cybersecurity, Research, Mentoring, Audit, Agile, Scrum" }
+    {
+      "category": "Languages/Frameworks",
+      "items": "Golang, Python, Java, Node.js, React, Shell, PowerShell, C++, SQL, NoSQL"
+    },
+    {
+      "category": "Cloud & Containers",
+      "items": "AWS, Azure, Azure Government, GCP, Kubernetes (AKS, GKE), Docker"
+    },
+    {
+      "category": "Data & Messaging",
+      "items": "Kafka, Redis, PostgreSQL, DynamoDB, EMR (YARN, HBase, Presto), S3"
+    },
+    {
+      "category": "CI/CD & IaC/PaC",
+      "items": "GitHub Actions, GitLab CI, Azure DevOps, Jenkins, Terraform, Terraform Cloud, CloudFormation, Trivy, Checkov, Sentinel"
+    },
+    {
+      "category": "AI Tooling",
+      "items": "Claude, Copilot, Azure OpenAI, LM Studio, OpenClaw"
+    },
+    {
+      "category": "Practices & Leadership",
+      "items": "Communication, SRE, DevOps, Security, Automation, Mentoring, Audit, Agile, Scrum"
+    }
   ],
   "work": [
     {
@@ -37,13 +56,25 @@
       "dates": "December 2024 - February 2026",
       "boldTitle": true,
       "meta": [
-        { "label": "Department", "value": "Cloud Operations" },
-        { "label": "Focus as Manager", "value": "Leading Cloud Infrastructure & Platform Reliability" },
-        { "label": "Main Languages", "value": "Terraform, Shell, PowerShell, JavaScript" },
-        { "label": "Main Cloud Platforms Worked With", "value": "AWS, Azure, Azure Gov, GCP" }
+        {
+          "label": "Department",
+          "value": "Cloud Operations"
+        },
+        {
+          "label": "Focus as Manager",
+          "value": "Leading Cloud Infrastructure & Platform Reliability"
+        },
+        {
+          "label": "Main Languages",
+          "value": "Terraform, Shell, PowerShell, JavaScript"
+        },
+        {
+          "label": "Main Cloud Platforms Worked With",
+          "value": "AWS, Azure, Azure Gov, GCP"
+        }
       ],
       "bullets": [
-        "Managed 4 engineers and a 2-6 contractor bench; led SRE, chaos-engineering, and cloud best-practice enablement",
+        "Managed 4 engineers and a 2-6 contractor bench; led SRE, chaos-engineering, and cloud best-practice enablement for SaaS workloads on VMs, containers, and Kubernetes (AKS, GKE) handling tens of millions of transactions per day",
         "Built medallion AWS Image Builder pipelines (Nutrition suite) with EC2 fast-launch for sub-4-min Windows boots, whose vetted golden images insulated us from supply-chain attacks like the Notepad++ auto-updater compromise",
         "Cut MTTR by 4-6 hours by auto-remediating common failures instead of paging on-call engineers",
         "Automated policy remediation via reusable shell libraries and OIDC-based CI/CD jobs, resolving tens of thousands of critical/high CVEs",
@@ -52,7 +83,7 @@
       "pdf": {
         "include": true,
         "bullets": [
-          "Managed 4 engineers and a 2-6 contractor bench, leading SRE, chaos-engineering, and cloud best practices.",
+          "Managed 4 engineers and a 2-6 contractor bench, leading SRE, chaos-engineering, and cloud best practices for SaaS workloads on VMs, containers, and Kubernetes handling tens of millions of transactions per day.",
           "Built medallion AWS Image Builder pipelines with EC2 fast-launch (sub-4-min Windows boots); vetted golden images blocked supply-chain attacks.",
           "Cut MTTR 4-6 hours via auto-remediation; OIDC CI/CD cleared tens of thousands of critical/high CVEs."
         ]
@@ -64,11 +95,26 @@
       "dates": "May 2022 - April 2024",
       "boldTitle": true,
       "meta": [
-        { "label": "Division", "value": "Cloud Foundation" },
-        { "label": "Focus as Lead over 3 teams", "value": "Improve the N.A. AWS Cloud Foundation Implementation & Spend" },
-        { "label": "Main Languages", "value": "Golang, Terraform, Shell" },
-        { "label": "Main Cloud Platforms Worked With", "value": "AWS, Azure" },
-        { "label": "Operating Costs Reduced", "value": "~40-50% a month in cloud spend" }
+        {
+          "label": "Division",
+          "value": "Cloud Foundation"
+        },
+        {
+          "label": "Focus as Lead over 3 teams",
+          "value": "Improve the N.A. AWS Cloud Foundation Implementation & Spend"
+        },
+        {
+          "label": "Main Languages",
+          "value": "Golang, Terraform, Shell"
+        },
+        {
+          "label": "Main Cloud Platforms Worked With",
+          "value": "AWS, Azure"
+        },
+        {
+          "label": "Operating Costs Reduced",
+          "value": "~40-50% a month in cloud spend"
+        }
       ],
       "bullets": [
         "Lead multiple work-streams focused on deliverables during client engagements, both on-site and remotely",
@@ -81,7 +127,7 @@
         "include": true,
         "bullets": [
           "Led 3 teams improving the N.A. AWS Cloud Foundation, cutting monthly cloud spend ~40-50%.",
-          "Applied a security-first mindset to guardrails (dynamic SCPs) and Policy-as-Code across all supported CSPs.",
+          "Applied a security-first mindset to guardrails (dynamic SCPs) and Policy-as-Code across AWS, Azure, and GCP.",
           "Built and presented Proof-of-Concept Generative AI projects on the Azure OpenAI service."
         ]
       }
@@ -92,11 +138,26 @@
       "dates": "May 2021 - May 2022",
       "boldTitle": true,
       "meta": [
-        { "label": "Team", "value": "Special Operations" },
-        { "label": "Focus as Team Lead", "value": "Migrating Cost Optimized SaaS Clients w/ Terraform & EMR" },
-        { "label": "Main Languages", "value": "Golang, Terraform, Shell" },
-        { "label": "Main Cloud Platforms Worked With", "value": "AWS, Terraform Cloud" },
-        { "label": "Operating Costs Reduced", "value": ">$300,000 a month saved" }
+        {
+          "label": "Team",
+          "value": "Special Operations"
+        },
+        {
+          "label": "Focus as Team Lead",
+          "value": "Migrating Cost Optimized SaaS Clients w/ Terraform & EMR"
+        },
+        {
+          "label": "Main Languages",
+          "value": "Golang, Terraform, Shell"
+        },
+        {
+          "label": "Main Cloud Platforms Worked With",
+          "value": "AWS, Terraform Cloud"
+        },
+        {
+          "label": "Operating Costs Reduced",
+          "value": ">$300,000 a month saved"
+        }
       ],
       "bulletsHeading": "Main Solo Project:",
       "bulletsFloat": true,
@@ -110,7 +171,7 @@
         "include": true,
         "bullets": [
           "Led cost-optimized SaaS client migrations to AWS with Terraform & EMR, saving >$300,000 a month.",
-          "Architected and automated a petabyte-scale EMR cluster (YARN, HBase, Presto) with a health service for graceful, data-loss-free scaling."
+          "Architected and automated a petabyte-scale EMR cluster (YARN, HBase, Presto) with a Go health service for graceful, data-loss-free scaling."
         ]
       }
     },
@@ -120,10 +181,22 @@
       "dates": "June 2020 - May 2021",
       "boldTitle": true,
       "meta": [
-        { "label": "Team", "value": "Professional Services" },
-        { "label": "Focus as Team Lead", "value": "Migrating Corporations Into AWS Cloud Native Environments" },
-        { "label": "Main Languages", "value": "Java, Node.js, React" },
-        { "label": "Main Cloud Platforms Worked With", "value": "AWS" }
+        {
+          "label": "Team",
+          "value": "Professional Services"
+        },
+        {
+          "label": "Focus as Team Lead",
+          "value": "Migrating Corporations Into AWS Cloud Native Environments"
+        },
+        {
+          "label": "Main Languages",
+          "value": "Java, Node.js, React"
+        },
+        {
+          "label": "Main Cloud Platforms Worked With",
+          "value": "AWS"
+        }
       ],
       "bulletsHeading": "Main Solo Project:",
       "bulletsFloat": true,
@@ -146,10 +219,22 @@
       "dates": "November 2019 - May 2020",
       "boldTitle": true,
       "meta": [
-        { "label": "Team", "value": "Research, Architecture, and Development(RAD)" },
-        { "label": "Team Focus", "value": "Designing/Implementing the Next Gen. Solutions for Les Schwab" },
-        { "label": "Main Languages", "value": "Node.js, React, Angular" },
-        { "label": "Main Cloud Platforms Worked With", "value": "AWS, Azure" }
+        {
+          "label": "Team",
+          "value": "Research, Architecture, and Development(RAD)"
+        },
+        {
+          "label": "Team Focus",
+          "value": "Designing/Implementing the Next Gen. Solutions for Les Schwab"
+        },
+        {
+          "label": "Main Languages",
+          "value": "Node.js, React, Angular"
+        },
+        {
+          "label": "Main Cloud Platforms Worked With",
+          "value": "AWS, Azure"
+        }
       ],
       "bulletsHeading": "Main Solo Projects:",
       "bulletsFloat": true,
@@ -178,10 +263,22 @@
           "dates": "January 2019 - July 2019",
           "boldTitle": false,
           "meta": [
-            { "label": "Team", "value": "Security/Exploit Mitigation Platform" },
-            { "label": "Team Focus", "value": "Ensuring the Functionality/Quality of the ShieldX Security Offerings" },
-            { "label": "Main Languages", "value": "C, Regular Expressions, XML" },
-            { "label": "Main Exploit Report Companies Worked With", "value": "Telus, Idappcom, MITRE(CVE), ExploitDB" }
+            {
+              "label": "Team",
+              "value": "Security/Exploit Mitigation Platform"
+            },
+            {
+              "label": "Team Focus",
+              "value": "Ensuring the Functionality/Quality of the ShieldX Security Offerings"
+            },
+            {
+              "label": "Main Languages",
+              "value": "C, Regular Expressions, XML"
+            },
+            {
+              "label": "Main Exploit Report Companies Worked With",
+              "value": "Telus, Idappcom, MITRE(CVE), ExploitDB"
+            }
           ],
           "bulletsHeading": "Main Solo Projects:",
           "bulletsFloat": true,
@@ -196,10 +293,22 @@
           "dates": "June 2018 - January 2019",
           "boldTitle": false,
           "meta": [
-            { "label": "Team", "value": "Factory/Orchestration(Back-end) Team" },
-            { "label": "Team Focus", "value": "Integrating the ShieldX Product with On/Off Premise Cloud Platforms" },
-            { "label": "Main Languages", "value": "Java, Python, Bash" },
-            { "label": "Main Cloud Platforms Worked With", "value": "VMware, Azure, AWS" }
+            {
+              "label": "Team",
+              "value": "Factory/Orchestration(Back-end) Team"
+            },
+            {
+              "label": "Team Focus",
+              "value": "Integrating the ShieldX Product with On/Off Premise Cloud Platforms"
+            },
+            {
+              "label": "Main Languages",
+              "value": "Java, Python, Bash"
+            },
+            {
+              "label": "Main Cloud Platforms Worked With",
+              "value": "VMware, Azure, AWS"
+            }
           ],
           "bulletsHeading": "Main Solo Projects:",
           "bulletsFloat": true,
@@ -235,5 +344,6 @@
         "bullets": []
       }
     }
-  ]
+  ],
+  "summary": "Lead-level cloud and software engineer with 8 years building, securing, and operating SaaS platforms across AWS, Azure, and GCP; writing Go since 2018; focused on reliability, automation, and AI-assisted engineering."
 }
