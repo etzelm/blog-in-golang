@@ -2062,9 +2062,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dropzone@npm:^19.2.0":
-  version: 19.2.0
-  resolution: "react-dropzone@npm:19.2.0"
+"react-dropzone@npm:^20.0.0":
+  version: 20.0.0
+  resolution: "react-dropzone@npm:20.0.0"
   dependencies:
     attr-accept: "npm:^2.2.5"
     file-selector: "npm:^4.1.0"
@@ -2074,7 +2074,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 10c0/3c14c84643ed16a01618488ffce386521a0a07410d8bc642b75fe48e2682521d985c22d6447505ee6dd9de3844419b1aacec8c14c9aeb17fd319f8cd165567e1
+  checksum: 10c0/8a430bd22ba0350ecfc4872da80f27ddd7061a45d66d7b1612d94d82afa1c3fbff7476a8bf30582c38449f136223cfa5e052cbb6072800dc61f01ceea6770dd6
   languageName: node
   linkType: hard
 
@@ -2181,7 +2181,7 @@ __metadata:
     react: "npm:^19.2.8"
     react-bootstrap: "npm:^2.10.10"
     react-dom: "npm:^19.2.8"
-    react-dropzone: "npm:^19.2.0"
+    react-dropzone: "npm:^20.0.0"
     react-router: "npm:^8.3.0"
     react-toastify: "npm:^11.1.0"
     terser: "npm:^5.49.0"
