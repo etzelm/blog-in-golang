@@ -23,7 +23,7 @@
     "@vitest/coverage-v8": "4.1.10",
     "jsdom": "^30.0.1",
     "postcss": "^8.5.26",
-    "terser": "^5.49.1",
+    "terser": "^5.49.2",
     "vite": "^8.2.0",
     "vitest": "^4.1.10"
   },
