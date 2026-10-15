@@ -25,7 +25,7 @@
     "postcss": "^8.5.29",
     "terser": "^5.51.2",
     "vite": "^8.3.4",
-    "vitest": "^5.0.3"
+    "vitest": "^5.0.4"
   },
   "scripts": {
     "dev": "vite",
