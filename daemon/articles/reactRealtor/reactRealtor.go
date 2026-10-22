@@ -3,32 +3,12 @@ package reactRealtor
 import (
 	"os"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
+	"github.com/etzelm/blog-in-golang/daemon/ddb"
 	"github.com/etzelm/blog-in-golang/src/models"
-	log "github.com/sirupsen/logrus"
 )
 
 // ReactRealtor function for addition/modification of ReactRealtor article
 func ReactRealtor() {
-	id := os.Getenv("AWS_ACCESS_KEY_ID")
-	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
-	var myCredentials = credentials.NewStaticCredentials(id, key, "")
-
-	sess, err := session.NewSession(&aws.Config{
-		Credentials: myCredentials,
-		Region:      aws.String("us-west-1"),
-		//Endpoint:    aws.String("http://localhost:8000"),
-	})
-	if err != nil {
-		log.Error(err)
-		return
-	}
-	dbSvc := dynamodb.New(sess)
-
 	data, _ := os.ReadFile("articles/reactRealtor/articlePicture.html")
 	ap := string(data)
 
@@ -55,19 +35,5 @@ func ReactRealtor() {
 		PostType:     "standard",
 	}
 
-	av, _ := dynamodbattribute.MarshalMap(item)
-
-	table := os.Getenv("ARTICLES")
-	input := &dynamodb.PutItemInput{
-		Item:      av,
-		TableName: aws.String(table),
-	}
-
-	log.Info("Putting reactRealtor into DDB")
-	_, err = dbSvc.PutItem(input)
-
-	if err != nil {
-		log.Error("Got error calling PutItem:")
-		log.Error(err.Error())
-	}
+	ddb.PutArticle("reactRealtor", item)
 }

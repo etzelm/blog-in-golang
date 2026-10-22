@@ -1,18 +1,19 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/etzelm/blog-in-golang/daemon/articles/awsEMR"
 	"github.com/etzelm/blog-in-golang/daemon/articles/googleSRE"
 	"github.com/etzelm/blog-in-golang/daemon/articles/graphStore"
 	"github.com/etzelm/blog-in-golang/daemon/articles/infraCode"
 	"github.com/etzelm/blog-in-golang/daemon/articles/reactRealtor"
+	"github.com/etzelm/blog-in-golang/daemon/ddb"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -45,41 +46,33 @@ func main() {
 }
 
 func createTable() {
-	id := os.Getenv("AWS_ACCESS_KEY_ID")
-	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
-	var myCredentials = credentials.NewStaticCredentials(id, key, "")
-
-	sess, err := session.NewSession(&aws.Config{
-		Credentials: myCredentials,
-		Region:      aws.String("us-west-1"),
-		Endpoint:    aws.String("http://localhost:8000"),
-	})
+	ctx := context.Background()
+	dbSvc, err := ddb.NewClient(ctx, "us-west-1", "http://localhost:8000")
 	if err != nil {
 		log.Error(err)
 		return
 	}
-	dbSvc := dynamodb.New(sess)
 	input := &dynamodb.CreateTableInput{
-		AttributeDefinitions: []*dynamodb.AttributeDefinition{
+		AttributeDefinitions: []types.AttributeDefinition{
 			{
 				AttributeName: aws.String("name"),
-				AttributeType: aws.String("S"),
+				AttributeType: types.ScalarAttributeTypeS,
 			},
 		},
-		KeySchema: []*dynamodb.KeySchemaElement{
+		KeySchema: []types.KeySchemaElement{
 			{
 				AttributeName: aws.String("name"),
-				KeyType:       aws.String("HASH"),
+				KeyType:       types.KeyTypeHash,
 			},
 		},
-		ProvisionedThroughput: &dynamodb.ProvisionedThroughput{
+		ProvisionedThroughput: &types.ProvisionedThroughput{
 			ReadCapacityUnits:  aws.Int64(10),
 			WriteCapacityUnits: aws.Int64(10),
 		},
 		TableName: aws.String("Feedback"),
 	}
 
-	_, err = dbSvc.CreateTable(input)
+	_, err = dbSvc.CreateTable(ctx, input)
 
 	if err != nil {
 		log.Error("Got error calling CreateTable:")
@@ -87,7 +80,7 @@ func createTable() {
 		return
 	}
 
-	result, err := dbSvc.ListTables(&dynamodb.ListTablesInput{})
+	result, err := dbSvc.ListTables(ctx, &dynamodb.ListTablesInput{})
 	if err != nil {
 		log.Error(err)
 		return
@@ -95,36 +88,26 @@ func createTable() {
 
 	log.Info("Tables:")
 	for _, table := range result.TableNames {
-		log.Info(*table)
+		log.Info(table)
 	}
 }
 
 func dropTable() {
-	id := os.Getenv("AWS_ACCESS_KEY_ID")
-	key := os.Getenv("AWS_SECRET_ACCESS_KEY")
-	var myCredentials = credentials.NewStaticCredentials(id, key, "")
-
-	sess, err := session.NewSession(&aws.Config{
-		Credentials: myCredentials,
-		Region:      aws.String("us-west-2"),
-		Endpoint:    aws.String("http://localhost:8000")})
+	ctx := context.Background()
+	dbSvc, err := ddb.NewClient(ctx, "us-west-2", "http://localhost:8000")
 	if err != nil {
 		log.Error(err)
 		return
 	}
-	dbSvc := dynamodb.New(sess)
 
-	hold := "Test-Articles"
-	input := &dynamodb.DeleteTableInput{TableName: &hold}
-
-	_, err = dbSvc.DeleteTable(input)
+	_, err = dbSvc.DeleteTable(ctx, &dynamodb.DeleteTableInput{TableName: aws.String("Test-Articles")})
 
 	if err != nil {
 		log.Error("Got error calling DeleteTable:")
 		log.Error(err.Error())
 	}
 
-	result, err := dbSvc.ListTables(&dynamodb.ListTablesInput{})
+	result, err := dbSvc.ListTables(ctx, &dynamodb.ListTablesInput{})
 	if err != nil {
 		log.Error(err)
 		return
@@ -132,6 +115,6 @@ func dropTable() {
 
 	log.Info("Current Tables:")
 	for _, table := range result.TableNames {
-		log.Info(*table)
+		log.Info(table)
 	}
 }
