@@ -1,7 +1,7 @@
 # Stage 1: Go Builder
 # Pin the builder to the native build platform and cross-compile to the target
 # arch (see the build RUN below) — fast, vs. emulating the whole toolchain.
-FROM --platform=$BUILDPLATFORM golang:1.26.5-alpine3.23 AS golang-builder
+FROM --platform=$BUILDPLATFORM golang:1.26.10-alpine3.24 AS golang-builder
 
 # Update package index and upgrade all packages to latest versions
 RUN apk update && apk upgrade
@@ -83,7 +83,7 @@ COPY --from=react-builder /app/realtor/test-results.txt /app/react-test-results.
 COPY --from=react-builder /app/realtor/coverage/ /app/react-coverage/
 
 # Stage 3: Final Runtime Image
-FROM alpine:3.22 AS runtime
+FROM alpine:3.24 AS runtime
 
 # Update package index and upgrade all packages to latest versions for security
 # Combine RUN commands to reduce layers and improve build cache efficiency

@@ -15,7 +15,7 @@ RUN curl -sL https://api.github.com/repos/cli/cli/releases/latest \
         | cut -d '"' -f 4 \
         | wget -qi - -O gh_latest.deb
 RUN dpkg -i gh_latest.deb
-RUN curl -fsSL https://go.dev/dl/go1.26.4.linux-arm64.tar.gz -o go.tar.gz && \
+RUN curl -fsSL https://go.dev/dl/go1.26.10.linux-arm64.tar.gz -o go.tar.gz && \
     tar -C /usr/local -xzf go.tar.gz && \
     rm go.tar.gz && \
     ln -s /usr/local/go/bin/go /usr/bin/go
@@ -40,9 +40,9 @@ RUN chmod 400 /home/docker/.ssh/gcp_rsa
 RUN chown docker:docker -R /home/docker/.ssh/
 
 USER docker
-# Pre-provision the realtor packageManager (yarn@4.11.0) into the docker
+# Pre-provision the realtor packageManager (yarn@4.18.1) into the docker
 # user's corepack cache so the first studio-build doesn't fetch it at runtime.
 # Keep this version in sync with realtor/package.json "packageManager".
-RUN corepack prepare yarn@4.11.0 --activate
+RUN corepack prepare yarn@4.18.1 --activate
 
 ENTRYPOINT ["./start.sh"]
