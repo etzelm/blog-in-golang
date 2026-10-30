@@ -35,7 +35,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Build
         shell: bash
         run: |
@@ -92,14 +92,34 @@ jobs:
       PR_URL: ${{github.event.pull_request.html_url}}
       GITHUB_TOKEN: ${{secrets.TOKEN}}
     steps:
-      - name: Enable auto-merge for Dependabot PRs
+      # This job only runs after studio-build passed, so merge directly.
+      # `gh pr merge --auto` failed whenever the PR was already mergeable
+      # with a non-required check neutral or failing ("unstable status"),
+      # which left Dependabot PRs open for days. The loop also covers the
+      # other two failures seen in this step: Dependabot closing a PR it
+      # superseded (nothing to do), and two merges racing ("Base branch
+      # was modified").
+      - name: Approve Dependabot PR
         if: github.actor == 'dependabot[bot]'
+        run: gh pr review "$PR_URL" --approve -b "LGTM! Approved for merge." || true
+      - name: Merge PR
         run: |
-          gh pr review "$PR_URL" --approve -b "LGTM! Approved for auto-merge."
-          gh pr merge --auto --merge "$PR_URL"
-      - name: Merge PR for etzelm with admin rights
-        if: github.actor == 'etzelm'
-        run: gh pr merge --admin --merge "$PR_URL"
+          ADMIN=""
+          if [ "$GITHUB_ACTOR" = "etzelm" ]; then ADMIN="--admin"; fi
+          for attempt in 1 2 3 4 5; do
+            state=$(gh pr view "$PR_URL" --json state -q .state)
+            if [ "$state" != "OPEN" ]; then
+              echo "PR is $state; nothing to merge."
+              exit 0
+            fi
+            if gh pr merge $ADMIN --merge "$PR_URL"; then
+              exit 0
+            fi
+            echo "Merge attempt $attempt failed; retrying in $((attempt * 15))s..."
+            sleep $((attempt * 15))
+          done
+          echo "Could not merge $PR_URL after 5 attempts."
+          exit 1
 
   # ───────────────────────────── Phase 2a: develop ─────────────────────────────
   # build-push: build the image natively on the Studio (arm64) and push it to
@@ -124,7 +144,7 @@ jobs:
       build_changed: ${{ steps.changed-build-files.outputs.any_changed }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Get Changed Build Files
         id: changed-build-files
         uses: tj-actions/changed-files@v47
@@ -255,7 +275,7 @@ jobs:
       METRICS_TOKEN: ${{ secrets.METRICS_TOKEN }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Get Changed Article Files
         id: changed-daemon-files
         uses: tj-actions/changed-files@v47
@@ -483,7 +503,7 @@ jobs:
       GRAFANA_TOKEN: ${{ secrets.GRAFANA_TOKEN }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Get Changed Dashboards
         id: changed-dashboards
         uses: tj-actions/changed-files@v47
@@ -570,7 +590,7 @@ jobs:
       TYPST_VERSION: v0.15.0
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Get Changed Résumé Files
         id: changed-resume
         uses: tj-actions/changed-files@v47
