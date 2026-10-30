@@ -1,6 +1,6 @@
 module github.com/etzelm/blog-in-golang/daemon
 
-go 1.26.10
+go 1.27.3
 
 replace github.com/etzelm/blog-in-golang => ../blog
 
@@ -15,7 +15,7 @@ require (
 )
 
 require (
-	github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression v1.10.2 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression v1.10.3 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.20.4 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.5.7 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.8.7 // indirect
