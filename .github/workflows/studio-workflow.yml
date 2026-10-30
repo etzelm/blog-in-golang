@@ -35,7 +35,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Build
         shell: bash
         run: |
@@ -124,7 +124,7 @@ jobs:
       build_changed: ${{ steps.changed-build-files.outputs.any_changed }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Get Changed Build Files
         id: changed-build-files
         uses: tj-actions/changed-files@v47
@@ -255,7 +255,7 @@ jobs:
       METRICS_TOKEN: ${{ secrets.METRICS_TOKEN }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Get Changed Article Files
         id: changed-daemon-files
         uses: tj-actions/changed-files@v47
@@ -483,7 +483,7 @@ jobs:
       GRAFANA_TOKEN: ${{ secrets.GRAFANA_TOKEN }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Get Changed Dashboards
         id: changed-dashboards
         uses: tj-actions/changed-files@v47
@@ -570,7 +570,7 @@ jobs:
       TYPST_VERSION: v0.15.0
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Get Changed Résumé Files
         id: changed-resume
         uses: tj-actions/changed-files@v47

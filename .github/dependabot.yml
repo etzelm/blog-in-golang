@@ -28,3 +28,14 @@ updates:
         patterns:
           - "react"
           - "react-dom"
+  # Base images (golang, node, alpine) in blog/Dockerfile and the GitHub
+  # Actions in .github/workflows were not watched, so they drifted until a
+  # manual upgrade pass caught them (2026-10-29). Watch both.
+  - package-ecosystem: "docker"
+    directory: "/blog"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"

@@ -197,7 +197,7 @@ docker compose -f blog/docker-compose.yml run --rm blog-test
 docker run --rm -v $(pwd)/blog:/app -w /app \
   -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
   -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}" \
-  golang:1.26.3-alpine3.22 go test -run TestSpecificFunction -v ./src/handlers/
+  golang:1.27.3-alpine3.24 go test -run TestSpecificFunction -v ./src/handlers/
 ```
 
 ### Current Test Coverage
