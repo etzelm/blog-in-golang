@@ -11,7 +11,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.72.3
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.114.6
 	github.com/caddyserver/certmagic v0.25.6
-	github.com/gin-contrib/cache v1.4.6
+	github.com/gin-contrib/cache v1.4.7
 	github.com/gin-contrib/gzip v1.2.9
 	github.com/gin-contrib/static v1.1.8
 	github.com/gin-gonic/gin v1.12.0
