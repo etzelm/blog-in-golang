@@ -9,7 +9,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.33.12
 	github.com/aws/aws-sdk-go-v2/credentials v1.20.12
 	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.21.16
-	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.72.2
+	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.72.3
 	github.com/etzelm/blog-in-golang v0.0.0-00010101000000-000000000000
 	github.com/sirupsen/logrus v1.10.2
 )
