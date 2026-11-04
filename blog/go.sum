@@ -16,8 +16,8 @@ github.com/aws/aws-sdk-go-v2/credentials v1.20.13 h1:j4z41OtspmQ3ftQycaDunJ26b69
 github.com/aws/aws-sdk-go-v2/credentials v1.20.13/go.mod h1:SgPA1oS3b+dlMxZb618jDmGNscpXSCaxz15igS52OlE=
 github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.21.17 h1:ML2l+ADkvyL8ztff61JLR46pPb9/ukdeKC7r8CwlaSg=
 github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.21.17/go.mod h1:Xboz5uzoEY8kIcetu/0THEGLBzaYoL8+aNwDJUNwbJ4=
-github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression v1.10.4 h1:dakxhUQK5IbjpCOJA42VqaM8BWwlJHOpCB975YimXGA=
-github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression v1.10.4/go.mod h1:3zzRmRW+pdgpRtV+FUyaxUjcjaQlA5n0jqcVu/6x9Y4=
+github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression v1.10.5 h1:hmVzfIAhudRPwRyO43B5QNvuGiuGGdKcHu1b1V5ef5s=
+github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression v1.10.5/go.mod h1:Tym9WvcWFfhGpPRmf9fM8IkLoh6OYG/eKGwHUB8oQ70=
 github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.20.5 h1:iXjy2SFhGYNB1jWZBhQqq8HbhsbPF23w+/zbMvPXsTg=
 github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.20.5/go.mod h1:k0RUiBnyXU0AXRJ9tJmY2jQke6XUIX2PNVnWtvgaPtc=
 github.com/aws/aws-sdk-go-v2/internal/configsources v1.5.8 h1:gzIWc3DTPfPbWKrQnmL6BV6WD7NPD1htxzgdk/bQ/Z4=
@@ -103,8 +103,8 @@ github.com/gin-contrib/gzip v1.2.9 h1:MPyIubgLF/o5A4ni90weaQV0Oji7JTQto7QBVqWtmm
 github.com/gin-contrib/gzip v1.2.9/go.mod h1:vLBq0o7y73JpE7m1pngAK/BPaVB7EU56R2gQP1yCgbo=
 github.com/gin-contrib/sse v1.1.1 h1:uGYpNwTacv5R68bSGMapo62iLTRa9l5zxGCps4hK6ko=
 github.com/gin-contrib/sse v1.1.1/go.mod h1:QXzuVkA0YO7o/gun03UI1Q+FTI8ZV/n5t03kIQAI89s=
-github.com/gin-contrib/static v1.1.8 h1:5heoI9Bya1A4GrX/qWXAYfrQj5ejJe1dbyOWc2UBx00=
-github.com/gin-contrib/static v1.1.8/go.mod h1:iLFZejDjIpTtkLnWshlLsuR8L+K3xFoc7vpZmOrNRWI=
+github.com/gin-contrib/static v1.1.9 h1:XuxuTaRKGjR3AuHsZUboYgD7uprF7VTF9weGFjamx3Q=
+github.com/gin-contrib/static v1.1.9/go.mod h1:XpvMEoBW5hbC5YxJZ7Al4PiOB1TgUrxBucfDnYwsZhw=
 github.com/gin-gonic/gin v1.12.0 h1:b3YAbrZtnf8N//yjKeU2+MQsh2mY5htkZidOM7O0wG8=
 github.com/gin-gonic/gin v1.12.0/go.mod h1:VxccKfsSllpKshkBWgVgRniFFAzFb9csfngsqANjnLc=
 github.com/go-jose/go-jose/v4 v4.1.4 h1:moDMcTHmvE6Groj34emNPLs/qtYXRVcd6S7NHbHz3kA=
