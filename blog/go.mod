@@ -11,9 +11,9 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.73.2
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.114.9
 	github.com/caddyserver/certmagic v0.25.6
-	github.com/gin-contrib/cache v1.4.7
-	github.com/gin-contrib/gzip v1.2.9
-	github.com/gin-contrib/static v1.1.9
+	github.com/gin-contrib/cache v1.4.8
+	github.com/gin-contrib/gzip v1.2.10
+	github.com/gin-contrib/static v1.1.10
 	github.com/gin-gonic/gin v1.12.0
 	github.com/prometheus/client_golang v1.25.0
 	github.com/sirupsen/logrus v1.10.2
@@ -82,7 +82,7 @@ require (
 	go.uber.org/zap/exp v0.3.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
 	golang.org/x/arch v0.29.0 // indirect
-	golang.org/x/net v0.60.0 // indirect
+	golang.org/x/net v0.62.0 // indirect
 	golang.org/x/sys v0.49.0 // indirect
 	golang.org/x/text v0.43.0 // indirect
 	google.golang.org/protobuf v1.36.12 // indirect
