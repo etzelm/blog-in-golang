@@ -13,7 +13,7 @@ require (
 	github.com/caddyserver/certmagic v0.25.6
 	github.com/gin-contrib/cache v1.4.8
 	github.com/gin-contrib/gzip v1.2.10
-	github.com/gin-contrib/static v1.1.9
+	github.com/gin-contrib/static v1.1.10
 	github.com/gin-gonic/gin v1.12.0
 	github.com/prometheus/client_golang v1.25.0
 	github.com/sirupsen/logrus v1.10.2
