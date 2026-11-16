@@ -6,8 +6,8 @@ require (
 	github.com/aws/aws-sdk-go-v2 v1.48.0
 	github.com/aws/aws-sdk-go-v2/config v1.33.17
 	github.com/aws/aws-sdk-go-v2/credentials v1.20.17
-	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.21.20
-	github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression v1.10.8
+	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.21.21
+	github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression v1.10.9
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.74.0
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.114.9
 	github.com/caddyserver/certmagic v0.25.6
@@ -29,7 +29,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.5.12 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.8.12 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/v4a v1.5.11 // indirect
-	github.com/aws/aws-sdk-go-v2/service/dynamodbstreams v1.46.7 // indirect
+	github.com/aws/aws-sdk-go-v2/service/dynamodbstreams v1.47.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.25 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.11.12 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/endpoint-discovery v1.13.12 // indirect
