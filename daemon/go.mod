@@ -8,14 +8,14 @@ require (
 	github.com/aws/aws-sdk-go-v2 v1.48.0
 	github.com/aws/aws-sdk-go-v2/config v1.33.21
 	github.com/aws/aws-sdk-go-v2/credentials v1.21.3
-	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.21.22
-	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.74.0
+	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.21.23
+	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.74.1
 	github.com/etzelm/blog-in-golang v0.0.0-00010101000000-000000000000
 	github.com/sirupsen/logrus v1.10.2
 )
 
 require (
-	github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression v1.10.10 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression v1.10.11 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.20.9 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.5.12 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.8.12 // indirect
