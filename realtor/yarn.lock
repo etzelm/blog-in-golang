@@ -1717,7 +1717,7 @@ __metadata:
     react-dropzone: "npm:^20.2.1"
     react-router: "npm:^8.5.2"
     react-toastify: "npm:^11.2.0"
-    terser: "npm:^5.51.3"
+    terser: "npm:^5.51.4"
     typescript: "npm:^7.0.2"
     uuid: "npm:^14.0.3"
     vite: "npm:^8.3.8"
@@ -1871,9 +1871,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"terser@npm:^5.51.3":
-  version: 5.51.3
-  resolution: "terser@npm:5.51.3"
+"terser@npm:^5.51.4":
+  version: 5.51.4
+  resolution: "terser@npm:5.51.4"
   dependencies:
     "@jridgewell/source-map": "npm:^0.3.3"
     acorn: "npm:^8.15.0"
@@ -1881,7 +1881,7 @@ __metadata:
     source-map-support: "npm:~0.5.20"
   bin:
     terser: bin/terser
-  checksum: 10c0/bc945b5134499d78188e24ae26e732241bdb53e5d68cf8d8201a01413d8dd7aa5a69d2fb6fbda4eab35ac1d6a426ecd8ecf9991f3ad82e5107b0644222caacc8
+  checksum: 10c0/eae8fe3d3c7f3f214df468141ce85f6e9be99d34ce21500e335bb48e432f323b15058be9142f04f030c749e6f3db159d6c05e060f88a164e057887716df47785
   languageName: node
   linkType: hard
 
